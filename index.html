@@ -2,414 +2,566 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gridlock Zero Mobile</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>THE ENTERPRISE: 覇権奪還</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --gold:    #C9A84C;
+            --emerald: #00D68F;
+            --rose:    #FF4D6D;
+            --sky:     #38BDF8;
+            --amber:   #F59E0B;
+            --bg:      #060A11;
+            --surf:    #0C1221;
+            --bdr:     rgba(255,255,255,0.07);
+            --muted:   #2a3a50;
+            --D: 'Bebas Neue', cursive;
+            --M: 'DM Mono', monospace;
+            --B: 'Outfit', sans-serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        html, body { height: 100%; overflow: hidden; }
         body {
-            background-color: #0F172A;
-            margin: 0;
+            font-family: var(--B);
+            background: var(--bg);
+            color: #7a8fa8;
+            display: flex; align-items: center; justify-content: center;
+        }
+        /* Scanline */
+        body::after {
+            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+            background: repeating-linear-gradient(180deg, transparent 0px, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
+        }
+
+        #app {
+            width: 100%; max-width: 430px;
+            height: 100dvh;
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+            background: var(--bg);
+        }
+
+        /* ── HEADER ── */
+        .hdr {
+            flex: 0 0 auto;
+            padding: 14px 18px 0;
+            background: var(--bg);
+            border-bottom: 1px solid var(--bdr);
+            z-index: 10;
+        }
+        .hdr-row { display: flex; justify-content: space-between; align-items: flex-end; }
+        .hdr-tag {
+            font-family: var(--D); font-size: 8px; letter-spacing: .65em;
+            color: var(--gold); line-height: 1; margin-bottom: 3px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .hdr-tag::before {
+            content: ''; width: 5px; height: 5px; border-radius: 50%;
+            background: var(--gold); flex-shrink: 0;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+        .hdr-phase { font-family: var(--D); font-size: 32px; color: #fff; line-height: 1; letter-spacing: .04em; }
+        .hdr-mh { text-align: right; padding-bottom: 3px; }
+        .hdr-mh-lbl { font-size: 7px; font-weight: 700; letter-spacing: .4em; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
+        .hdr-mh-val { font-family: var(--D); font-size: 36px; color: var(--emerald); line-height: 1; }
+        .hdr-mh-val.lo { color: var(--rose); }
+
+        .share-bar {
+            margin: 8px 0 0; height: 18px; display: flex; border-radius: 3px;
+            overflow: hidden; border: 1px solid var(--bdr);
+        }
+        .share-seg {
+            height: 100%; transition: width .7s ease;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--D); font-size: 11px; color: rgba(255,255,255,.9); 
+            white-space: nowrap; overflow: hidden;
+            font-weight: 600;
+        }
+
+        /* ── GRID AREA ── */
+        .grid-wrap {
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 8px 14px;
+            position: relative;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            touch-action: none;
         }
-        canvas {
-            display: block;
-            touch-action: none;
-            -webkit-tap-highlight-color: transparent;
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(6,1fr);
+            grid-template-rows: repeat(6,1fr);
+            gap: 5px;
+            width: 100%; max-width: 360px;
+            aspect-ratio: 1;
         }
-        .ui-overlay {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            pointer-events: none;
-            color: #38BDF8;
-            width: calc(100% - 40px);
+        .tile {
+            aspect-ratio: 1; border-radius: 7px;
+            border: 1.5px solid rgba(255,255,255,.05);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            position: relative; user-select: none;
+            transition: transform .12s, box-shadow .12s, border-color .12s;
         }
-        .stats {
-            font-size: 14px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+        .tile:active { transform: scale(.88); }
+        .tile.sel {
+            border-color: #fff !important;
+            box-shadow: 0 0 14px rgba(255,255,255,.35), inset 0 0 6px rgba(255,255,255,.05);
+            transform: scale(1.07); z-index: 5;
         }
-        .current-mode-display {
-            position: absolute;
-            top: 20px;
-            right: 0;
-            text-align: right;
-            font-weight: bold;
-            font-size: 12px;
+        .t-lbl { font-family: var(--M); font-size: 16px; color: rgba(255,255,255,.8); pointer-events: none; font-weight: 600; } 
+
+        /* ── ANIMATIONS ── */
+        @keyframes rfp  { 0%,100%{box-shadow:0 0 8px var(--gold);border-color:var(--gold)} 50%{box-shadow:0 0-18px var(--gold);border-color:#ffe88a} }
+        @keyframes bld  { 0%,100%{box-shadow:0 0 6px rgba(255,255,255,.2);border-color:rgba(255,255,255,.35)} 50%{box-shadow:0 0 14px rgba(255,255,255,.5);border-color:#fff} }
+        @keyframes cxo  { 0%,100%{box-shadow:0 0 10px var(--sky);border-color:var(--sky)} 50%{box-shadow:0 0 20px var(--sky);border-color:#93e2ff} }
+        .rfp-a  { animation: rfp  1.3s infinite ease-in-out; }
+        .bld-a  { animation: bld  1.7s infinite ease-in-out; }
+        .cxo-a  { animation: cxo  1.5s infinite ease-in-out; border-width: 2.2px !important; }
+
+        /* ── SIDE PANEL ── */
+        .sp {
+            position: absolute; top: 0; right: 0; bottom: 0;
+            width: 78%;
+            background: rgba(6,10,17,0.1); 
+            backdrop-filter: blur(4px) saturate(1.4);
+            border-left: 1px solid rgba(255,255,255,.1);
+            display: flex; flex-direction: column; gap: 10px;
+            padding: 16px 15px 14px;
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform .35s cubic-bezier(.16,1,.3,1);
+            overflow-y: auto; overflow-x: hidden;
         }
-        /* ツールバー：直感操作のためのラベル付き */
-        .toolbar {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            background: rgba(30, 41, 59, 0.95);
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid #475569;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        .sp::-webkit-scrollbar { display: none; }
+        .sp.open { transform: translateX(0); }
+        .sp-hdr { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .sp-tag { font-size: 7px; font-weight: 700; letter-spacing: .5em; color: var(--emerald); text-transform: uppercase; }
+        .sp-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 4px; transition: color .15s; }
+        .sp-close:hover { color: #fff; }
+        .sp-name { font-family: var(--D); font-size: 22px; color: #fff; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+        .sp-full { font-size: 10px; color: #4a5f78; line-height: 1.45; border-left: 3px solid var(--gold); padding-left: 7px; flex-shrink: 0; }
+        .sp-stats { display: flex; gap: 6px; flex-shrink: 0; }
+        .sp-stat { flex: 1; background: rgba(255,255,255,.02); border: 1px solid var(--bdr); border-radius: 9px; padding: 8px; }
+        .sp-sl { font-size: 6px; font-weight: 700; letter-spacing: .4em; color: var(--muted); text-transform: uppercase; margin-bottom: 3px; }
+        .sp-sv { font-family: var(--D); font-size: 22px; color: #fff; }
+        .sp-win { 
+            font-family: var(--D); font-size: 44px; 
+            color: #002b5c; 
+            -webkit-text-stroke: 1px #fff;
+            line-height: 1; flex-shrink: 0; 
         }
-        .tool-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+        .sp-row { flex-shrink: 0; }
+        .sp-rl { font-size: 6px; font-weight: 700; letter-spacing: .35em; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
+        .sp-rv { font-family: var(--D); font-size: 14px; color: var(--gold); letter-spacing: .1em; }
+        .sp-status { font-size: 11px; font-weight: 600; color: #fff; }
+        .sp-btns { margin-top: auto; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .sp-btn {
+            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; border-radius: 10px; padding: 8px 8px;
+            font-family: var(--D); font-size: 13px; letter-spacing: .12em;
+            cursor: pointer; transition: all .18s; text-transform: uppercase;
+            opacity: 0.4;
         }
-        .tool-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+        .sp-btn:hover:not(:disabled) { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.4); opacity: 1; }
+        .sp-btn.pri { background: rgba(0,214,143,.18); border-color: var(--emerald); color: var(--emerald); }
+        .sp-btn.alt { background: rgba(201,168,76,.12); border-color: var(--gold); color: var(--gold); }
+        .sp-btn:disabled { opacity: 0.1; cursor: not-allowed; }
+
+        /* ── RESULT OVERLAY ── */
+        #result-ov {
+            position: fixed; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(6,10,17,.82); backdrop-filter: blur(18px);
+            z-index: 800;
         }
-        .tool-btn.active {
-            border-color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        #result-ov.hidden { display: none; }
+        .res-box {
+            width: 93%; max-height: 88dvh;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 24px;
+            background: rgba(12,18,33,.45);
+            backdrop-filter: blur(24px);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 80px rgba(0,0,0,.9);
         }
-        .tool-label {
-            font-size: 9px;
-            color: #94A3B8;
-            font-weight: bold;
+        .res-hdr { padding: 20px 20px 14px; border-bottom: 1px solid var(--bdr); display: flex; justify-content: space-between; }
+        .res-title { font-family: var(--D); font-size: 20px; letter-spacing: .45em; color: var(--gold); }
+        .res-list { flex: 1; overflow-y: auto; padding: 10px 18px; scrollbar-width: none; }
+        .res-block { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .res-bname { font-family: var(--D); color: var(--gold); font-size: 14px; letter-spacing: .2em; margin-bottom: 8px; padding-left: 8px; border-left: 3px solid var(--gold); }
+        .res-row { display: flex; gap: 9px; font-size: 14.5px; margin-bottom: 5px; line-height: 1.45; align-items: flex-start; }
+        .res-txt { color: #aabbcc; }
+        .res-next {
+            flex-shrink: 0; height: 52px; border: none; border-top: 1px solid var(--bdr);
+            background: #fff; color: var(--bg); font-family: var(--D); font-size: 15px; letter-spacing: .5em; text-transform: uppercase; cursor: pointer;
         }
-        .tool-btn.active + .tool-label {
-            color: white;
+
+        /* ── LOWER UI ── */
+        .task-strip {
+            flex: 0 0 50px; min-height: 50px; display: flex; align-items: center; gap: 6px; padding: 0 14px; overflow-x: auto; border-top: 1px solid var(--bdr); background: var(--bg); z-index: 10;
         }
+        .t-chip { flex-shrink: 0; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 18px; padding: 3px 9px 3px 11px; font-size: 9.5px; font-weight: 600; color: #c0cee0; }
+        .t-chip-name { color: var(--emerald); font-family: var(--M); font-size: 8.5px; }
+        .t-chip-rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 0; }
+
+        .exec-btn {
+            flex: 0 0 50px; min-height: 50px; border: none; border-top: 1px solid var(--bdr); background: rgba(255,255,255,.03); color: var(--muted); font-family: var(--D); font-size: 17px; letter-spacing: .55em; text-transform: uppercase; cursor: not-allowed; opacity: .4; transition: all .25s; z-index: 10;
+        }
+        .exec-btn.on { background: #fff; color: var(--bg); cursor: pointer; opacity: 1; box-shadow: 0 -8px 24px rgba(255,255,255,.12); }
+
+        .log-area { flex: 0 0 40px; min-height: 40px; overflow: hidden; padding: 5px 15px; border-top: 1px solid var(--bdr); background: var(--bg); z-index: 10; }
+        .log-ln { font-family: var(--M); font-size: 8.5px; color: var(--muted); line-height: 1.55; }
+
+        .score-bar { flex: 0 0 48px; min-height: 48px; display: flex; justify-content: space-between; align-items: center; padding: 0 18px; border-top: 1px solid var(--bdr); background: var(--bg); z-index: 10; }
+        .score-v { font-family: var(--D); font-size: 30px; color: #fff; }
+
+        #final-modal { position: fixed; inset: 0; z-index: 9500; display: flex; align-items: center; justify-content: center; background: rgba(6,10,17,.97); padding: 16px; }
+        #final-modal.hidden { display: none; }
+        .final-box { background: var(--surf); border: 1px solid rgba(255,255,255,.08); border-radius: 28px; padding: 28px 22px; width: 100%; text-align: center; }
+        .final-score { font-family: var(--D); font-size: 64px; color: var(--emerald); line-height: 1; margin: 8px 0 20px; }
+        .final-btn { width: 100%; height: 48px; border-radius: 12px; border: none; font-family: var(--D); font-size: 15px; letter-spacing: .4em; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
+        .final-btn.pri { background: #fff; color: var(--bg); }
+        .final-btn.sec { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: var(--muted); }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="ui-overlay">
-        <h1 class="text-xl font-bold italic mb-1">GRIDLOCK ZERO</h1>
-        <div class="flex justify-between items-start">
+<div id="start-ov" class="hidden">
+    <div class="start-txt" id="start-txt">GAME START</div>
+</div>
+
+<div id="app">
+    <header class="hdr">
+        <div class="hdr-row">
             <div>
-                <div class="stats text-white">SCORE: <span id="score-val" class="text-sky-400">0</span></div>
-                <div class="stats text-white">CONGESTION: <span id="congestion-val" class="text-rose-400">0</span>%</div>
+                <div class="hdr-tag">The Enterprise Command</div>
+                <div class="hdr-phase" id="phase-disp">FY26M1</div>
             </div>
-            <div class="current-mode-display">
-                <div class="text-slate-400 uppercase">Current Tool</div>
-                <div id="active-mode-text" class="text-sky-400 text-lg">開通 / 廃止</div>
+            <div class="hdr-mh">
+                <div class="hdr-mh-lbl">Resource MH</div>
+                <div class="hdr-mh-val" id="mh-disp">20</div>
             </div>
         </div>
+        <div class="share-bar" id="share-bar"></div>
+    </header>
+
+    <section class="grid-wrap">
+        <div id="grid"></div>
+        <aside class="sp" id="sp">
+            <div class="sp-hdr"><span class="sp-tag">Tactical Detail</span><button class="sp-close" id="sp-close">✕</button></div>
+            <div class="sp-name" id="sp-name">—</div>
+            <div class="sp-full" id="sp-full">—</div>
+            <div class="sp-stats">
+                <div class="sp-stat"><div class="sp-sl">Visit</div><div class="sp-sv" id="sp-vc">0</div></div>
+                <div class="sp-stat"><div class="sp-sl">Study</div><div class="sp-sv" id="sp-sc">0</div></div>
+            </div>
+            <div><div class="sp-win" id="sp-win">—%</div><div class="sp-sl">Capture Prob</div></div>
+            <div class="sp-row"><div class="sp-rl">Provider</div><div class="sp-rv" id="sp-vendor">—</div></div>
+            <div class="sp-row"><div class="sp-rl">Phase Vector</div><div class="sp-status" id="sp-status">—</div></div>
+            <div class="sp-btns">
+                <div style="display:flex; gap:4px;">
+                    <button class="sp-btn" style="flex:1;" onclick="addTask('VISIT',5,'訪問')">Visit(-5)</button>
+                    <!-- SURVEY への改称を適用 -->
+                    <button class="sp-btn" style="flex:1;" onclick="addTask('SURVEY',3,'調査')">Survey(-3)</button>
+                </div>
+                <button class="sp-btn" id="sp-spec-btn" onclick="addTask('SPECIN',12,'スペックイン')">Spec-in (-12 MH)</button>
+                <button class="sp-btn alt" onclick="addTask('CXO',15,'トップ面談')">CXO Meeting (-15 MH)</button>
+                <button class="sp-btn pri" id="sp-prop-btn" onclick="addTask('PROPOSAL',10,'提案')" disabled>Submit Proposal (-10 MH)</button>
+            </div>
+        </aside>
+    </section>
+
+    <div class="task-strip" id="task-strip"></div>
+    <button class="exec-btn" id="exec-btn" disabled onclick="executeStrategy()">Launch Mission</button>
+    <div class="log-area" id="log-area"></div>
+
+    <footer class="score-bar">
+        <div class="score-v" id="score-v">¥0<span>M</span></div>
+    </footer>
+</div>
+
+<div id="result-ov" class="hidden">
+    <div class="res-box">
+        <div class="res-hdr"><span class="res-title">CALL REPORT</span></div>
+        <div class="res-list" id="res-list"></div>
+        <button class="res-next" onclick="closeResult()">Next Cycle ›</button>
     </div>
+</div>
 
-    <div class="toolbar" id="toolbar">
-        <div class="tool-group">
-            <div class="tool-btn active bg-slate-600" data-mode="toggle" data-label="開通 / 廃止">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
-            </div>
-            <div class="tool-label">ON/OFF</div>
-        </div>
-        <div class="tool-group">
-            <div class="tool-btn bg-[#00E5FF]" data-mode="cyan" data-label="水色専用"></div>
-            <div class="tool-label">CYAN</div>
-        </div>
-        <div class="tool-group">
-            <div class="tool-btn bg-[#FF4081]" data-mode="magenta" data-label="赤紫専用"></div>
-            <div class="tool-label">MAGENTA</div>
-        </div>
-        <div class="tool-group">
-            <div class="tool-btn bg-[#CCFF00]" data-mode="lime" data-label="黄緑専用"></div>
-            <div class="tool-label">LIME</div>
-        </div>
+<div id="final-modal" class="hidden">
+    <div class="final-box">
+        <div class="final-ttl">Annual Performance Report</div>
+        <div class="final-score" id="final-score">¥0</div>
+        <button class="final-btn pri" onclick="continueGame()">⏩ Next Year</button>
+        <button class="final-btn sec" onclick="resetGame()">↩ Reset</button>
     </div>
+</div>
 
-    <canvas id="gameCanvas"></canvas>
+<script>
+const MAX_MH = 20;
+const VENDORS = {
+    H: { name:'H社(SELF)', bg:'#00D68F' }, 
+    I: { name:'I社',        bg:'#0A1F3D' },
+    A: { name:'A社',        bg:'#2D0A3D' },
+    S: { name:'S社',        bg:'#451A03' },
+    NONE:{ name:'未開拓', bg:'#060A11' },
+    UNK: { name:'情報未取得', bg:'#111926' },
+};
+const CUSTOMER_POOL = [
+    { id:101, name:'NIT-Core', budget:120, tiles:5 },
+    { id:102, name:'NIT-Logi', budget:80,  tiles:4 },
+    { id:201, name:'SAP-Net',  budget:70,  tiles:4 },
+    { id:202, name:'SAP-Win',  budget:65,  tiles:3 },
+    { id:401, name:'HOU-Edu',  budget:110, tiles:4 },
+    { id:501, name:'TSU-EC',   budget:80,  tiles:3 },
+    { id:701, name:'HKL-Agri', budget:60,  tiles:3 },
+    { id:901, name:'HBA-Sec',  budget:50,  tiles:2 },
+    { id:1001,name:'SAT-POS',  budget:40,  tiles:2 },
+    { id:1201,name:'HPP-Sec',  budget:25,  tiles:1 },
+];
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score-val');
-        const congEl = document.getElementById('congestion-val');
-        const modeTextEl = document.getElementById('active-mode-text');
-        const toolbar = document.getElementById('toolbar');
+let state = {
+    month:1, year:1, mh:MAX_MH, sales:0, selId:null, tasks:[], 
+    logs:['Intelligence system online.'], customers:[], grid:[],
+};
 
-        const CONFIG = {
-            nodesCount: 6, // 6x6 nodes = 5x5 cells (ニモさんのリクエスト)
-            colors: {
-                bg: '#0F172A',
-                grid: '#1E293B',
-                gridActive: '#334155',
-                carTypes: [
-                    { id: 'cyan', color: '#00E5FF' },
-                    { id: 'magenta', color: '#FF4081' },
-                    { id: 'lime', color: '#CCFF00' }
-                ],
-                danger: '#FB7185'
-            },
-            edgeHitWidth: 35, // さらに当たり判定を拡大
-            carSpeed: 0.00065 // 少しゆっくりに調整
-        };
+function initEnv() {
+    const vd = ['H','I','A','S'];
+    state.customers = CUSTOMER_POOL.map(b => ({
+        ...b,
+        vendor: vd[Math.floor(Math.random()*4)],
+        mo: Math.floor(Math.random()*45)+1,
+        vc:0, sc:0, 
+        affinity: Math.floor(Math.random() * 21),
+        specIn: false, 
+        cxoProtect: 0,
+        intelRevealed: false
+    }));
+    buildGrid();
+}
 
-        let state = {
-            score: 0,
-            congestion: 0,
-            edges: [], 
-            cars: [],  
-            lastTime: 0,
-            selectedMode: 'toggle'
-        };
+function buildGrid() {
+    let tiles = [];
+    [...state.customers].sort(()=>Math.random()-.5).forEach(c => {
+        for (let i=0;i<c.tiles;i++) tiles.push({cid:c.id});
+    });
+    if (tiles.length > 36) {
+        tiles = tiles.slice(0, 36);
+    } else {
+        while (tiles.length < 36) tiles.push({cid:null});
+    }
+    state.grid = tiles;
+}
 
-        function initGrid() {
-            state.edges = [];
-            for (let y = 0; y < CONFIG.nodesCount; y++) {
-                for (let x = 0; x < CONFIG.nodesCount - 1; x++) {
-                    state.edges.push({ n1: [x, y], n2: [x + 1, y], active: true, vertical: false, carsOn: 0, restriction: null });
-                }
-            }
-            for (let x = 0; x < CONFIG.nodesCount; x++) {
-                for (let y = 0; y < CONFIG.nodesCount - 1; y++) {
-                    state.edges.push({ n1: [x, y], n2: [x, y + 1], active: true, vertical: true, carsOn: 0, restriction: null });
-                }
-            }
-        }
+function wr(c) {
+    if (!c) return 0;
+    let r = 5 + (c.affinity || 0); 
+    if (c.vendor==='H') r += 40;
+    if (c.mo>=48 && c.mo<50) r += 40; else if (c.mo>=50) r -= 20;
+    if (c.specIn) r += 30;
+    r += c.vc*5 + (c.sc||0)*10;
+    state.tasks.filter(t=>t.cid===c.id).forEach(t=>{
+        if(t.type==='VISIT') r+=5;
+        if(t.type==='CXO') r+=50;
+    });
+    return Math.min(99, Math.max(5, Math.round(r)));
+}
 
-        function resize() {
-            const dpr = window.devicePixelRatio || 1;
-            const size = Math.min(window.innerWidth, window.innerHeight * 0.75);
-            canvas.width = size * dpr;
-            canvas.height = size * dpr;
-            canvas.style.width = `${size}px`;
-            canvas.style.height = `${size}px`;
-            canvas.style.marginTop = `${(window.innerHeight - size) / 2 - 40}px`;
-            canvas.style.marginLeft = `${(window.innerWidth - size) / 2}px`;
-            ctx.scale(dpr, dpr);
-        }
+function render() {
+    document.getElementById('phase-disp').textContent = `FY2${state.year+5}M${state.month}`;
+    const me = document.getElementById('mh-disp');
+    me.textContent = state.mh;
+    document.getElementById('score-v').innerHTML = `¥${state.sales}<span>M</span>`;
 
-        function findShortestPath(start, target, carColorId) {
-            const queue = [[start]];
-            const visited = new Set();
-            visited.add(`${start[0]},${start[1]}`);
+    const s={H:0,I:0,A:0,S:0};
+    state.customers.forEach(c=>{if(s[c.vendor]!==undefined)s[c.vendor]+=c.budget;});
+    const total = Object.values(s).reduce((a,b)=>a+b,0)||1;
+    const bar = document.getElementById('share-bar'); bar.innerHTML='';
+    [['H','#00D68F'],['I','#38BDF8'],['A','#A855F7'],['S','#F59E0B']].forEach(([v,c])=>{
+        const p=(s[v]||0)/total*100;
+        if(p>0){const d=document.createElement('div');d.className='share-seg';d.style.cssText=`width:${p}%;background:${c}`;if(p>6)d.textContent=Math.round(p)+'%';bar.appendChild(d);}
+    });
 
-            while (queue.length > 0) {
-                const path = queue.shift();
-                const [cx, cy] = path[path.length - 1];
-                if (cx === target[0] && cy === target[1]) return path;
-
-                const neighbors = [];
-                state.edges.forEach(e => {
-                    if (!e.active) return;
-                    if (e.restriction && e.restriction !== carColorId) return;
-                    if (e.n1[0] === cx && e.n1[1] === cy) neighbors.push(e.n2);
-                    if (e.n2[0] === cx && e.n2[1] === cy) neighbors.push(e.n1);
-                });
-
-                for (const next of neighbors) {
-                    const key = `${next[0]},${next[1]}`;
-                    if (!visited.has(key)) {
-                        visited.add(key);
-                        queue.push([...path, next]);
-                    }
-                }
-            }
-            return null;
-        }
-
-        function spawnCar() {
-            const getBoundaryNode = () => {
-                const side = Math.floor(Math.random() * 4);
-                if (side === 0) return [0, Math.floor(Math.random() * CONFIG.nodesCount)];
-                if (side === 1) return [CONFIG.nodesCount - 1, Math.floor(Math.random() * CONFIG.nodesCount)];
-                if (side === 2) return [Math.floor(Math.random() * CONFIG.nodesCount), 0];
-                return [Math.floor(Math.random() * CONFIG.nodesCount), CONFIG.nodesCount - 1];
-            };
-
-            const start = getBoundaryNode();
-            let target = getBoundaryNode();
-            while (target[0] === start[0] && target[1] === start[1]) target = getBoundaryNode();
-
-            const colorIdx = Math.floor(Math.random() * CONFIG.colors.carTypes.length);
-            const colorId = CONFIG.colors.carTypes[colorIdx].id;
-
-            const path = findShortestPath(start, target, colorId);
-            if (!path || path.length < 2) return;
-
-            state.cars.push({
-                curr: [...start],
-                next: [...path[1]],
-                target: [...target],
-                colorIdx: colorIdx,
-                colorId: colorId,
-                progress: 0,
-                stuck: false
-            });
-        }
-
-        function update(deltaTime) {
-            state.edges.forEach(e => e.carsOn = 0);
-            for (let i = state.cars.length - 1; i >= 0; i--) {
-                const car = state.cars[i];
-                if (car.progress >= 1) {
-                    car.curr = [...car.next];
-                    if (car.curr[0] === car.target[0] && car.curr[1] === car.target[1]) {
-                        state.cars.splice(i, 1);
-                        state.score += 100; // スコア加算
-                        continue;
-                    }
-                    const newPath = findShortestPath(car.curr, car.target, car.colorId);
-                    if (newPath && newPath.length >= 2) {
-                        car.next = [...newPath[1]];
-                        car.progress = 0;
-                        car.stuck = false;
-                    } else {
-                        car.stuck = true;
-                    }
-                } else if (!car.stuck) {
-                    car.progress += deltaTime * CONFIG.carSpeed;
-                } else {
-                    const retryPath = findShortestPath(car.curr, car.target, car.colorId);
-                    if (retryPath && retryPath.length >= 2) {
-                        car.next = [...retryPath[1]];
-                        car.progress = 0;
-                        car.stuck = false;
-                    }
-                }
-                if (!car.stuck) {
-                    const edge = state.edges.find(e => {
-                        const match1 = e.n1[0] === car.curr[0] && e.n1[1] === car.curr[1] && e.n2[0] === car.next[0] && e.n2[1] === car.next[1];
-                        const match2 = e.n2[0] === car.curr[0] && e.n2[1] === car.curr[1] && e.n1[0] === car.next[0] && e.n1[1] === car.next[1];
-                        return match1 || match2;
-                    });
-                    if (edge) edge.carsOn++;
-                }
-            }
-
-            const congestedCount = state.edges.filter(e => e.carsOn > 1).length;
-            state.congestion = Math.min(100, Math.floor((congestedCount / state.edges.length) * 1000));
-            scoreEl.innerText = state.score;
-            congEl.innerText = state.congestion;
-
-            if (Math.random() < 0.015 && state.cars.length < 15) spawnCar();
-        }
-
-        function draw() {
-            const size = Math.min(window.innerWidth, window.innerHeight * 0.75);
-            const step = size / (CONFIG.nodesCount - 1);
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 道路
-            state.edges.forEach(edge => {
-                const x1 = edge.n1[0] * step, y1 = edge.n1[1] * step;
-                const x2 = edge.n2[0] * step, y2 = edge.n2[1] * step;
-
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                
-                if (!edge.active) {
-                    ctx.strokeStyle = '#1e293b';
-                    ctx.lineWidth = 1;
-                    ctx.setLineDash([2, 6]);
-                } else {
-                    ctx.setLineDash([]);
-                    if (edge.restriction) {
-                        const type = CONFIG.colors.carTypes.find(t => t.id === edge.restriction);
-                        ctx.strokeStyle = type.color;
-                        ctx.lineWidth = 4;
-                        ctx.setLineDash([10, 5]);
-                    } else if (edge.carsOn > 1) {
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = CONFIG.colors.danger;
-                        ctx.strokeStyle = CONFIG.colors.danger;
-                        ctx.lineWidth = 5;
-                    } else {
-                        ctx.shadowBlur = 0;
-                        ctx.strokeStyle = CONFIG.colors.gridActive;
-                        ctx.lineWidth = 3;
-                    }
-                }
-                ctx.stroke();
-                ctx.shadowBlur = 0;
-            });
-
-            ctx.setLineDash([]);
-
-            // 車両
-            state.cars.forEach(car => {
-                const x = (car.curr[0] + (car.next[0] - car.curr[0]) * car.progress) * step;
-                const y = (car.curr[1] + (car.next[1] - car.curr[1]) * car.progress) * step;
-                ctx.beginPath();
-                ctx.arc(x, y, 8, 0, Math.PI * 2);
-                ctx.fillStyle = CONFIG.colors.carTypes[car.colorIdx].color;
-                if (car.stuck) {
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = '#FFFFFF';
-                    ctx.strokeStyle = '#FFFFFF';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                } else {
-                    ctx.shadowBlur = 12;
-                    ctx.shadowColor = ctx.fillStyle;
-                }
-                ctx.fill();
-            });
-            ctx.shadowBlur = 0;
-        }
-
-        function loop(time) {
-            update(time - state.lastTime);
-            state.lastTime = time;
-            draw();
-            requestAnimationFrame(loop);
-        }
-
-        toolbar.addEventListener('touchstart', (e) => {
-            const btn = e.target.closest('.tool-btn');
-            if (!btn) return;
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.selectedMode = btn.dataset.mode;
-            modeTextEl.innerText = btn.dataset.label;
-            if (navigator.vibrate) navigator.vibrate(15);
-        });
-
-        canvas.addEventListener('touchstart', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const touch = e.touches[0];
-            const pos = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
-            const size = Math.min(window.innerWidth, window.innerHeight * 0.75);
-            const step = size / (CONFIG.nodesCount - 1);
+    const gEl = document.getElementById('grid'); gEl.innerHTML='';
+    state.grid.forEach(t=>{
+        const el=document.createElement('div'); el.className='tile';
+        if (t.cid) {
+            const c=state.customers.find(x=>x.id===t.cid);
+            const known=c.vc>0||c.vendor==='H';
+            el.style.backgroundColor=VENDORS[known?c.vendor:'UNK'].bg;
+            if(state.selId===c.id) el.classList.add('sel');
             
-            const edge = state.edges.find(edge => {
-                const x1 = edge.n1[0] * step, y1 = edge.n1[1] * step;
-                const x2 = edge.n2[0] * step, y2 = edge.n2[1] * step;
-                const minX = Math.min(x1, x2) - CONFIG.edgeHitWidth;
-                const maxX = Math.max(x1, x2) + CONFIG.edgeHitWidth;
-                const minY = Math.min(y1, y2) - CONFIG.edgeHitWidth;
-                const maxY = Math.max(y1, y2) + CONFIG.edgeHitWidth;
-                if (pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY) {
-                    return edge.vertical ? Math.abs(pos.x - x1) < CONFIG.edgeHitWidth : Math.abs(pos.y - y1) < CONFIG.edgeHitWidth;
-                }
-                return false;
-            });
+            if(c.cxoProtect > 0) el.classList.add('cxo-a');
+            else if(known && c.mo>=48 && c.mo<50) el.classList.add('rfp-a');
+            else if(known && c.mo>=50) el.classList.add('bld-a');
 
-            if (edge) {
-                if (state.selectedMode === 'toggle') {
-                    edge.active = !edge.active;
-                    edge.restriction = null;
+            const sp=document.createElement('span');sp.className='t-lbl';
+            sp.textContent=known?`${Math.ceil(c.mo/12)}`:'?';
+            el.appendChild(sp);
+            el.onclick=e=>{state.selId=c.id;render();};
+        } else {
+            el.style.backgroundColor=VENDORS.NONE.bg;
+        }
+        gEl.appendChild(el);
+    });
+
+    const sp=document.getElementById('sp');
+    if (state.selId) {
+        const c=state.customers.find(x=>x.id===state.selId);
+        sp.classList.add('open');
+        document.getElementById('sp-name').textContent=c.name;
+        document.getElementById('sp-vc').textContent=c.vc;
+        document.getElementById('sp-win').textContent=`${wr(c)}%`;
+        const known=c.vc>0||c.vendor==='H';
+        document.getElementById('sp-vendor').textContent= (known || c.intelRevealed) ? VENDORS[c.vendor].name : '？';
+        const stEl=document.getElementById('sp-status');
+        if(c.cxoProtect > 0){stEl.textContent=`🛡 CXO防衛中 (残り${c.cxoProtect}ヶ月)`; stEl.style.color = 'var(--sky)';}
+        else if(!known && !c.intelRevealed){stEl.textContent='情報未取得'; stEl.style.color = '';}
+        else if(c.mo>=50){stEl.textContent=`構築中 (M${c.mo})`; stEl.style.color = '';}
+        else if(c.mo>=48){stEl.textContent=`📄 RFP放出中 (M${c.mo})`; stEl.style.color = 'var(--amber)';}
+        else{stEl.textContent=`運用中 (M${c.mo})`; stEl.style.color = '';}
+        
+        document.getElementById('sp-prop-btn').disabled=!(known&&c.mo>=48&&c.mo<50);
+        document.getElementById('sp-spec-btn').disabled=(c.mo>=48 || c.specIn);
+    } else {
+        sp.classList.remove('open');
+    }
+
+    const ts=document.getElementById('task-strip'); ts.innerHTML='';
+    state.tasks.forEach((t,i)=>{
+        const c=document.createElement('div');c.className='t-chip';
+        c.innerHTML=`<span class="t-chip-name">${t.cname}</span><span>${t.label}</span><button class="t-chip-rm" onclick="removeTask(${i})">✕</button>`;
+        ts.appendChild(c);
+    });
+
+    const eb=document.getElementById('exec-btn');
+    eb.disabled=state.tasks.length===0;
+    eb.className='exec-btn'+(eb.disabled?'':' on');
+
+    const la=document.getElementById('log-area'); la.innerHTML='';
+    state.logs.slice(0,3).forEach((l,i)=>{
+        const d=document.createElement('div');d.className='log-ln';
+        d.textContent=(i===0?'>>> ':'... ')+l;la.appendChild(d);
+    });
+}
+
+function addTask(type,cost,label) {
+    if(!state.selId) return;
+    if(state.mh<cost) return;
+    const c=state.customers.find(x=>x.id===state.selId);
+    state.tasks.push({cid:c.id,cname:c.name,type,cost,label});
+    state.mh-=cost; 
+    state.selId = null; 
+    render();
+}
+
+function removeTask(i) {
+    state.mh+=state.tasks[i].cost;
+    state.tasks.splice(i,1); render();
+}
+
+async function executeStrategy() {
+    let turnResults = [];
+    const interacted = [...new Set(state.tasks.map(t=>t.cid))];
+
+    for(const t of state.tasks){
+        const c=state.customers.find(x=>x.id===t.cid);
+        if(t.type==='VISIT'){
+            c.vc++; turnResults.push({n:c.name, tx:'戦略訪問を実施。顧客キーマンの情報を入手。', self:true});
+        } else if(t.type==='SURVEY'){ // INTEL ではなく SURVEY に置換
+            c.intelRevealed = true; turnResults.push({n:c.name, tx:`市場調査を実施。${VENDORS[c.vendor].name}の動向を特定。`, self:true});
+        } else if(t.type==='SPECIN'){
+            c.specIn = true; turnResults.push({n:c.name, tx:'自社有利な要件をRFPに盛り込む「スペックイン」に成功。', self:true});
+        } else if(t.type==='CXO'){
+            c.cxoProtect = 4; turnResults.push({n:c.name, tx:'CXOとの合意を形成。以後3ヶ月間、他社の介入をシャットアウト。', self:true});
+        } else if(t.type==='PROPOSAL'){
+            if(Math.random()*100<wr(c)){
+                c.vendor='H';c.mo=55;c.vc=1;c.specIn=false;state.sales+=c.budget;
+                turnResults.push({n:c.name, tx:'【受注】コンペを制しました。構築フェーズへ移行。', self:true});
+            } else {
+                turnResults.push({n:c.name, tx:'【失注】競合のロジックに押し切られました。', self:true});
+            }
+        }
+    }
+
+    // Rival moves
+    for (const rid of ['I', 'A', 'S']) {
+        const targets = state.customers.filter(c => c.vendor !== rid && c.cxoProtect <= 0 && c.mo < 50);
+        
+        interacted.forEach(cid => {
+            const tgt = state.customers.find(c => c.id === cid);
+            if (tgt && tgt.mo < 50 && tgt.vendor !== rid && Math.random() < 0.3) {
+                const attemptSuccess = Math.random() * 100 < (tgt.mo >= 48 ? 40 : 15);
+                if (attemptSuccess) {
+                    tgt.vendor = rid; tgt.mo = 1; tgt.vc = 0; tgt.specIn = false;
+                    turnResults.push({ n: tgt.name, tx: `【急報】${VENDORS[rid].name}による強襲を確認。ベンダーが切り替わりました。`, self:false });
                 } else {
-                    edge.active = true;
-                    edge.restriction = (edge.restriction === state.selectedMode) ? null : state.selectedMode;
+                    turnResults.push({ n: tgt.name, tx: `【防衛】${VENDORS[rid].name}による干渉を検知しましたが、影響はありませんでした。`, self:false });
                 }
-                if (navigator.vibrate) navigator.vibrate(40);
             }
         });
 
-        document.body.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-        window.addEventListener('resize', resize);
-        resize();
-        initGrid();
-        requestAnimationFrame(loop);
-    </script>
+        if (targets.length && Math.random() < 0.2) {
+            const tgt = targets[Math.floor(Math.random() * targets.length)];
+            if (!interacted.includes(tgt.id)) {
+                if (Math.random() * 100 < (tgt.mo >= 48 ? 40 : 15)) {
+                    tgt.vendor = rid; tgt.mo = 1; tgt.vc = 0; tgt.specIn = false;
+                    turnResults.push({ n: tgt.name, tx: `【急報】${VENDORS[rid].name}による強襲を確認。ベンダーが切り替わりました。`, self:false });
+                }
+            }
+        }
+    }
+
+    state.month++; 
+    state.tasks = [];
+    state.mh = MAX_MH; 
+    state.selId = null; 
+    state.customers.forEach(c=>{
+        c.mo=c.mo>=60?1:c.mo+1;
+        if(c.cxoProtect > 0) c.cxoProtect--;
+    });
+
+    const rl=document.getElementById('res-list'); rl.innerHTML='';
+    const grouped = {};
+    turnResults.forEach(r => {
+        if(!grouped[r.n]) grouped[r.n] = [];
+        grouped[r.n].push(r);
+    });
+
+    Object.keys(grouped).forEach(name => {
+        const blk=document.createElement('div'); blk.className='res-block';
+        let h = `<div class="res-bname">${name}</div>`;
+        grouped[name].forEach(r => {
+            h += `<div class="res-row"><div class="res-txt" style="${r.self ? 'color:var(--emerald);' : ''}">${r.tx}</div></div>`;
+        });
+        blk.innerHTML = h;
+        rl.appendChild(blk);
+    });
+
+    document.getElementById('result-ov').classList.remove('hidden');
+    render();
+}
+
+function closeResult() {
+    document.getElementById('result-ov').classList.add('hidden');
+    if(state.month >= 12 && state.tasks.length === 0) showFinal();
+}
+
+function showFinal() { document.getElementById('final-modal').classList.remove('hidden'); }
+function continueGame(){ state.year++; state.month=1; state.sales=0; document.getElementById('final-modal').classList.add('hidden'); render(); }
+function resetGame(){ location.reload(); }
+
+window.onload=()=>{ 
+    initEnv(); 
+    document.getElementById('sp-close').onclick=()=>{state.selId=null;render();};
+    render(); 
+};
+</script>
 </body>
 </html>
