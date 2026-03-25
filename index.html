@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gridlock Zero Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0F172A;
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: none;
+        }
+        canvas {
+            display: block;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            color: #38BDF8;
+        }
+        .stats {
+            font-size: 14px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        #info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #38BDF8;
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            display: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-overlay">
+        <h1 class="text-xl font-bold italic mb-1">GRIDLOCK ZERO</h1>
+        <div class="stats">SCORE: <span id="score-val">0</span></div>
+        <div class="stats">CONGESTION: <span id="congestion-val">0</span>%</div>
+    </div>
+
+    <div id="info-panel">
+        <div class="font-bold border-bottom border-sky-400 mb-1">ROAD STATUS</div>
+        <div id="info-content"></div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        /**
+         * Gridlock Zero: Mobile Edition
+         * Logical Structure for Nimogram Optimization
+         */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score-val');
+        const congEl = document.getElementById('congestion-val');
+        const infoPanel = document.getElementById('info-panel');
+        const infoContent = document.getElementById('info-content');
+
+        const CONFIG = {
+            gridSize: 6, // 6x6 cells
+            nodes: 7,    // 7x7 lines
+            colors: {
+                bg: '#0F172A',
+                grid: '#1E293B',
+                gridActive: '#334155',
+                carTypes: [
+                    { id: 'cyan', color: '#00E5FF' },
+                    { id: 'magenta', color: '#FF4081' },
+                    { id: 'lime', color: '#CCFF00' }
+                ],
+                danger: '#FB7185'
+            },
+            edgeHitWidth: 25, // 指のための広い当たり判定
+            longPressDelay: 500
+        };
+
+        let state = {
+            score: 0,
+            congestion: 0,
+            edges: [], // { n1, n2, active: true, vertical: bool }
+            cars: [],  // { x, y, targetIdx, path: [], colorIdx, progress: 0 }
+            lastTime: 0,
+            touchStart: null,
+            touchTimer: null
+        };
+
+        // Initialize Grid Data
+        function initGrid() {
+            state.edges = [];
+            // Horizontal edges
+            for (let y = 0; y < CONFIG.nodes; y++) {
+                for (let x = 0; x < CONFIG.nodes - 1; x++) {
+                    state.edges.push({ n1: [x, y], n2: [x + 1, y], active: true, vertical: false, carsOn: 0 });
+                }
+            }
+            // Vertical edges
+            for (let x = 0; x < CONFIG.nodes; x++) {
+                for (let y = 0; y < CONFIG.nodes - 1; y++) {
+                    state.edges.push({ n1: [x, y], n2: [x, y + 1], active: true, vertical: true, carsOn: 0 });
+                }
+            }
+        }
+
+        function resize() {
+            const dpr = window.devicePixelRatio || 1;
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.95;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+            canvas.style.marginTop = `${(window.innerHeight - size) / 2}px`;
+            canvas.style.marginLeft = `${(window.innerWidth - size) / 2}px`;
+            ctx.scale(dpr, dpr);
+        }
+
+        function getCanvasPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }
+
+        // --- Logic: Car Spawning & Movement ---
+
+        function spawnCar() {
+            const side = Math.floor(Math.random() * 4);
+            let start = [0, 0];
+            if (side === 0) start = [0, Math.floor(Math.random() * CONFIG.nodes)];
+            if (side === 1) start = [CONFIG.nodes - 1, Math.floor(Math.random() * CONFIG.nodes)];
+            if (side === 2) start = [Math.floor(Math.random() * CONFIG.nodes), 0];
+            if (side === 3) start = [Math.floor(Math.random() * CONFIG.nodes), CONFIG.nodes - 1];
+
+            const colorIdx = Math.floor(Math.random() * CONFIG.colors.carTypes.length);
+            state.cars.push({
+                curr: [...start],
+                next: [...start],
+                colorIdx: colorIdx,
+                progress: 1, // Ready to choose next
+                stuckTime: 0
+            });
+        }
+
+        function update(deltaTime) {
+            // Update congestion count
+            state.edges.forEach(e => e.carsOn = 0);
+            
+            state.cars.forEach((car, idx) => {
+                if (car.progress >= 1) {
+                    // Choose next node
+                    const possibleEdges = state.edges.filter(e => {
+                        if (!e.active) return false;
+                        const atN1 = e.n1[0] === car.curr[0] && e.n1[1] === car.curr[1];
+                        const atN2 = e.n2[0] === car.curr[0] && e.n2[1] === car.curr[1];
+                        return atN1 || atN2;
+                    });
+
+                    if (possibleEdges.length > 0) {
+                        const edge = possibleEdges[Math.floor(Math.random() * possibleEdges.length)];
+                        car.next = (edge.n1[0] === car.curr[0] && edge.n1[1] === car.curr[1]) ? [...edge.n2] : [...edge.n1];
+                        car.progress = 0;
+                        car.stuckTime = 0;
+                    } else {
+                        car.stuckTime += deltaTime;
+                    }
+                } else {
+                    car.progress += deltaTime * 0.002;
+                    if (car.progress >= 1) {
+                        car.curr = [...car.next];
+                        // Boundary check for scoring
+                        if (car.curr[0] === 0 || car.curr[0] === CONFIG.nodes - 1 || car.curr[1] === 0 || car.curr[1] === CONFIG.nodes - 1) {
+                            if (Math.random() > 0.8) { // Simulate exit
+                                state.cars.splice(idx, 1);
+                                state.score += 10;
+                            }
+                        }
+                    }
+                }
+
+                // Count cars on edges
+                state.edges.forEach(e => {
+                    const match1 = e.n1[0] === car.curr[0] && e.n1[1] === car.curr[1] && e.n2[0] === car.next[0] && e.n2[1] === car.next[1];
+                    const match2 = e.n2[0] === car.curr[0] && e.n2[1] === car.curr[1] && e.n1[0] === car.next[0] && e.n1[1] === car.next[1];
+                    if (match1 || match2) e.carsOn++;
+                });
+            });
+
+            // Calculate overall congestion
+            const heavyTraffic = state.edges.filter(e => e.carsOn > 1).length;
+            state.congestion = Math.min(100, Math.floor((heavyTraffic / state.edges.length) * 500));
+            
+            scoreEl.innerText = state.score;
+            congEl.innerText = state.congestion;
+
+            if (Math.random() < 0.02 && state.cars.length < 20) spawnCar();
+        }
+
+        // --- Drawing ---
+
+        function draw() {
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.95;
+            const step = size / (CONFIG.nodes - 1);
+            const margin = 0;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Edges
+            state.edges.forEach(edge => {
+                const x1 = edge.n1[0] * step;
+                const y1 = edge.n1[1] * step;
+                const x2 = edge.n2[0] * step;
+                const y2 = edge.n2[1] * step;
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                
+                if (!edge.active) {
+                    ctx.strokeStyle = '#1e293b';
+                    ctx.setLineDash([5, 5]);
+                } else {
+                    ctx.setLineDash([]);
+                    if (edge.carsOn > 1) {
+                        // Congestion Glow
+                        ctx.shadowBlur = 10 + Math.sin(Date.now() / 200) * 5;
+                        ctx.shadowColor = CONFIG.colors.danger;
+                        ctx.strokeStyle = CONFIG.colors.danger;
+                        ctx.lineWidth = 4;
+                    } else {
+                        ctx.shadowBlur = 0;
+                        ctx.strokeStyle = CONFIG.colors.gridActive;
+                        ctx.lineWidth = 2;
+                    }
+                }
+                ctx.stroke();
+            });
+
+            ctx.setLineDash([]);
+            ctx.shadowBlur = 0;
+
+            // Draw Cars
+            state.cars.forEach(car => {
+                const x = (car.curr[0] + (car.next[0] - car.curr[0]) * car.progress) * step;
+                const y = (car.curr[1] + (car.next[1] - car.curr[1]) * car.progress) * step;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fillStyle = CONFIG.colors.carTypes[car.colorIdx].color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+        }
+
+        function loop(time) {
+            const deltaTime = time - state.lastTime;
+            state.lastTime = time;
+
+            update(deltaTime);
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // --- Interactions ---
+
+        function findEdgeAt(pos) {
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.95;
+            const step = size / (CONFIG.nodes - 1);
+            
+            return state.edges.find(edge => {
+                const x1 = edge.n1[0] * step;
+                const y1 = edge.n1[1] * step;
+                const x2 = edge.n2[0] * step;
+                const y2 = edge.n2[1] * step;
+
+                // Simple AABB hit test for lines with a buffer
+                const minX = Math.min(x1, x2) - CONFIG.edgeHitWidth;
+                const maxX = Math.max(x1, x2) + CONFIG.edgeHitWidth;
+                const minY = Math.min(y1, y2) - CONFIG.edgeHitWidth;
+                const maxY = Math.max(y1, y2) + CONFIG.edgeHitWidth;
+
+                if (pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY) {
+                    // More precise distance check
+                    if (edge.vertical) {
+                        return Math.abs(pos.x - x1) < CONFIG.edgeHitWidth;
+                    } else {
+                        return Math.abs(pos.y - y1) < CONFIG.edgeHitWidth;
+                    }
+                }
+                return false;
+            });
+        }
+
+        canvas.addEventListener('touchstart', (e) => {
+            const pos = getCanvasPos(e);
+            state.touchStart = pos;
+            
+            const edge = findEdgeAt(pos);
+            if (edge) {
+                state.touchTimer = setTimeout(() => {
+                    // Long Press Action
+                    infoPanel.style.display = 'block';
+                    infoContent.innerHTML = `
+                        Location: [${edge.n1}] to [${edge.n2}]<br>
+                        Current Load: ${edge.carsOn} units<br>
+                        Status: ${edge.active ? 'ACTIVE' : 'DECOMMISSIONED'}
+                    `;
+                    state.touchTimer = null;
+                }, CONFIG.longPressDelay);
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            if (state.touchTimer) {
+                clearTimeout(state.touchTimer);
+                const pos = getCanvasPos(e.changedTouches[0]);
+                const edge = findEdgeAt(pos);
+                
+                if (edge) {
+                    edge.active = !edge.active;
+                    // Haptic Feedback
+                    if (!edge.active && navigator.vibrate) {
+                        navigator.vibrate(40);
+                    }
+                }
+            }
+            state.touchTimer = null;
+            setTimeout(() => { infoPanel.style.display = 'none'; }, 2000);
+        });
+
+        // Prevention for scrolling
+        document.body.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
+        // Start
+        window.addEventListener('resize', resize);
+        resize();
+        initGrid();
+        requestAnimationFrame(loop);
+
+    </script>
+</body>
+</html>
