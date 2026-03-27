@@ -80,6 +80,11 @@
             0% { transform: scale(0.8) translateY(20px); opacity: 0; }
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -101,6 +106,9 @@
 
                 <div class="flex flex-col items-end gap-2">
                     <div class="flex gap-2">
+                        <button id="toggle-settings-btn" onclick="toggleSettings()" class="p-2 rounded-xl bg-slate-800/80 text-slate-400 active-tap border border-white/5">
+                            <i id="settings-icon" data-lucide="settings" class="w-4 h-4"></i>
+                        </button>
                         <button id="toggle-view-btn" onclick="toggleView()" class="p-2 rounded-xl bg-slate-800/80 text-slate-400 active-tap border border-white/5">
                             <i id="view-icon" data-lucide="bar-chart-3" class="w-4 h-4"></i>
                         </button>
@@ -121,7 +129,7 @@
                     </div>
                     <div class="flex flex-col items-end">
                         <span class="text-[10px] font-black text-slate-500 uppercase leading-none mb-1">Gap to Level Up</span>
-                        <span id="next-level-info" class="text-2xl font-black text-white leading-none tracking-tighter tabular-nums">+501 EXP</span>
+                        <span id="next-level-info" class="text-xl font-black text-white leading-none tracking-tighter tabular-nums"></span>
                     </div>
                 </div>
                 <div class="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden p-[1px]">
@@ -130,14 +138,17 @@
             </div>
         </header>
 
-        <!-- HINT AREA -->
-        <div id="hint-box" class="bg-emerald-500/5 border border-emerald-500/10 p-2.5 rounded-2xl flex items-center gap-2 shrink-0">
-            <div class="text-emerald-400 shrink-0 animate-pulse">
-                <i data-lucide="zap" class="w-4 h-4"></i>
+        <!-- INTEGRATED ADVISOR -->
+        <div id="advisor-box" class="bg-slate-950 p-4 rounded-2xl flex items-center gap-3 border border-emerald-900/50 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
-            <p id="hint-text" class="text-[12px] font-medium leading-tight text-slate-300 italic hint-fade flex-1">
-                背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）
-            </p>
+            <div class="flex-1">
+                <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Human Intelligence Advisor</p>
+                <p id="advisor-text" class="text-[14px] font-bold text-emerald-400 leading-snug tracking-tight hint-fade">
+                    Advisor Engine Initializing...
+                </p>
+            </div>
         </div>
 
         <!-- MAIN VIEW (ACTION GRID) -->
@@ -147,7 +158,7 @@
 
         <!-- STATS VIEW -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
                     <span class="text-[8px] font-black text-slate-500 uppercase mb-1">Weekly Momentum</span>
                     <span id="weekly-total" class="text-xl font-black text-emerald-400">0</span>
@@ -157,20 +168,39 @@
                     <span id="daily-average" class="text-xl font-black text-blue-400">0.0</span>
                 </div>
             </div>
-            <div id="history-list" class="space-y-1"></div>
+            <div class="flex items-center gap-2 mb-2 px-2">
+                <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sync LOG</span>
+            </div>
+            <div id="history-list" class="space-y-1.5 flex-1 overflow-y-auto pr-1"></div>
         </div>
 
-        <!-- FOOTER (Black background with Emerald text) -->
-        <footer id="footer-status" class="bg-slate-950 p-3 rounded-2xl flex items-center gap-3 border border-emerald-900/50 shrink-0 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                <i data-lucide="users" class="w-4 h-4"></i>
+        <!-- SETTINGS VIEW -->
+        <div id="settings-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
+            <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 mb-2">
+                <h3 class="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <i data-lucide="cpu" class="w-4 h-4 text-emerald-500"></i> Action Tuning
+                </h3>
+                <div id="settings-list" class="space-y-4">
+                    <!-- Config inputs injected by JS -->
+                </div>
+                <div class="mt-8 flex gap-2">
+                    <button onclick="saveSettings()" class="flex-1 bg-emerald-600 text-white font-black py-3 rounded-xl active-tap uppercase text-[10px] tracking-widest">Save Config</button>
+                    <button onclick="resetToDefaultActions()" class="px-4 bg-slate-800 text-slate-400 font-black py-3 rounded-xl active-tap uppercase text-[10px] tracking-widest border border-white/5">Reset</button>
+                </div>
             </div>
-            <p id="advisor-text" class="text-[11px] font-bold text-emerald-400 leading-tight flex-1 tracking-tight">
-                Advisor Engine Ready.
-            </p>
+        </div>
+
+        <!-- FOOTER -->
+        <footer id="footer-status" class="bg-slate-900/40 p-2.5 rounded-2xl flex items-center justify-between border border-white/5 shrink-0 backdrop-blur-sm">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_#10b981]"></div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
+            </div>
             <div id="success-icon" class="hidden">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 animate-bounce"></i>
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 animate-bounce shrink-0"></i>
             </div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC STRATEGIC OS v5.6</div>
         </footer>
 
         <!-- MILESTONE MODAL -->
@@ -190,7 +220,7 @@
         </div>
     </div>
 
-    <!-- REGISTRATION PANEL (Card background color updated dynamically) -->
+    <!-- REGISTRATION PANEL -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
@@ -225,18 +255,28 @@
     </div>
 
     <script>
-        const ACTIONS = [
-            { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-blue-600 to-blue-400', panelRgba: 'rgba(52, 152, 219, 0.3)' },
-            { id: 'vision', label: '顧客視点', points: 20, icon: 'target', color: 'from-indigo-700 to-indigo-500', panelRgba: 'rgba(41, 128, 185, 0.3)' },
-            { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-purple-700 to-purple-500', panelRgba: 'rgba(142, 68, 173, 0.3)' },
-            { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-teal-600 to-teal-400', panelRgba: 'rgba(22, 160, 133, 0.3)' },
-            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-600 to-pink-400', panelRgba: 'rgba(233, 30, 99, 0.3)' },
-            { id: 'thanks_spec', label: '具体称賛', points: 15, icon: 'smile', color: 'from-rose-700 to-rose-500', panelRgba: 'rgba(194, 24, 91, 0.3)' },
-            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'from-orange-600 to-orange-400', panelRgba: 'rgba(243, 156, 18, 0.3)' },
-            { id: 'reset', label: '履歴消去', points: 0, icon: 'history', color: 'from-slate-700 to-slate-500', panelRgba: 'rgba(52, 73, 94, 0.3)' }
+        const DEFAULT_ACTIONS = [
+            { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-blue-600 to-blue-400', panelRgba: 'rgba(52, 152, 219, 0.4)' },
+            { id: 'vision', label: '顧客視点', points: 20, icon: 'target', color: 'from-indigo-700 to-indigo-500', panelRgba: 'rgba(41, 128, 185, 0.4)' },
+            { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-purple-700 to-purple-500', panelRgba: 'rgba(142, 68, 173, 0.4)' },
+            { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-teal-600 to-teal-400', panelRgba: 'rgba(22, 160, 133, 0.4)' },
+            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-600 to-pink-400', panelRgba: 'rgba(233, 30, 99, 0.4)' },
+            { id: 'thanks_spec', label: '具体称賛', points: 15, icon: 'smile', color: 'from-rose-700 to-rose-500', panelRgba: 'rgba(194, 24, 91, 0.4)' },
+            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'from-orange-600 to-orange-400', panelRgba: 'rgba(243, 156, 18, 0.4)' },
+            { id: 'reset', label: '履歴消去', points: 0, icon: 'history', color: 'from-slate-700 to-slate-500', panelRgba: 'rgba(52, 73, 94, 0.4)' }
         ];
 
-        const TIPS = [
+        const ADVISORY_DATABASE = [
+            "相手の『なぜ』を先に理解することが、最速の合意形成への近道ですよ。",
+            "沈黙の3秒は、相手が本音を話すための『招待状』として機能します。",
+            "称賛は『行動』に対して行うと、相手の自己肯定感を論理的に高められます。",
+            "雑談は情報の無駄ではなく、信頼という名の帯域幅を広げるインフラ投資です。",
+            "感謝を二度伝えることで、相手の脳内にあなたのポジティブな印象が定着します。",
+            "反論の前に『理解しました』と枕詞を挟むだけで、対立のバグを回避できます。",
+            "相手の家族や趣味への関心は、最強のコネクション・パッチになります。",
+            "ミスを責めるより『次はどうしましょうか』と未来に焦点を合わせるのが帝王の器です。",
+            "報告ではなく『相談』として持ちかけることで、相手をあなたの味方に変えられますよ。",
+            "ニモさん、今日は『たぬき』の愛嬌を30%混ぜて交渉してみてください。効果は抜群です。",
             "🎯 背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）",
             "🎯 相手の考えの根拠を聞く（反論する前に理解する）",
             "🎯 相手が大事にしていることを知り、そこを起点に交渉する",
@@ -249,27 +289,10 @@
             "💬 メールの前に口頭。重要なパケットは非公式ルートで",
             "🤝 相手の視点を優先する場面を意識的に作り、Creditを溜める",
             "🤝 相手の判断を信頼し、マイクロマネジメントというノイズを排除",
-            "🤝 相手の勉強・成長の機会をサポートし、将来の能力に投資する",
             "🤝 相手の家族・趣味・目標を知り、優先度設定を解読する",
-            "⏱ 妻には『家族イベント』を最優先で。家庭のパッチ当ては重要タスク",
-            "⏱ 同僚とは月1回、進捗や悩みを一緒に棚卸し。定期メンテでバグ予防",
-            "⏱ 定期的な食事・雑談は、非公式な情報経路を太くするインフラ投資",
+            "⏱ 妻への家族イベント共有、今日のうちに済ませておきましょう。バグの事前回避です。",
             "🎯 正論は『正しさ』の証明ではなく、時に『攻撃』として処理されます",
-            "🎯 論破は短期的な勝利、共感は長期的な支配（レバレッジ）です",
-            "🎯 相手を『不完全なプログラム』だと思えば、デバッグに集中できます"
-        ];
-
-        const ADVISOR_MESSAGES = [
-            "相手の『なぜ』を先に理解することが、最速の合意形成への近道ですよ。",
-            "沈黙の3秒は、相手が本音を話すための『招待状』として機能します。",
-            "称賛は『行動』に対して行うと、相手の自己肯定感を論理的に高められます。",
-            "雑談は情報の無駄ではなく、信頼という名の帯域幅を広げるインフラ投資です。",
-            "感謝を二度伝えることで、相手の脳内にあなたのポジティブな印象が定着します。",
-            "反論の前に『理解しました』と枕詞を挟むだけで、対立のバグを回避できます。",
-            "相手の家族や趣味への関心は、最強のコネクション・パッチになります。",
-            "ミスを責めるより『次はどうしましょうか』と未来に焦点を合わせるのが帝王の器です。",
-            "報告ではなく『相談』として持ちかけることで、相手をあなたの味方に変えられますよ。",
-            "ニモさん、今日は『たぬき』の愛嬌を30%混ぜて交渉してみてください。効果は抜群です。"
+            "🎯 論破は短期的な勝利、共感は長期的な支配（レバレッジ）です"
         ];
 
         const STAGES = [
@@ -295,11 +318,12 @@
             currentAction: null,
             selectedTarget: null,
             view: 'action', 
-            logs: []
+            logs: [],
+            actions: JSON.parse(JSON.stringify(DEFAULT_ACTIONS))
         };
 
         let audioCtx = null;
-        let hintInterval = null;
+        let advisorInterval = null;
 
         function loadData() {
             const savedData = localStorage.getItem('eq_logic_v3');
@@ -307,6 +331,7 @@
                 const parsed = JSON.parse(savedData);
                 state.totalPoints = parsed.totalPoints || 0;
                 state.logs = parsed.logs || [];
+                state.actions = parsed.actions || JSON.parse(JSON.stringify(DEFAULT_ACTIONS));
                 state.lastMilestone = Math.floor(state.totalPoints / 100) * 100;
                 refreshDailyThanks();
             }
@@ -315,14 +340,16 @@
         function refreshDailyThanks() {
             const today = new Date().toLocaleDateString();
             state.dailyThanks = state.logs.filter(log => {
-                return new Date(log.timestamp).toLocaleDateString() === today && log.id.startsWith('thanks');
+                return new Date(log.timestamp).toLocaleDateString() === today && 
+                       log.actionId && log.actionId.startsWith('thanks');
             }).length;
         }
 
         function saveData() {
             localStorage.setItem('eq_logic_v3', JSON.stringify({
                 totalPoints: state.totalPoints,
-                logs: state.logs
+                logs: state.logs,
+                actions: state.actions
             }));
         }
 
@@ -331,27 +358,26 @@
             lucide.createIcons();
             renderButtons();
             updateUI();
-            startHintRotation();
-            refreshAdvisor();
+            startAdvisorRotation();
         }
 
         function renderButtons() {
             const container = document.getElementById('action-view'); 
             if (!container) return; 
             container.innerHTML = '';
-            ACTIONS.forEach(action => {
+            state.actions.forEach(action => {
                 const btn = document.createElement('button');
-                btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[64px]`;
+                btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
                 btn.onclick = () => handleAction(action);
                 btn.innerHTML = `
-                    <div class="shrink-0 mr-2 text-white">
-                        <i data-lucide="${action.icon}" class="w-5 h-5"></i>
+                    <div class="w-8 shrink-0 flex justify-center text-white opacity-90">
+                        <i data-lucide="${action.icon}" class="w-6 h-6"></i>
                     </div>
-                    <div class="flex-1 text-center overflow-hidden">
-                        <span class="font-black text-white text-[13px] tracking-tight leading-none truncate block uppercase drop-shadow-sm">${action.label}</span>
+                    <div class="flex-1 text-center px-1">
+                        <span class="font-black text-white text-[15px] tracking-tight leading-none uppercase drop-shadow-sm">${action.label}</span>
                     </div>
-                    <div class="shrink-0 text-right min-w-[38px]">
-                        <span class="font-black text-white text-[18px] tracking-tighter tabular-nums leading-none drop-shadow-md">+${action.points}</span>
+                    <div class="w-14 shrink-0 text-right">
+                        <span class="font-black text-white text-[22px] tracking-tighter tabular-nums leading-none drop-shadow-md">+${action.points}</span>
                     </div>
                 `;
                 container.appendChild(btn);
@@ -359,25 +385,19 @@
             lucide.createIcons();
         }
 
-        function startHintRotation() {
-            if (hintInterval) clearInterval(hintInterval);
-            hintInterval = setInterval(refreshHint, 10000);
-            refreshHint();
-        }
-
-        function refreshHint() {
-            const hintText = document.getElementById('hint-text');
-            if (!hintText) return;
-            hintText.classList.remove('hint-fade');
-            void hintText.offsetWidth; 
-            hintText.innerText = TIPS[Math.floor(Math.random() * TIPS.length)];
-            hintText.classList.add('hint-fade');
+        function startAdvisorRotation() {
+            if (advisorInterval) clearInterval(advisorInterval);
+            advisorInterval = setInterval(refreshAdvisor, 10000);
+            refreshAdvisor();
         }
 
         function refreshAdvisor() {
             const advisorText = document.getElementById('advisor-text');
             if (!advisorText) return;
-            advisorText.innerText = ADVISOR_MESSAGES[Math.floor(Math.random() * ADVISOR_MESSAGES.length)];
+            advisorText.classList.remove('hint-fade');
+            void advisorText.offsetWidth; 
+            advisorText.innerText = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
+            advisorText.classList.add('hint-fade');
         }
 
         function playSound(type) {
@@ -404,6 +424,7 @@
                 if(confirm("全データを消去しますか？")) {
                     state.totalPoints = 0; state.logs = []; state.dailyThanks = 0; state.lastMilestone = 0;
                     saveData(); updateUI(); playSound('click');
+                    if(state.view === 'stats') renderStats();
                 }
                 return;
             }
@@ -424,10 +445,7 @@
             state.selectedTarget = null;
             document.querySelectorAll('.target-opt').forEach(btn => btn.classList.remove('target-btn-active'));
             
-            // Dynamic Background Color (Increased Transparency 0.3)
             content.style.backgroundColor = action.panelRgba;
-            
-            // Apply gradient to button inside panel to match
             submitBtn.className = `mt-auto w-full bg-gradient-to-r ${action.color} text-white font-black py-4 rounded-2xl shadow-lg active-tap uppercase tracking-widest text-sm`;
             
             panel.classList.remove('pointer-events-none');
@@ -453,12 +471,14 @@
         function saveLog() {
             const action = state.currentAction;
             const logEntry = {
-                id: action.id,
+                id: Date.now(),
+                actionId: action.id, 
                 label: action.label,
                 points: action.points,
                 target: state.selectedTarget || 'OTHER',
                 memo: document.getElementById('log-memo').value,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                bg: action.panelRgba
             };
             state.logs.push(logEntry);
             state.totalPoints += action.points;
@@ -472,8 +492,20 @@
                 playSound('success');
             }
 
-            saveData(); updateUI(); closePanel(); refreshHint();
-            refreshAdvisor();
+            saveData(); updateUI(); closePanel(); refreshAdvisor();
+        }
+
+        function deleteLog(logId) {
+            const logIndex = state.logs.findIndex(l => l.id === logId);
+            if (logIndex !== -1) {
+                state.totalPoints -= state.logs[logIndex].points;
+                state.logs.splice(logIndex, 1);
+                refreshDailyThanks();
+                saveData();
+                updateUI();
+                renderStats();
+                playSound('click');
+            }
         }
 
         function showMilestone(value) {
@@ -496,7 +528,12 @@
             state.view = state.view === 'action' ? 'stats' : 'action';
             const actionView = document.getElementById('action-view');
             const statsView = document.getElementById('stats-view');
+            const settingsView = document.getElementById('settings-view');
             const icon = document.getElementById('view-icon');
+            
+            settingsView.classList.add('hidden');
+            document.getElementById('settings-icon').setAttribute('data-lucide', 'settings');
+
             if (state.view === 'stats') {
                 actionView.classList.add('hidden'); statsView.classList.remove('hidden');
                 icon.setAttribute('data-lucide', 'layout-grid'); renderStats();
@@ -505,6 +542,80 @@
                 icon.setAttribute('data-lucide', 'bar-chart-3'); renderButtons();
             }
             lucide.createIcons(); playSound('click');
+        }
+
+        function toggleSettings() {
+            const actionView = document.getElementById('action-view');
+            const statsView = document.getElementById('stats-view');
+            const settingsView = document.getElementById('settings-view');
+            const settingsIcon = document.getElementById('settings-icon');
+
+            if (settingsView.classList.contains('hidden')) {
+                actionView.classList.add('hidden');
+                statsView.classList.add('hidden');
+                settingsView.classList.remove('hidden');
+                settingsIcon.setAttribute('data-lucide', 'layout-grid');
+                renderSettings();
+            } else {
+                settingsView.classList.add('hidden');
+                settingsIcon.setAttribute('data-lucide', 'settings');
+                state.view = 'action';
+                actionView.classList.remove('hidden');
+                document.getElementById('view-icon').setAttribute('data-lucide', 'bar-chart-3');
+                renderButtons();
+            }
+            lucide.createIcons(); playSound('click');
+        }
+
+        function renderSettings() {
+            const list = document.getElementById('settings-list');
+            list.innerHTML = '';
+            state.actions.forEach((action, index) => {
+                if (action.id === 'reset') return;
+                const item = document.createElement('div');
+                item.className = 'bg-black/20 p-4 rounded-2xl border border-white/5 space-y-3';
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-500">
+                             <i data-lucide="${action.icon}" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${action.id}</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="col-span-2">
+                            <label class="text-[8px] font-bold text-slate-600 uppercase mb-1 block">Label</label>
+                            <input type="text" value="${action.label}" onchange="updateActionConfig(${index}, 'label', this.value)" 
+                                class="w-full bg-slate-800/50 border border-white/5 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[8px] font-bold text-slate-600 uppercase mb-1 block">Points</label>
+                            <input type="number" value="${action.points}" onchange="updateActionConfig(${index}, 'points', this.value)" 
+                                class="w-full bg-slate-800/50 border border-white/5 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function updateActionConfig(index, key, value) {
+            if (key === 'points') value = parseInt(value) || 0;
+            state.actions[index][key] = value;
+        }
+
+        function saveSettings() {
+            saveData();
+            playSound('success');
+            toggleSettings();
+        }
+
+        function resetToDefaultActions() {
+            if(confirm("アクション設定を初期状態に戻しますか？（現在の累計ポイント等は維持されます）")) {
+                state.actions = JSON.parse(JSON.stringify(DEFAULT_ACTIONS));
+                renderSettings();
+                playSound('click');
+            }
         }
 
         function renderStats() {
@@ -517,16 +628,40 @@
             const dailyAvg = (weeklyTotal / 7).toFixed(1);
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString();
             document.getElementById('daily-average').innerText = dailyAvg;
+            
             const historyList = document.getElementById('history-list');
             if (!historyList) return;
             historyList.innerHTML = '';
-            [...state.logs].reverse().slice(0, 10).forEach(log => {
+            
+            if (state.logs.length === 0) {
+                historyList.innerHTML = '<div class="text-center text-slate-700 italic text-[12px] mt-10">履歴データがありません</div>';
+                return;
+            }
+
+            [...state.logs].reverse().forEach(log => {
                 const date = new Date(log.timestamp);
                 const item = document.createElement('div');
-                item.className = 'flex justify-between items-center text-[10px] bg-slate-800/40 p-2 rounded-xl border border-white/5 mb-1';
-                item.innerHTML = `<div class="flex flex-col"><span class="text-slate-500 text-[8px]">${date.getMonth()+1}/${date.getDate()}</span><span class="font-bold text-slate-200">${log.label} <span class="text-emerald-500 text-[8px] ml-1">@${log.target}</span></span></div><span class="font-black text-emerald-400">+${log.points}</span>`;
+                item.className = 'flex justify-between items-center p-3 rounded-2xl border border-white/5 mb-1 active-tap';
+                item.style.backgroundColor = log.bg || 'rgba(30, 41, 59, 0.4)';
+                
+                item.innerHTML = `
+                    <div class="flex flex-col flex-1">
+                        <span class="text-white/40 text-[9px] font-mono leading-none mb-1">${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-white text-[14px] leading-tight">${log.label}</span>
+                            <span class="text-white/60 text-[10px] bg-black/20 px-1.5 rounded uppercase font-bold tracking-tighter">@${log.target}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-black text-white text-[18px] tracking-tighter tabular-nums">+${log.points}</span>
+                        <button onclick="deleteLog(${log.id})" class="p-2 bg-black/20 rounded-lg text-white/40 hover:text-rose-400 active-tap">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
                 historyList.appendChild(item);
             });
+            lucide.createIcons();
         }
 
         function toggleMute() {
@@ -557,14 +692,13 @@
                 const stageGap = nextStage.threshold - stage.threshold;
                 const percent = (progressInStage / stageGap) * 100;
 
-                nextInfoEl.innerText = `+${diff} EXP`;
+                nextInfoEl.innerHTML = `+${diff} <span class="text-[9px] font-bold text-slate-500 ml-0.5">EXP</span>`;
                 progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
             } else {
                 nextInfoEl.innerText = `MAX LEVEL`;
                 progressBar.style.width = `100%`;
             }
 
-            const advisor = document.getElementById('advisor-text');
             const successIcon = document.getElementById('success-icon');
             if (state.dailyThanks >= 5) {
                 successIcon.classList.remove('hidden');
