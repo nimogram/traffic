@@ -29,9 +29,8 @@
             transform: translateX(100%);
         }
 
-        /* 登録画面の背景：透明度をさらにアップ */
         .bg-glass {
-            background: rgba(15, 23, 42, 0.2);
+            background: rgba(15, 23, 42, 0.3);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
         }
@@ -57,102 +56,139 @@
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
         }
 
-        /* 褒めコメントのオーバーレイ */
-        #success-overlay {
-            transition: opacity 0.3s ease;
+        .exp-text {
+            font-size: 1.1rem;
+            font-weight: 800;
         }
 
-        /* EXPテキストの強調 */
-        .exp-text {
-            font-size: 1.1rem; /* 大きく調整 */
-            font-weight: 800;
+        .heart-display {
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            line-height: 1;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .chart-bar {
+            transition: height 1s ease-out;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-4 gap-3 relative">
+    <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-3 gap-2 relative">
         
-        <!-- HEADER -->
-        <header class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 relative overflow-hidden emerald-glow">
+        <!-- HEADER (Horizontal Layout) -->
+        <header class="bg-slate-900/40 border border-slate-800 rounded-xl p-3 relative overflow-hidden emerald-glow shrink-0">
             <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
             
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <div class="text-[10px] font-black text-emerald-500 tracking-[0.2em] mb-1 uppercase">EQ ASSET MANAGEMENT</div>
-                    <div class="flex items-baseline gap-2">
-                        <span id="total-points" class="text-4xl font-black text-white leading-none tracking-tighter tabular-nums">0</span>
-                        <span class="exp-text text-slate-500 uppercase tracking-tighter">Total EXP</span>
+            <div class="flex items-center justify-between gap-4">
+                <!-- Points Section -->
+                <div class="flex flex-col">
+                    <div class="text-[8px] font-black text-emerald-500 tracking-[0.2em] mb-0.5 uppercase">EQ ASSET</div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span id="total-points" class="text-3xl font-black text-white leading-none tracking-tighter tabular-nums">0</span>
+                        <span class="exp-text text-slate-500 uppercase tracking-tighter scale-90 origin-left tracking-tighter">Total EXP</span>
                     </div>
                 </div>
-                <div class="flex flex-col items-end gap-2">
-                    <button onclick="toggleMute()" id="mute-btn" class="p-2 rounded-full bg-slate-800/50 text-slate-500">
-                        <i data-lucide="volume-2" class="w-4 h-4"></i>
-                    </button>
-                    <div id="rank-badge" class="text-[10px] font-bold text-emerald-400 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/30 uppercase tracking-wider">
+
+                <!-- Sync Section (Hearts) -->
+                <div class="flex-1 max-w-[120px] text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center gap-1 text-emerald-500 mb-0.5">
+                            <i data-lucide="heart" class="w-2.5 h-2.5 fill-emerald-500"></i>
+                            <span class="text-[8px] font-black uppercase tracking-widest">Sync</span>
+                        </div>
+                        <div id="heart-container" class="heart-display text-emerald-500 font-bold">
+                            ♡♡♡♡♡
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggle Stats & Mute -->
+                <div class="flex flex-col items-end gap-1.5">
+                    <div class="flex gap-2">
+                        <button id="toggle-view-btn" onclick="toggleView()" class="p-1.5 rounded-full bg-slate-800/50 text-slate-500 hover:text-emerald-400">
+                            <i id="view-icon" data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="toggleMute()" id="mute-btn" class="p-1.5 rounded-full bg-slate-800/50 text-slate-500">
+                            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div id="rank-badge" class="text-[8px] font-bold text-emerald-400 px-1.5 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20 uppercase tracking-tighter">
                         孤高の建築家
                     </div>
                 </div>
             </div>
-
-            <!-- PROGRESS -->
-            <div class="relative pt-2 border-t border-white/5">
-                <div class="flex justify-between items-center mb-1.5">
-                    <div class="flex items-center gap-1.5 text-emerald-500">
-                        <i data-lucide="heart" class="w-3 h-3"></i>
-                        <span class="text-[10px] font-black uppercase tracking-widest">Gratitude Sync</span>
-                    </div>
-                    <span id="thanks-counter" class="text-[10px] font-mono font-bold text-slate-400">0 / 5</span>
-                </div>
-                <div class="h-1 w-full bg-black/60 rounded-full overflow-hidden p-[0.5px]">
-                    <div id="thanks-progress" class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-700 rounded-full" style="width: 0%"></div>
-                </div>
-            </div>
         </header>
 
-        <!-- ACTION GRID -->
-        <div class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-1" id="action-grid">
+        <!-- MAIN VIEW (ACTION GRID) -->
+        <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5">
             <!-- Buttons injected by JS -->
         </div>
 
-        <!-- HINT AREA (Auto Refresh Every 10s) -->
-        <div id="hint-box" class="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-xl flex items-start gap-3 relative overflow-hidden min-h-[90px]">
+        <!-- STATS VIEW (HIDDEN BY DEFAULT) -->
+        <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex flex-col items-center text-center">
+                    <span class="text-[8px] font-black text-slate-500 uppercase mb-1">Weekly Total</span>
+                    <span id="weekly-total" class="text-xl font-black text-emerald-400">0</span>
+                    <span class="text-[8px] text-slate-600 uppercase">EXP / 7 Days</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex flex-col items-center text-center">
+                    <span class="text-[8px] font-black text-slate-500 uppercase mb-1">Daily Average</span>
+                    <span id="daily-average" class="text-xl font-black text-blue-400">0.0</span>
+                    <span class="text-[8px] text-slate-600 uppercase">EXP / Day</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 shrink-0">
+                <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Performance Trend</span>
+                <div id="chart-container" class="h-28 flex items-end justify-between gap-1 px-2 border-b border-slate-800 pb-2 relative"></div>
+                <div class="flex justify-between px-2 text-[7px] font-bold text-slate-600 uppercase">
+                    <span>-6D</span><span>-5D</span><span>-4D</span><span>-3D</span><span>-2D</span><span>-1D</span><span>Today</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex flex-col gap-2 min-h-[120px]">
+                <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Recent Activity Log</span>
+                <div id="history-list" class="space-y-1"></div>
+            </div>
+        </div>
+
+        <!-- HINT AREA -->
+        <div id="hint-box" class="bg-emerald-500/5 border border-emerald-500/20 p-3 rounded-xl flex items-start gap-2 relative overflow-hidden min-h-[80px] shrink-0">
             <div class="text-emerald-400 shrink-0 mt-0.5 animate-pulse">
-                <i data-lucide="zap" class="w-4 h-4"></i>
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i>
             </div>
             <div class="flex-1">
-                <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Architect's Strategy Hint</p>
+                <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest mb-0.5">Architect's Strategy Hint</p>
                 <div id="hint-text-container">
-                    <p id="hint-text" class="text-[11px] font-medium leading-relaxed text-slate-300 italic hint-fade">
-                        枕詞：『〇〇さんの知見を拝借したいのですが』は最強の解除キーです。
+                    <p id="hint-text" class="text-sm font-medium leading-tight text-slate-300 italic hint-fade">
+                        背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- FOOTER ADVICE -->
-        <footer id="footer-status" class="bg-emerald-600 p-3 rounded-2xl flex items-center gap-3 border border-white/10 transition-colors duration-500">
-            <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner backdrop-blur-sm">
-                <i data-lucide="smile" class="w-5 h-5"></i>
+        <footer id="footer-status" class="bg-emerald-600 p-2.5 rounded-xl flex items-center gap-2 border border-white/10 transition-colors duration-500 shrink-0">
+            <div class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner backdrop-blur-sm">
+                <i data-lucide="smile" class="w-4 h-4"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-[8px] text-white/60 font-black uppercase tracking-widest leading-none mb-1">Advisor Output</p>
                 <p id="advisor-text" class="text-[10px] font-bold text-white leading-tight">
-                    ニモさん、周囲の心理的負荷を軽減するためのパケットを送信してください。
+                    Advisor Engine Online.
                 </p>
             </div>
             <div id="success-icon" class="hidden">
-                <i data-lucide="check-circle-2" class="w-5 h-5 text-white animate-bounce"></i>
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-white animate-bounce"></i>
             </div>
         </footer>
     </div>
 
     <!-- REGISTRATION SLIDE-IN PANEL -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
-        <!-- Backdrop -->
         <div id="panel-backdrop" class="absolute inset-0 bg-black/40 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
-        
-        <!-- Panel -->
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-emerald-500/30 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
             <div class="flex justify-between items-center border-b border-emerald-500/20 pb-4">
                 <div>
@@ -165,7 +201,6 @@
             </div>
 
             <div class="space-y-6">
-                <!-- Target Person (Button Selector) -->
                 <div>
                     <label class="text-[10px] font-black text-emerald-500 tracking-[0.2em] block mb-3 uppercase">Target Person</label>
                     <div id="target-selector" class="grid grid-cols-2 gap-2">
@@ -190,17 +225,6 @@
         </div>
     </div>
 
-    <!-- SUCCESS FEEDBACK OVERLAY -->
-    <div id="success-overlay" class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none opacity-0">
-        <div class="bg-emerald-500 text-slate-950 p-8 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.5)] flex flex-col items-center text-center max-w-[80%]">
-            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 animate-bounce">
-                <i data-lucide="award" class="w-10 h-10"></i>
-            </div>
-            <p id="success-exp" class="text-3xl font-black mb-2">+10 EXP</p>
-            <p id="success-msg" class="text-sm font-bold leading-relaxed italic">完璧な戦略的判断です、ニモさん！</p>
-        </div>
-    </div>
-
     <script>
         // CONFIG
         const LEVELS = [
@@ -214,60 +238,71 @@
             { id: 'vision', label: '顧客視点', points: 20, icon: 'target', color: 'bg-teal-600' },
             { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'bg-emerald-700' },
             { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'bg-slate-700' },
-            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'bg-emerald-500 shadow-emerald-900/40' },
-            { id: 'thanks_spec', label: '具体称賛', points: 15, icon: 'smile', color: 'bg-emerald-400 text-emerald-950 shadow-emerald-900/20' },
-            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'bg-amber-500 text-amber-950 shadow-amber-900/20' },
+            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'bg-emerald-500' },
+            { id: 'thanks_spec', label: '具体称賛', points: 15, icon: 'smile', color: 'bg-emerald-400 text-emerald-950' },
+            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'bg-amber-500 text-amber-950' },
             { id: 'reset', label: '履歴消去', points: 0, icon: 'history', color: 'bg-slate-800' }
         ];
 
         const TIPS = [
-            "枕詞：『〇〇さんの知見を拝借したいのですが』は最強の解除キーです。",
-            "視点：正論は『正しさ』の証明ではなく、時に『攻撃』として処理されます。",
-            "背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）",
-            "相手の考えの根拠を聞く（反論する前に理解する）",
-            "相手が大事にしていることを知る",
-            "小さな約束は必ず守る",
-            "相手の成功・貢献を見つけて伝える",
-            "💬 交流：一方通行ではなく、対話にする",
-            "💬 交流：「報告」ではなく「相談」に変える",
-            "💬 交流：ミスを責めず、次に焦点を当てる",
-            "💬 交流：言ったと思ったら、もう一度言う（感謝・労い）",
-            "💬 交流：メールではなく、まず口頭で伝える",
-            "🤝 尊重：相手の視点を優先する場面を意識的に作る",
-            "🤝 尊重：相手の判断を信頼し、口出ししすぎない",
-            "🤝 尊重：相手の勉強・成長の機会をサポートする",
-            "🤝 尊重：相手の家族・趣味・目標について知る",
-            "⏱ 行動：妻には「家族イベント」を最優先で伝える",
-            "⏱ 行動：同僚には月1回、進捗や悩みを一緒に棚卸しする",
-            "⏱ 行動：定期的に一緒に食事・雑談する時間を作る",
-            "戦術：論破は短期的な勝利、共感は長期的な支配（レバレッジ）です。",
-            "視点：相手を『不完全なプログラム』だと思えば、怒りは消え、デバッグに集中できます。"
+            "🎯 基本原則：背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）",
+            "🎯 基本原則：相手の考えの根拠を聞く（反論する前に理解する）",
+            "🎯 基本原則：相手が大事にしていることを知り、そこを起点に交渉する",
+            "🎯 基本原則：小さな約束は必ず守り、信頼のレバレッジを効かせる",
+            "🎯 基本原則：相手の成功・貢献を見つけて伝え、リソースの質を上げる",
+            "💬 交流：一方通行ではなく対話に。双方向のプロトコルを確立する",
+            "💬 交流：『報告』ではなく『相談』に変え、共犯関係を構築する",
+            "💬 交流：ミスを責めず、次に焦点を当てる（デバッグ思考）",
+            "💬 交流：感謝は二度言う。言ったつもりは未送信と同じです",
+            "💬 交流：メールの前に口頭。重要なパケットは非公式ルートで",
+            "🤝 尊重：相手の視点を優先する場面を意識的に作り、Creditを溜める",
+            "🤝 尊重：相手の判断を信頼し、マイクロマネジメントというノイズを排除",
+            "🤝 尊重：相手の勉強・成長の機会をサポートし、将来の能力に投資する",
+            "🤝 尊重：相手の家族・趣味・目標を知り、優先度設定を解読する",
+            "⏱ 行動：妻には『家族イベント』を最優先で。家庭のパッチ当ては重要タスク",
+            "⏱ 行動：同僚とは月1回、進捗や悩みを棚卸し。定期メンテでバグ予防",
+            "⏱ 行動：定期的な食事・雑談は、非公式な情報経路を太くするインフラ投資"
         ];
 
-        const PRAISES = [
-            "完璧な戦略的判断です、ニモさん！",
-            "組織の潤滑油が注入されましたよ！",
-            "SEのOSがアップデートされましたね！",
-            "さすが五黄土星の統率力です！",
-            "卓越したコミュニケーション投資ですね！",
-            "この一手でレバレッジが掛かりますよ！",
-            "ニモさん、今日も最高にキレてますね！"
-        ];
-
-        // STATE
         let state = {
             totalPoints: 0,
             dailyThanks: 0,
             isMuted: false,
             currentAction: null,
-            selectedTarget: null
+            selectedTarget: null,
+            view: 'action', 
+            logs: []
         };
 
         let audioCtx = null;
         let hintInterval = null;
 
-        // INIT
+        function loadData() {
+            const savedData = localStorage.getItem('eq_logic_v3');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                state.totalPoints = parsed.totalPoints || 0;
+                state.logs = parsed.logs || [];
+                refreshDailyThanks();
+            }
+        }
+
+        function refreshDailyThanks() {
+            const today = new Date().toLocaleDateString();
+            state.dailyThanks = state.logs.filter(log => {
+                return new Date(log.timestamp).toLocaleDateString() === today && log.id.startsWith('thanks');
+            }).length;
+        }
+
+        function saveData() {
+            localStorage.setItem('eq_logic_v3', JSON.stringify({
+                totalPoints: state.totalPoints,
+                logs: state.logs
+            }));
+        }
+
         function init() {
+            loadData();
             lucide.createIcons();
             renderButtons();
             updateUI();
@@ -275,47 +310,45 @@
         }
 
         function renderButtons() {
-            const grid = document.getElementById('action-grid');
+            const grid = document.getElementById('action-view'); 
+            if (!grid) return; 
+            grid.innerHTML = '';
             ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
-                btn.className = `${action.color} relative flex flex-col items-center justify-center p-4 rounded-2xl active-tap transition-all shadow-lg`;
+                btn.className = `${action.color} relative flex flex-col items-center justify-center p-2 rounded-xl active-tap transition-all shadow-lg`;
                 btn.onclick = () => handleAction(action);
                 btn.innerHTML = `
-                    <div class="mb-2"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
-                    <span class="text-[11px] font-black uppercase tracking-tight">${action.label}</span>
-                    <span class="exp-text opacity-60 mt-0.5">${action.id === 'reset' ? 'CLEAR' : '+' + action.points + ' EXP'}</span>
+                    <div class="mb-0.5"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-tight">${action.label}</span>
+                    <span class="exp-text opacity-60 mt-0.5 scale-90 tracking-tighter">+${action.points} EXP</span>
                 `;
                 grid.appendChild(btn);
             });
             lucide.createIcons();
         }
 
-        // HINT ROTATION (10s Cycle)
         function startHintRotation() {
             if (hintInterval) clearInterval(hintInterval);
-            hintInterval = setInterval(() => {
-                refreshHint();
-            }, 10000);
+            hintInterval = setInterval(refreshHint, 10000);
+            refreshHint();
         }
 
         function refreshHint() {
             const hintText = document.getElementById('hint-text');
+            if (!hintText) return;
             hintText.classList.remove('hint-fade');
-            void hintText.offsetWidth; // Trigger reflow
+            void hintText.offsetWidth; 
             hintText.innerText = TIPS[Math.floor(Math.random() * TIPS.length)];
             hintText.classList.add('hint-fade');
         }
 
-        // SOUND
         function playSound(type) {
             if (state.isMuted) return;
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-
             const now = audioCtx.currentTime;
             if (type === 'click') {
                 osc.type = 'sine';
@@ -323,52 +356,44 @@
                 osc.frequency.exponentialRampToValueAtTime(440, now + 0.1);
                 gain.gain.setValueAtTime(0.04, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now);
-                osc.stop(now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
             } else if (type === 'success') {
                 osc.type = 'triangle';
-                [523, 659, 783, 1046, 1318].forEach((f, i) => {
+                [523, 659, 783, 1046].forEach((f, i) => {
                     osc.frequency.setValueAtTime(f, now + (i * 0.08));
                 });
                 gain.gain.setValueAtTime(0.04, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now);
-                osc.stop(now + 0.5);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
             }
         }
 
-        // HANDLERS
         function handleAction(action) {
             if (action.id === 'reset') {
-                state.totalPoints = 0;
-                state.dailyThanks = 0;
-                playSound('click');
-                updateUI();
+                if(confirm("全データを消去しますか？")) {
+                    state.totalPoints = 0;
+                    state.logs = [];
+                    state.dailyThanks = 0;
+                    saveData();
+                    updateUI();
+                    playSound('click');
+                }
                 return;
             }
-
             playSound('click');
             state.currentAction = action;
             openPanel(action);
-            updateUI();
-            
-            refreshHint();
-            startHintRotation(); 
         }
 
         function openPanel(action) {
             const panel = document.getElementById('detail-panel');
             const content = document.getElementById('panel-content');
             const backdrop = document.getElementById('panel-backdrop');
-            
             document.getElementById('panel-title').innerText = `${action.label}の戦略記録`;
-            document.getElementById('panel-points').innerHTML = `<span class="exp-text">+${action.points} EXP</span> DETECTED`;
+            document.getElementById('panel-points').innerHTML = `<span class="exp-text">+${action.points} EXP</span> - ANALYSIS ON`;
             document.getElementById('log-memo').value = '';
-            
             state.selectedTarget = null;
-            const targetBtns = document.querySelectorAll('.target-opt');
-            targetBtns.forEach(btn => btn.classList.remove('target-btn-active'));
-
+            document.querySelectorAll('.target-opt').forEach(btn => btn.classList.remove('target-btn-active'));
             panel.classList.remove('pointer-events-none');
             content.classList.remove('translate-x-full');
             backdrop.style.opacity = '1';
@@ -377,93 +402,145 @@
 
         function selectTarget(target) {
             state.selectedTarget = target;
-            const targetBtns = document.querySelectorAll('.target-opt');
-            targetBtns.forEach(btn => {
-                if (btn.innerText === target) {
-                    btn.classList.add('target-btn-active');
-                } else {
-                    btn.classList.remove('target-btn-active');
-                }
+            document.querySelectorAll('.target-opt').forEach(btn => {
+                btn.classList.toggle('target-btn-active', btn.innerText === target);
             });
             playSound('click');
         }
 
         function closePanel() {
-            const panel = document.getElementById('detail-panel');
             const content = document.getElementById('panel-content');
             const backdrop = document.getElementById('panel-backdrop');
-
             content.classList.add('translate-x-full');
             backdrop.style.opacity = '0';
             backdrop.classList.remove('pointer-events-auto');
-            setTimeout(() => {
-                panel.classList.add('pointer-events-none');
-            }, 400);
+            setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400);
         }
 
         function saveLog() {
             const action = state.currentAction;
-            state.totalPoints += action.points;
-            if (action.id.startsWith('thanks')) {
-                state.dailyThanks++;
-            }
+            const logEntry = {
+                id: action.id,
+                label: action.label,
+                points: action.points,
+                target: state.selectedTarget || 'OTHER',
+                memo: document.getElementById('log-memo').value,
+                timestamp: new Date().toISOString()
+            };
 
-            // Show Success Feedback
-            showSuccessOverlay(action);
-            
+            state.logs.push(logEntry);
+            state.totalPoints += action.points;
+            refreshDailyThanks();
+            if (action.id.startsWith('thanks') && state.dailyThanks === 5) playSound('success');
+
+            saveData();
             updateUI();
             closePanel();
+            refreshHint();
         }
 
-        function showSuccessOverlay(action) {
-            const overlay = document.getElementById('success-overlay');
-            const expText = document.getElementById('success-exp');
-            const msgText = document.getElementById('success-msg');
+        function toggleView() {
+            state.view = state.view === 'action' ? 'stats' : 'action';
+            const actionView = document.getElementById('action-view');
+            const statsView = document.getElementById('stats-view');
+            const icon = document.getElementById('view-icon');
 
-            expText.innerText = `+${action.points} EXP`;
-            msgText.innerText = PRAISES[Math.floor(Math.random() * PRAISES.length)];
+            if (state.view === 'stats') {
+                actionView.classList.add('hidden');
+                statsView.classList.remove('hidden');
+                icon.setAttribute('data-lucide', 'layout-grid');
+                renderStats();
+            } else {
+                actionView.classList.remove('hidden');
+                statsView.classList.add('hidden');
+                icon.setAttribute('data-lucide', 'bar-chart-3');
+                renderButtons();
+            }
+            lucide.createIcons();
+            playSound('click');
+        }
 
-            overlay.style.opacity = '1';
-            playSound('success');
+        function renderStats() {
+            const today = new Date();
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(today.getDate() - 6);
+            sevenDaysAgo.setHours(0, 0, 0, 0);
 
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-            }, 2000);
+            const weeklyLogs = state.logs.filter(log => new Date(log.timestamp) >= sevenDaysAgo);
+            const weeklyTotal = weeklyLogs.reduce((sum, log) => sum + log.points, 0);
+            const dailyAvg = (weeklyTotal / 7).toFixed(1);
+
+            document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString();
+            document.getElementById('daily-average').innerText = dailyAvg;
+
+            const chartContainer = document.getElementById('chart-container');
+            if (!chartContainer) return;
+            chartContainer.innerHTML = '';
+            
+            const dailyScores = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(sevenDaysAgo);
+                date.setDate(sevenDaysAgo.getDate() + i);
+                const dateStr = date.toLocaleDateString();
+                const dayScore = state.logs
+                    .filter(log => new Date(log.timestamp).toLocaleDateString() === dateStr)
+                    .reduce((sum, log) => sum + log.points, 0);
+                dailyScores.push(dayScore);
+            }
+
+            const maxScore = Math.max(...dailyScores, 100); 
+            dailyScores.forEach((score, index) => {
+                const height = (score / maxScore) * 100;
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar w-full bg-emerald-500 rounded-t-sm flex flex-col items-center justify-end group relative';
+                bar.style.height = `${Math.max(height, 5)}%`;
+                bar.innerHTML = `<div class="absolute bottom-full mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-[8px] font-bold px-1 rounded border border-slate-700 pointer-events-none">${score}</div>`;
+                chartContainer.appendChild(bar);
+            });
+
+            const historyList = document.getElementById('history-list');
+            if (!historyList) return;
+            historyList.innerHTML = '';
+            const recentLogs = [...state.logs].reverse().slice(0, 10);
+            recentLogs.forEach(log => {
+                const date = new Date(log.timestamp);
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center text-[10px] bg-slate-800/40 p-2 rounded border border-white/5';
+                item.innerHTML = `<div class="flex flex-col"><span class="text-slate-500 text-[8px]">${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}</span><span class="font-bold text-slate-200">${log.label} <span class="text-emerald-500 text-[8px] tracking-widest ml-1">@${log.target}</span></span></div><span class="font-black text-emerald-400">+${log.points}</span>`;
+                historyList.appendChild(item);
+            });
         }
 
         function toggleMute() {
             state.isMuted = !state.isMuted;
-            const btn = document.getElementById('mute-btn');
-            btn.innerHTML = `<i data-lucide="${state.isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4"></i>`;
+            document.getElementById('mute-btn').innerHTML = `<i data-lucide="${state.isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4"></i>`;
             lucide.createIcons();
         }
 
         function updateUI() {
-            document.getElementById('total-points').innerText = state.totalPoints.toLocaleString();
-            document.getElementById('thanks-counter').innerText = `${state.dailyThanks} / 5`;
-            
-            const progress = (state.dailyThanks / 5) * 100;
-            document.getElementById('thanks-progress').style.width = `${Math.min(100, progress)}%`;
-
+            const pointsEl = document.getElementById('total-points');
+            if (pointsEl) pointsEl.innerText = state.totalPoints.toLocaleString();
+            const heartContainer = document.getElementById('heart-container');
+            if (heartContainer) {
+                const filledCount = Math.min(5, state.dailyThanks);
+                heartContainer.innerText = '♥'.repeat(filledCount) + '♡'.repeat(5 - filledCount);
+            }
             const rank = [...LEVELS].reverse().find(l => state.totalPoints >= l.min) || LEVELS[0];
             const badge = document.getElementById('rank-badge');
-            badge.innerText = rank.name;
-            badge.className = `text-[10px] font-bold ${rank.color} px-2 py-0.5 bg-slate-800 rounded-md border border-slate-700 uppercase tracking-wider`;
-
-            const footer = document.getElementById('footer-status');
+            if (badge) {
+                badge.innerText = rank.name;
+                badge.className = `text-[8px] font-bold ${rank.color} px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 uppercase tracking-tighter`;
+            }
             const advisor = document.getElementById('advisor-text');
             const successIcon = document.getElementById('success-icon');
-
-            if (state.dailyThanks >= 5) {
-                footer.classList.remove('bg-emerald-600');
-                footer.classList.add('bg-emerald-500');
-                advisor.innerText = "同期完了。非常に合理的な振る舞いです。精神リソースの回復に努めてください。";
-                successIcon.classList.remove('hidden');
-            } else {
-                footer.classList.add('bg-emerald-600');
-                footer.classList.remove('bg-emerald-500');
-                advisor.innerText = `あと${5 - state.dailyThanks}回の感謝パケット送信が必要です。バフを切らさないでください。`;
-                successIcon.classList.add('hidden');
+            if (advisor && successIcon) {
+                if (state.dailyThanks >= 5) {
+                    advisor.innerText = "同期完了。非常に合理的な判断です。休息を確保してください。";
+                    successIcon.classList.remove('hidden');
+                } else {
+                    advisor.innerText = `ニモさん、あと${5 - state.dailyThanks}回の感謝パケットが必要です。バフを維持して。`;
+                    successIcon.classList.add('hidden');
+                }
             }
         }
 
@@ -471,4 +548,3 @@
     </script>
 </body>
 </html>
-
