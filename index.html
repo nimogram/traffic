@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EQ-Logic Pro | Enterprise IT Sales Edition</title>
+    <title>EQ-Logic Pro | Strategic Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -29,11 +29,11 @@
             transform: translateX(100%);
         }
 
-        /* 登録画面の背景：透明度をさらにアップ（0.6 -> 0.3） */
+        /* 登録画面の背景：透明度をさらにアップ */
         .bg-glass {
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.2);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
         }
 
         .active-tap:active {
@@ -54,13 +54,24 @@
             background-color: rgba(16, 185, 129, 0.3) !important;
             border-color: #10b981 !important;
             color: #fff !important;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+
+        /* 褒めコメントのオーバーレイ */
+        #success-overlay {
+            transition: opacity 0.3s ease;
+        }
+
+        /* EXPテキストの強調 */
+        .exp-text {
+            font-size: 1.1rem; /* 大きく調整 */
+            font-weight: 800;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-4 gap-3">
+    <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-4 gap-3 relative">
         
         <!-- HEADER -->
         <header class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 relative overflow-hidden emerald-glow">
@@ -71,7 +82,7 @@
                     <div class="text-[10px] font-black text-emerald-500 tracking-[0.2em] mb-1 uppercase">EQ ASSET MANAGEMENT</div>
                     <div class="flex items-baseline gap-2">
                         <span id="total-points" class="text-4xl font-black text-white leading-none tracking-tighter tabular-nums">0</span>
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Total EXP</span>
+                        <span class="exp-text text-slate-500 uppercase tracking-tighter">Total EXP</span>
                     </div>
                 </div>
                 <div class="flex flex-col items-end gap-2">
@@ -105,7 +116,7 @@
         </div>
 
         <!-- HINT AREA (Auto Refresh Every 10s) -->
-        <div id="hint-box" class="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-xl flex items-start gap-3 relative overflow-hidden min-h-[70px]">
+        <div id="hint-box" class="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-xl flex items-start gap-3 relative overflow-hidden min-h-[90px]">
             <div class="text-emerald-400 shrink-0 mt-0.5 animate-pulse">
                 <i data-lucide="zap" class="w-4 h-4"></i>
             </div>
@@ -141,12 +152,12 @@
         <!-- Backdrop -->
         <div id="panel-backdrop" class="absolute inset-0 bg-black/40 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
         
-        <!-- Panel (High Transparency) -->
+        <!-- Panel -->
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-emerald-500/30 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
             <div class="flex justify-between items-center border-b border-emerald-500/20 pb-4">
                 <div>
                     <h2 id="panel-title" class="text-xl font-black text-white tracking-tight">ログ登録</h2>
-                    <p id="panel-points" class="text-emerald-400 text-[10px] font-mono font-bold mt-1 tracking-widest">+10 EXP DETECTED</p>
+                    <p id="panel-points" class="text-emerald-400 font-mono font-bold mt-1 tracking-widest"><span class="exp-text">+10 EXP</span> DETECTED</p>
                 </div>
                 <button onclick="closePanel()" class="p-2 bg-white/10 rounded-full text-slate-200 active-tap">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -179,6 +190,17 @@
         </div>
     </div>
 
+    <!-- SUCCESS FEEDBACK OVERLAY -->
+    <div id="success-overlay" class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none opacity-0">
+        <div class="bg-emerald-500 text-slate-950 p-8 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.5)] flex flex-col items-center text-center max-w-[80%]">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                <i data-lucide="award" class="w-10 h-10"></i>
+            </div>
+            <p id="success-exp" class="text-3xl font-black mb-2">+10 EXP</p>
+            <p id="success-msg" class="text-sm font-bold leading-relaxed italic">完璧な戦略的判断です、ニモさん！</p>
+        </div>
+    </div>
+
     <script>
         // CONFIG
         const LEVELS = [
@@ -201,15 +223,35 @@
         const TIPS = [
             "枕詞：『〇〇さんの知見を拝借したいのですが』は最強の解除キーです。",
             "視点：正論は『正しさ』の証明ではなく、時に『攻撃』として処理されます。",
-            "戦術：相手が感情的な時は、共感エミュレータを起動させてください。",
-            "枕詞：『少しお力添えいただけますか？』で相手に役割を与えましょう。",
-            "格言：『ありがとう』は、次回の優先処理を予約するトークンです。",
-            "視点：SEの視座が低いのは、ビジネスの痛みが共有されていない証拠です。",
-            "マインド：非効率な雑談こそ、情報のパケットを詰まらせない潤滑油です。",
-            "枕詞：『この件、〇〇さんのご意見が一番信頼できるので』で心を掴む。",
-            "視点：単刀直入さは『効率』ですが、相手には『圧迫』と取られる事があります。",
+            "背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）",
+            "相手の考えの根拠を聞く（反論する前に理解する）",
+            "相手が大事にしていることを知る",
+            "小さな約束は必ず守る",
+            "相手の成功・貢献を見つけて伝える",
+            "💬 交流：一方通行ではなく、対話にする",
+            "💬 交流：「報告」ではなく「相談」に変える",
+            "💬 交流：ミスを責めず、次に焦点を当てる",
+            "💬 交流：言ったと思ったら、もう一度言う（感謝・労い）",
+            "💬 交流：メールではなく、まず口頭で伝える",
+            "🤝 尊重：相手の視点を優先する場面を意識的に作る",
+            "🤝 尊重：相手の判断を信頼し、口出ししすぎない",
+            "🤝 尊重：相手の勉強・成長の機会をサポートする",
+            "🤝 尊重：相手の家族・趣味・目標について知る",
+            "⏱ 行動：妻には「家族イベント」を最優先で伝える",
+            "⏱ 行動：同僚には月1回、進捗や悩みを一緒に棚卸しする",
+            "⏱ 行動：定期的に一緒に食事・雑談する時間を作る",
             "戦術：論破は短期的な勝利、共感は長期的な支配（レバレッジ）です。",
             "視点：相手を『不完全なプログラム』だと思えば、怒りは消え、デバッグに集中できます。"
+        ];
+
+        const PRAISES = [
+            "完璧な戦略的判断です、ニモさん！",
+            "組織の潤滑油が注入されましたよ！",
+            "SEのOSがアップデートされましたね！",
+            "さすが五黄土星の統率力です！",
+            "卓越したコミュニケーション投資ですね！",
+            "この一手でレバレッジが掛かりますよ！",
+            "ニモさん、今日も最高にキレてますね！"
         ];
 
         // STATE
@@ -241,7 +283,7 @@
                 btn.innerHTML = `
                     <div class="mb-2"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
                     <span class="text-[11px] font-black uppercase tracking-tight">${action.label}</span>
-                    <span class="text-[9px] font-mono opacity-60 mt-0.5">${action.id === 'reset' ? 'CLEAR' : '+' + action.points + ' EXP'}</span>
+                    <span class="exp-text opacity-60 mt-0.5">${action.id === 'reset' ? 'CLEAR' : '+' + action.points + ' EXP'}</span>
                 `;
                 grid.appendChild(btn);
             });
@@ -285,13 +327,13 @@
                 osc.stop(now + 0.1);
             } else if (type === 'success') {
                 osc.type = 'triangle';
-                [523, 659, 783, 1046].forEach((f, i) => {
+                [523, 659, 783, 1046, 1318].forEach((f, i) => {
                     osc.frequency.setValueAtTime(f, now + (i * 0.08));
                 });
                 gain.gain.setValueAtTime(0.04, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
                 osc.start(now);
-                osc.stop(now + 0.4);
+                osc.stop(now + 0.5);
             }
         }
 
@@ -306,12 +348,6 @@
             }
 
             playSound('click');
-            state.totalPoints += action.points;
-            if (action.id.startsWith('thanks')) {
-                state.dailyThanks++;
-                if (state.dailyThanks === 5) playSound('success');
-            }
-
             state.currentAction = action;
             openPanel(action);
             updateUI();
@@ -326,10 +362,9 @@
             const backdrop = document.getElementById('panel-backdrop');
             
             document.getElementById('panel-title').innerText = `${action.label}の戦略記録`;
-            document.getElementById('panel-points').innerText = `+${action.points} EXP - ANALYSIS ENGINE ON`;
+            document.getElementById('panel-points').innerHTML = `<span class="exp-text">+${action.points} EXP</span> DETECTED`;
             document.getElementById('log-memo').value = '';
             
-            // Reset target selection
             state.selectedTarget = null;
             const targetBtns = document.querySelectorAll('.target-opt');
             targetBtns.forEach(btn => btn.classList.remove('target-btn-active'));
@@ -367,11 +402,33 @@
         }
 
         function saveLog() {
-            const memo = document.getElementById('log-memo').value;
-            const target = state.selectedTarget || 'Unknown';
-            // Here you would persistent to localStorage
-            console.log(`Saved Analysis: [${state.currentAction.label}] | Target: ${target} | Memo: ${memo}`);
+            const action = state.currentAction;
+            state.totalPoints += action.points;
+            if (action.id.startsWith('thanks')) {
+                state.dailyThanks++;
+            }
+
+            // Show Success Feedback
+            showSuccessOverlay(action);
+            
+            updateUI();
             closePanel();
+        }
+
+        function showSuccessOverlay(action) {
+            const overlay = document.getElementById('success-overlay');
+            const expText = document.getElementById('success-exp');
+            const msgText = document.getElementById('success-msg');
+
+            expText.innerText = `+${action.points} EXP`;
+            msgText.innerText = PRAISES[Math.floor(Math.random() * PRAISES.length)];
+
+            overlay.style.opacity = '1';
+            playSound('success');
+
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 2000);
         }
 
         function toggleMute() {
@@ -405,7 +462,7 @@
             } else {
                 footer.classList.add('bg-emerald-600');
                 footer.classList.remove('bg-emerald-500');
-                advisor.innerText = `あと${5 - state.dailyThanks}回の感謝が必要です。バフを切らさないでください。`;
+                advisor.innerText = `あと${5 - state.dailyThanks}回の感謝パケット送信が必要です。バフを切らさないでください。`;
                 successIcon.classList.add('hidden');
             }
         }
@@ -414,3 +471,4 @@
     </script>
 </body>
 </html>
+
