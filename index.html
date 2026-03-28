@@ -81,10 +81,18 @@
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        /* Cursor blinking effect for typewriter */
+        .cursor-active::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: #10b981;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -106,9 +114,6 @@
 
                 <div class="flex flex-col items-end gap-2">
                     <div class="flex gap-2">
-                        <button id="toggle-settings-btn" onclick="toggleSettings()" class="p-2 rounded-xl bg-slate-800/80 text-slate-400 active-tap border border-white/5">
-                            <i id="settings-icon" data-lucide="settings" class="w-4 h-4"></i>
-                        </button>
                         <button id="toggle-view-btn" onclick="toggleView()" class="p-2 rounded-xl bg-slate-800/80 text-slate-400 active-tap border border-white/5">
                             <i id="view-icon" data-lucide="bar-chart-3" class="w-4 h-4"></i>
                         </button>
@@ -129,7 +134,7 @@
                     </div>
                     <div class="flex flex-col items-end">
                         <span class="text-[10px] font-black text-slate-500 uppercase leading-none mb-1">Gap to Level Up</span>
-                        <span id="next-level-info" class="text-xl font-black text-white leading-none tracking-tighter tabular-nums"></span>
+                        <span id="next-level-info" class="text-2xl font-black text-white leading-none tracking-tighter tabular-nums">+501 EXP</span>
                     </div>
                 </div>
                 <div class="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden p-[1px]">
@@ -143,10 +148,10 @@
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-h-[52px]">
                 <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Human Intelligence Advisor</p>
-                <p id="advisor-text" class="text-[14px] font-bold text-emerald-400 leading-snug tracking-tight hint-fade">
-                    Advisor Engine Initializing...
+                <p id="advisor-text" class="text-[14px] font-bold text-emerald-400 leading-snug tracking-tight">
+                    Initializing Strategic OS...
                 </p>
             </div>
         </div>
@@ -172,22 +177,8 @@
                 <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sync LOG</span>
             </div>
-            <div id="history-list" class="space-y-1.5 flex-1 overflow-y-auto pr-1"></div>
-        </div>
-
-        <!-- SETTINGS VIEW -->
-        <div id="settings-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
-            <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 mb-2">
-                <h3 class="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <i data-lucide="cpu" class="w-4 h-4 text-emerald-500"></i> Action Tuning
-                </h3>
-                <div id="settings-list" class="space-y-4">
-                    <!-- Config inputs injected by JS -->
-                </div>
-                <div class="mt-8 flex gap-2">
-                    <button onclick="saveSettings()" class="flex-1 bg-emerald-600 text-white font-black py-3 rounded-xl active-tap uppercase text-[10px] tracking-widest">Save Config</button>
-                    <button onclick="resetToDefaultActions()" class="px-4 bg-slate-800 text-slate-400 font-black py-3 rounded-xl active-tap uppercase text-[10px] tracking-widest border border-white/5">Reset</button>
-                </div>
+            <div id="history-list" class="space-y-1.5 flex-1 overflow-y-auto pr-1">
+                <!-- Log items injected by JS -->
             </div>
         </div>
 
@@ -200,7 +191,7 @@
             <div id="success-icon" class="hidden">
                 <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 animate-bounce shrink-0"></i>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC STRATEGIC OS v5.6</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC STRATEGIC OS v5.7</div>
         </footer>
 
         <!-- MILESTONE MODAL -->
@@ -255,7 +246,7 @@
     </div>
 
     <script>
-        const DEFAULT_ACTIONS = [
+        const ACTIONS = [
             { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-blue-600 to-blue-400', panelRgba: 'rgba(52, 152, 219, 0.4)' },
             { id: 'vision', label: '顧客視点', points: 20, icon: 'target', color: 'from-indigo-700 to-indigo-500', panelRgba: 'rgba(41, 128, 185, 0.4)' },
             { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-purple-700 to-purple-500', panelRgba: 'rgba(142, 68, 173, 0.4)' },
@@ -318,12 +309,12 @@
             currentAction: null,
             selectedTarget: null,
             view: 'action', 
-            logs: [],
-            actions: JSON.parse(JSON.stringify(DEFAULT_ACTIONS))
+            logs: []
         };
 
         let audioCtx = null;
         let advisorInterval = null;
+        let typeWriterTimeout = null;
 
         function loadData() {
             const savedData = localStorage.getItem('eq_logic_v3');
@@ -331,7 +322,6 @@
                 const parsed = JSON.parse(savedData);
                 state.totalPoints = parsed.totalPoints || 0;
                 state.logs = parsed.logs || [];
-                state.actions = parsed.actions || JSON.parse(JSON.stringify(DEFAULT_ACTIONS));
                 state.lastMilestone = Math.floor(state.totalPoints / 100) * 100;
                 refreshDailyThanks();
             }
@@ -348,8 +338,7 @@
         function saveData() {
             localStorage.setItem('eq_logic_v3', JSON.stringify({
                 totalPoints: state.totalPoints,
-                logs: state.logs,
-                actions: state.actions
+                logs: state.logs
             }));
         }
 
@@ -365,7 +354,7 @@
             const container = document.getElementById('action-view'); 
             if (!container) return; 
             container.innerHTML = '';
-            state.actions.forEach(action => {
+            ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
                 btn.onclick = () => handleAction(action);
@@ -387,17 +376,35 @@
 
         function startAdvisorRotation() {
             if (advisorInterval) clearInterval(advisorInterval);
-            advisorInterval = setInterval(refreshAdvisor, 10000);
+            // Updated: Set rotation to 8 seconds as requested
+            advisorInterval = setInterval(refreshAdvisor, 8000); 
             refreshAdvisor();
         }
 
         function refreshAdvisor() {
             const advisorText = document.getElementById('advisor-text');
             if (!advisorText) return;
-            advisorText.classList.remove('hint-fade');
-            void advisorText.offsetWidth; 
-            advisorText.innerText = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
-            advisorText.classList.add('hint-fade');
+            const newText = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
+            typeWriter(advisorText, newText);
+        }
+
+        function typeWriter(element, text) {
+            if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+            
+            element.innerText = '';
+            element.classList.add('cursor-active');
+            let i = 0;
+            
+            function step() {
+                if (i < text.length) {
+                    element.innerText += text.charAt(i);
+                    i++;
+                    typeWriterTimeout = setTimeout(step, 80); 
+                } else {
+                    element.classList.remove('cursor-active');
+                }
+            }
+            step();
         }
 
         function playSound(type) {
@@ -472,7 +479,7 @@
             const action = state.currentAction;
             const logEntry = {
                 id: Date.now(),
-                actionId: action.id, 
+                actionId: action.id,
                 label: action.label,
                 points: action.points,
                 target: state.selectedTarget || 'OTHER',
@@ -528,12 +535,7 @@
             state.view = state.view === 'action' ? 'stats' : 'action';
             const actionView = document.getElementById('action-view');
             const statsView = document.getElementById('stats-view');
-            const settingsView = document.getElementById('settings-view');
             const icon = document.getElementById('view-icon');
-            
-            settingsView.classList.add('hidden');
-            document.getElementById('settings-icon').setAttribute('data-lucide', 'settings');
-
             if (state.view === 'stats') {
                 actionView.classList.add('hidden'); statsView.classList.remove('hidden');
                 icon.setAttribute('data-lucide', 'layout-grid'); renderStats();
@@ -542,80 +544,6 @@
                 icon.setAttribute('data-lucide', 'bar-chart-3'); renderButtons();
             }
             lucide.createIcons(); playSound('click');
-        }
-
-        function toggleSettings() {
-            const actionView = document.getElementById('action-view');
-            const statsView = document.getElementById('stats-view');
-            const settingsView = document.getElementById('settings-view');
-            const settingsIcon = document.getElementById('settings-icon');
-
-            if (settingsView.classList.contains('hidden')) {
-                actionView.classList.add('hidden');
-                statsView.classList.add('hidden');
-                settingsView.classList.remove('hidden');
-                settingsIcon.setAttribute('data-lucide', 'layout-grid');
-                renderSettings();
-            } else {
-                settingsView.classList.add('hidden');
-                settingsIcon.setAttribute('data-lucide', 'settings');
-                state.view = 'action';
-                actionView.classList.remove('hidden');
-                document.getElementById('view-icon').setAttribute('data-lucide', 'bar-chart-3');
-                renderButtons();
-            }
-            lucide.createIcons(); playSound('click');
-        }
-
-        function renderSettings() {
-            const list = document.getElementById('settings-list');
-            list.innerHTML = '';
-            state.actions.forEach((action, index) => {
-                if (action.id === 'reset') return;
-                const item = document.createElement('div');
-                item.className = 'bg-black/20 p-4 rounded-2xl border border-white/5 space-y-3';
-                item.innerHTML = `
-                    <div class="flex items-center gap-2 mb-1">
-                        <div class="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-500">
-                             <i data-lucide="${action.icon}" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${action.id}</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="col-span-2">
-                            <label class="text-[8px] font-bold text-slate-600 uppercase mb-1 block">Label</label>
-                            <input type="text" value="${action.label}" onchange="updateActionConfig(${index}, 'label', this.value)" 
-                                class="w-full bg-slate-800/50 border border-white/5 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="text-[8px] font-bold text-slate-600 uppercase mb-1 block">Points</label>
-                            <input type="number" value="${action.points}" onchange="updateActionConfig(${index}, 'points', this.value)" 
-                                class="w-full bg-slate-800/50 border border-white/5 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
-                        </div>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-            lucide.createIcons();
-        }
-
-        function updateActionConfig(index, key, value) {
-            if (key === 'points') value = parseInt(value) || 0;
-            state.actions[index][key] = value;
-        }
-
-        function saveSettings() {
-            saveData();
-            playSound('success');
-            toggleSettings();
-        }
-
-        function resetToDefaultActions() {
-            if(confirm("アクション設定を初期状態に戻しますか？（現在の累計ポイント等は維持されます）")) {
-                state.actions = JSON.parse(JSON.stringify(DEFAULT_ACTIONS));
-                renderSettings();
-                playSound('click');
-            }
         }
 
         function renderStats() {
@@ -692,7 +620,7 @@
                 const stageGap = nextStage.threshold - stage.threshold;
                 const percent = (progressInStage / stageGap) * 100;
 
-                nextInfoEl.innerHTML = `+${diff} <span class="text-[9px] font-bold text-slate-500 ml-0.5">EXP</span>`;
+                nextInfoEl.innerText = `+${diff} EXP`;
                 progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
             } else {
                 nextInfoEl.innerText = `MAX LEVEL`;
