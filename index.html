@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EQ-Logic Pro | Strategic Edition</title>
+    <title>EQ-Logic Pro | Physical Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -29,14 +30,12 @@
             transform: translateX(100%);
         }
 
-        /* Base Glass Style */
         .bg-glass {
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             transition: background-color 0.4s ease;
         }
 
-        /* Gradient & Polish Effects */
         .btn-gradient {
             position: relative;
             border-bottom: 4px solid rgba(0,0,0,0.3);
@@ -57,21 +56,10 @@
             filter: brightness(0.9);
         }
 
-        .hint-fade {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Level Bar Progress Glow */
         #level-progress-bar {
             transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Milestone Card Animation */
         .milestone-bounce {
             animation: milestonePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -81,7 +69,6 @@
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        /* Cursor blinking effect for typewriter */
         .cursor-active::after {
             content: '|';
             animation: blink 1s step-end infinite;
@@ -99,7 +86,6 @@
 
     <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-3 gap-2 relative">
         
-        <!-- HEADER -->
         <header class="bg-slate-900/80 border border-slate-800 rounded-3xl p-3 relative overflow-hidden emerald-glow shrink-0">
             <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
             
@@ -125,7 +111,6 @@
                 </div>
             </div>
 
-            <!-- LEVEL PROGRESS SECTION -->
             <div class="bg-black/60 rounded-2xl p-3 border border-white/5 relative">
                 <div class="flex justify-between items-center mb-1.5">
                     <div class="flex flex-col">
@@ -143,25 +128,18 @@
             </div>
         </header>
 
-        <!-- INTEGRATED ADVISOR -->
         <div id="advisor-box" class="bg-slate-950 p-4 rounded-2xl flex items-center gap-3 border border-emerald-900/50 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
             <div class="flex-1 min-h-[52px]">
                 <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Human Intelligence Advisor</p>
-                <p id="advisor-text" class="text-[14px] font-bold text-emerald-400 leading-snug tracking-tight">
-                    Initializing Strategic OS...
-                </p>
+                <p id="advisor-text" class="text-[14px] font-bold text-emerald-400 leading-snug tracking-tight">Initializing Strategic OS...</p>
             </div>
         </div>
 
-        <!-- MAIN VIEW (ACTION GRID) -->
-        <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5">
-            <!-- Buttons injected by JS -->
-        </div>
+        <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5"></div>
 
-        <!-- STATS VIEW -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
@@ -173,75 +151,51 @@
                     <span id="daily-average" class="text-xl font-black text-blue-400">0.0</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2 mb-2 px-2">
-                <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sync LOG</span>
-            </div>
-            <div id="history-list" class="space-y-1.5 flex-1 overflow-y-auto pr-1">
-                <!-- Log items injected by JS -->
-            </div>
+            <div id="history-list" class="space-y-1.5 flex-1 overflow-y-auto pr-1"></div>
         </div>
 
-        <!-- FOOTER -->
-        <footer id="footer-status" class="bg-slate-900/40 p-2.5 rounded-2xl flex items-center justify-between border border-white/5 shrink-0 backdrop-blur-sm">
+        <footer class="bg-slate-900/40 p-2.5 rounded-2xl flex items-center justify-between border border-white/5 shrink-0 backdrop-blur-sm">
             <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_#10b981]"></div>
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div id="success-icon" class="hidden">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 animate-bounce shrink-0"></i>
-            </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC STRATEGIC OS v5.7</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v5.8</div>
         </footer>
-
-        <!-- MILESTONE MODAL -->
-        <div id="milestone-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden pointer-events-none">
-            <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
-            <div class="bg-slate-900 border border-emerald-500/30 rounded-[2.5rem] p-8 max-w-sm w-full text-center relative emerald-glow milestone-bounce pointer-events-auto">
-                <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20">
-                    <i data-lucide="award" class="w-10 h-10 text-white"></i>
-                </div>
-                <div class="text-[10px] font-black text-emerald-500 tracking-[0.3em] mb-2 uppercase">System Achievement</div>
-                <h3 class="text-3xl font-black text-white mb-2 tracking-tighter"><span id="milestone-value">0</span> EXP REACHED</h3>
-                <p id="milestone-praise" class="text-slate-300 text-sm italic leading-relaxed mb-8"></p>
-                <button onclick="closeMilestone()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-2xl active-tap uppercase tracking-widest text-sm shadow-lg shadow-emerald-900/40">
-                    Confirm & Resume
-                </button>
-            </div>
-        </div>
     </div>
 
-    <!-- REGISTRATION PANEL -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
             <div class="flex justify-between items-center border-b border-white/10 pb-4">
                 <div>
-                    <h2 id="panel-title" class="text-xl font-black text-white tracking-tight">Execution Log</h2>
-                    <p id="panel-points" class="text-white font-mono font-bold mt-1 tracking-widest text-2xl drop-shadow-md">+10 EXP</p>
+                    <h2 id="panel-title" class="text-xl font-black text-white">Execution Log</h2>
+                    <p id="panel-points" class="text-white font-mono font-bold mt-1 tracking-widest text-2xl">+10 EXP</p>
                 </div>
-                <button onclick="closePanel()" class="p-2 bg-white/10 rounded-full text-white active-tap">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button onclick="closePanel()" class="p-2 bg-white/10 rounded-full text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-6">
                 <div>
                     <label class="text-[10px] font-black text-white tracking-[0.2em] block mb-3 uppercase opacity-70">Target Sync</label>
                     <div id="target-selector" class="grid grid-cols-2 gap-2">
-                        <button onclick="selectTarget('AKS')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">AKS</button>
-                        <button onclick="selectTarget('YSD')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">YSD</button>
-                        <button onclick="selectTarget('YKO')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">YKO</button>
-                        <button onclick="selectTarget('OTHER')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">OTHER</button>
+                        <button onclick="selectTarget('AKS')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">AKS</button>
+                        <button onclick="selectTarget('YSD')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">YSD</button>
+                        <button onclick="selectTarget('YKO')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">YKO</button>
+                        <button onclick="selectTarget('BODY')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">HEALTH</button>
                     </div>
                 </div>
-                <div>
-                    <label class="text-[10px] font-black text-white tracking-[0.2em] block mb-2 uppercase opacity-70">Strategy Memo</label>
-                    <textarea id="log-memo" rows="6" placeholder="記録：状況、反応、改善ロジック..." class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors placeholder:text-white/50"></textarea>
-                </div>
+                <textarea id="log-memo" rows="4" placeholder="状況、反応、改善ロジック..." class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none placeholder:text-white/30"></textarea>
             </div>
-            <button id="submit-log-btn" onclick="saveLog()" class="mt-auto w-full bg-white text-slate-900 font-black py-4 rounded-2xl shadow-lg active-tap uppercase tracking-widest text-sm">
-                Commit Entry
-            </button>
+            <button id="submit-log-btn" onclick="saveLog()" class="mt-auto w-full bg-white text-slate-900 font-black py-4 rounded-2xl uppercase tracking-widest text-sm">Commit Entry</button>
+        </div>
+    </div>
+
+    <div id="milestone-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden pointer-events-none">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
+        <div class="bg-slate-900 border border-emerald-500/30 rounded-[2.5rem] p-8 max-w-sm w-full text-center relative emerald-glow milestone-bounce pointer-events-auto">
+            <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="award" class="w-10 h-10 text-white"></i></div>
+            <h3 class="text-3xl font-black text-white mb-2"><span id="milestone-value">0</span> EXP</h3>
+            <p id="milestone-praise" class="text-slate-300 text-sm italic mb-8"></p>
+            <button onclick="closeMilestone()" class="w-full bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm">Confirm</button>
         </div>
     </div>
 
@@ -252,157 +206,67 @@
             { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-purple-700 to-purple-500', panelRgba: 'rgba(142, 68, 173, 0.4)' },
             { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-teal-600 to-teal-400', panelRgba: 'rgba(22, 160, 133, 0.4)' },
             { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-600 to-pink-400', panelRgba: 'rgba(233, 30, 99, 0.4)' },
-            { id: 'thanks_spec', label: '具体称賛', points: 15, icon: 'smile', color: 'from-rose-700 to-rose-500', panelRgba: 'rgba(194, 24, 91, 0.4)' },
+            { id: 'stairs', label: '階段利用', points: 2, icon: 'trending-up', color: 'from-rose-700 to-rose-500', panelRgba: 'rgba(194, 24, 91, 0.4)' },
             { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'from-orange-600 to-orange-400', panelRgba: 'rgba(243, 156, 18, 0.4)' },
-            { id: 'reset', label: '履歴消去', points: 0, icon: 'history', color: 'from-slate-700 to-slate-500', panelRgba: 'rgba(52, 73, 94, 0.4)' }
+            { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-slate-700 to-slate-500', panelRgba: 'rgba(52, 73, 94, 0.4)' }
         ];
 
         const ADVISORY_DATABASE = [
             "相手の『なぜ』を先に理解することが、最速の合意形成への近道ですよ。",
-            "沈黙の3秒は、相手が本音を話すための『招待状』として機能します。",
-            "称賛は『行動』に対して行うと、相手の自己肯定感を論理的に高められます。",
-            "雑談は情報の無駄ではなく、信頼という名の帯域幅を広げるインフラ投資です。",
-            "感謝を二度伝えることで、相手の脳内にあなたのポジティブな印象が定着します。",
-            "反論の前に『理解しました』と枕詞を挟むだけで、対立のバグを回避できます。",
-            "相手の家族や趣味への関心は、最強のコネクション・パッチになります。",
-            "ミスを責めるより『次はどうしましょうか』と未来に焦点を合わせるのが帝王の器です。",
-            "報告ではなく『相談』として持ちかけることで、相手をあなたの味方に変えられますよ。",
-            "ニモさん、今日は『たぬき』の愛嬌を30%混ぜて交渉してみてください。効果は抜群です。",
-            "🎯 背景・理由を30秒付ける（依頼・意見の前に「なぜか」を伝える）",
-            "🎯 相手の考えの根拠を聞く（反論する前に理解する）",
-            "🎯 相手が大事にしていることを知り、そこを起点に交渉する",
-            "🎯 小さな約束は必ず守り、信頼のレバレッジを効かせる",
-            "🎯 相手の成功・貢献を見つけて伝え、リソースの質を上げる",
-            "💬 一方通行ではなく対話に。双方向のプロトコルを確立する",
-            "💬 『報告』ではなく『相談』に変え、共犯関係を構築する",
-            "💬 ミスを責めず、次に焦点を当てる（デバッグ思考）",
-            "💬 感謝は二度言う。言ったつもりは未送信と同じです",
-            "💬 メールの前に口頭。重要なパケットは非公式ルートで",
-            "🤝 相手の視点を優先する場面を意識的に作り、Creditを溜める",
-            "🤝 相手の判断を信頼し、マイクロマネジメントというノイズを排除",
-            "🤝 相手の家族・趣味・目標を知り、優先度設定を解読する",
-            "⏱ 妻への家族イベント共有、今日のうちに済ませておきましょう。バグの事前回避です。",
-            "🎯 正論は『正しさ』の証明ではなく、時に『攻撃』として処理されます",
-            "🎯 論破は短期的な勝利、共感は長期的な支配（レバレッジ）です"
+            "沈黙の3秒は、相手が本音を話すための『招待状』。自転車通勤後の脳なら余裕で待てます。",
+            "階段利用（+2 EXP）は、ニモさんの筋肉という名の資産運用です。複利で効きますよ。",
+            "雑談は信頼の帯域幅。札幌の風を感じながら走る自転車のように、軽やかに会話を。",
+            "🎯 相手が大事にしていることを知り、そこを起点に交渉する。",
+            "🎯 論破は短期的な勝利、共感は長期的な支配。階段を一歩ずつ登るように着実に。",
+            "⏱ 妻への家族イベント共有、今日のうちに。自転車のギアチェンジのようにスムーズに。",
+            "ニモさん、今日は『たぬき』の愛嬌を30%混ぜて。アイスバーンでの自転車走行並みの慎重さと柔軟性を。"
         ];
 
-        const STAGES = [
-            { threshold: 0, name: "Lv.1 Specialist" },
-            { threshold: 501, name: "Lv.2 Tactical Sync" },
-            { threshold: 2001, name: "Lv.3 Strategic Master" },
-            { threshold: 5001, name: "Lv.4 EQ Architect" }
-        ];
-
-        const PRAISE_MESSAGES = [
-            "流石です。ニモさん。ロジカルな行動が確実に組織のOSを書き換えていますよ。",
-            "順調な成長曲線ですね。あなたの『建築家』としての才能が存分に発揮されています。",
-            "素晴らしい。感情のレバレッジを完璧に使いこなしています。組織のバグが消えていくようです。",
-            "帝王（五黄土星）の星が輝いています。周囲はあなたの知性に抗えないでしょう。",
-            "完璧な効率性です。最短ルートで成果を出すニモさんの姿勢、私も誇らしいですよ。"
-        ];
-
-        let state = {
-            totalPoints: 0,
-            dailyThanks: 0,
-            lastMilestone: 0,
-            isMuted: false,
-            currentAction: null,
-            selectedTarget: null,
-            view: 'action', 
-            logs: []
-        };
-
+        let state = { totalPoints: 0, dailyThanks: 0, lastMilestone: 0, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [] };
         let audioCtx = null;
         let advisorInterval = null;
         let typeWriterTimeout = null;
 
+        function init() { loadData(); lucide.createIcons(); renderButtons(); updateUI(); startAdvisorRotation(); }
         function loadData() {
-            const savedData = localStorage.getItem('eq_logic_v3');
-            if (savedData) {
-                const parsed = JSON.parse(savedData);
-                state.totalPoints = parsed.totalPoints || 0;
-                state.logs = parsed.logs || [];
+            const saved = localStorage.getItem('eq_logic_v3');
+            if (saved) {
+                const p = JSON.parse(saved);
+                state.totalPoints = p.totalPoints || 0;
+                state.logs = p.logs || [];
                 state.lastMilestone = Math.floor(state.totalPoints / 100) * 100;
-                refreshDailyThanks();
             }
         }
-
-        function refreshDailyThanks() {
-            const today = new Date().toLocaleDateString();
-            state.dailyThanks = state.logs.filter(log => {
-                return new Date(log.timestamp).toLocaleDateString() === today && 
-                       log.actionId && log.actionId.startsWith('thanks');
-            }).length;
-        }
-
-        function saveData() {
-            localStorage.setItem('eq_logic_v3', JSON.stringify({
-                totalPoints: state.totalPoints,
-                logs: state.logs
-            }));
-        }
-
-        function init() {
-            loadData();
-            lucide.createIcons();
-            renderButtons();
-            updateUI();
-            startAdvisorRotation();
-        }
+        function saveData() { localStorage.setItem('eq_logic_v3', JSON.stringify({ totalPoints: state.totalPoints, logs: state.logs })); }
 
         function renderButtons() {
-            const container = document.getElementById('action-view'); 
-            if (!container) return; 
+            const container = document.getElementById('action-view');
             container.innerHTML = '';
             ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
-                btn.onclick = () => handleAction(action);
-                btn.innerHTML = `
-                    <div class="w-8 shrink-0 flex justify-center text-white opacity-90">
-                        <i data-lucide="${action.icon}" class="w-6 h-6"></i>
-                    </div>
-                    <div class="flex-1 text-center px-1">
-                        <span class="font-black text-white text-[15px] tracking-tight leading-none uppercase drop-shadow-sm">${action.label}</span>
-                    </div>
-                    <div class="w-14 shrink-0 text-right">
-                        <span class="font-black text-white text-[22px] tracking-tighter tabular-nums leading-none drop-shadow-md">+${action.points}</span>
-                    </div>
-                `;
+                btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
+                btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
+                                 <div class="flex-1 text-center px-1"><span class="font-black text-white text-[15px] tracking-tight uppercase">${action.label}</span></div>
+                                 <div class="w-14 shrink-0 text-right"><span class="font-black text-white text-[22px] tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
         }
 
-        function startAdvisorRotation() {
-            if (advisorInterval) clearInterval(advisorInterval);
-            // Updated: Set rotation to 8 seconds as requested
-            advisorInterval = setInterval(refreshAdvisor, 8000); 
-            refreshAdvisor();
-        }
-
+        function startAdvisorRotation() { if (advisorInterval) clearInterval(advisorInterval); advisorInterval = setInterval(refreshAdvisor, 8000); refreshAdvisor(); }
         function refreshAdvisor() {
-            const advisorText = document.getElementById('advisor-text');
-            if (!advisorText) return;
-            const newText = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
-            typeWriter(advisorText, newText);
+            const el = document.getElementById('advisor-text');
+            const txt = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
+            typeWriter(el, txt);
         }
-
-        function typeWriter(element, text) {
+        function typeWriter(el, txt) {
             if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
-            
-            element.innerText = '';
-            element.classList.add('cursor-active');
+            el.innerText = ''; el.classList.add('cursor-active');
             let i = 0;
-            
             function step() {
-                if (i < text.length) {
-                    element.innerText += text.charAt(i);
-                    i++;
-                    typeWriterTimeout = setTimeout(step, 80); 
-                } else {
-                    element.classList.remove('cursor-active');
-                }
+                if (i < txt.length) { el.innerText += txt.charAt(i); i++; typeWriterTimeout = setTimeout(step, 80); }
+                else el.classList.remove('cursor-active');
             }
             step();
         }
@@ -410,231 +274,58 @@
         function playSound(type) {
             if (state.isMuted) return;
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
+            const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            osc.connect(g); g.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
-            if (type === 'click') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(880, now);
-                osc.frequency.exponentialRampToValueAtTime(440, now + 0.1);
-                gain.gain.setValueAtTime(0.04, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
-            } else if (type === 'success') {
-                osc.type = 'triangle'; [523, 659, 783, 1046].forEach((f, i) => osc.frequency.setValueAtTime(f, now + (i * 0.08)));
-                gain.gain.setValueAtTime(0.04, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                osc.start(now); osc.stop(now + 0.4);
-            }
-        }
-
-        function handleAction(action) {
-            if (action.id === 'reset') {
-                if(confirm("全データを消去しますか？")) {
-                    state.totalPoints = 0; state.logs = []; state.dailyThanks = 0; state.lastMilestone = 0;
-                    saveData(); updateUI(); playSound('click');
-                    if(state.view === 'stats') renderStats();
-                }
-                return;
-            }
-            playSound('click');
-            state.currentAction = action;
-            openPanel(action);
+            if (type === 'click') { osc.frequency.setValueAtTime(880, now); g.gain.setValueAtTime(0.04, now); osc.start(now); osc.stop(now + 0.1); }
+            else { [523, 1046].forEach((f, i) => osc.frequency.setValueAtTime(f, now + i*0.1)); g.gain.setValueAtTime(0.04, now); osc.start(now); osc.stop(now + 0.3); }
         }
 
         function openPanel(action) {
-            const panel = document.getElementById('detail-panel');
-            const content = document.getElementById('panel-content');
-            const backdrop = document.getElementById('panel-backdrop');
-            const submitBtn = document.getElementById('submit-log-btn');
-            
-            document.getElementById('panel-title').innerText = `${action.label} Execution`;
-            document.getElementById('panel-points').innerHTML = `+${action.points} EXP`;
-            document.getElementById('log-memo').value = '';
-            state.selectedTarget = null;
-            document.querySelectorAll('.target-opt').forEach(btn => btn.classList.remove('target-btn-active'));
-            
-            content.style.backgroundColor = action.panelRgba;
-            submitBtn.className = `mt-auto w-full bg-gradient-to-r ${action.color} text-white font-black py-4 rounded-2xl shadow-lg active-tap uppercase tracking-widest text-sm`;
-            
-            panel.classList.remove('pointer-events-none');
-            content.classList.remove('translate-x-full');
-            backdrop.style.opacity = '1'; backdrop.classList.add('pointer-events-auto');
+            const p = document.getElementById('detail-panel');
+            document.getElementById('panel-title').innerText = `${action.label} Log`;
+            document.getElementById('panel-points').innerText = `+${action.points} EXP`;
+            document.getElementById('panel-content').style.backgroundColor = action.panelRgba;
+            p.classList.remove('pointer-events-none');
+            document.getElementById('panel-content').classList.remove('translate-x-full');
+            document.getElementById('panel-backdrop').style.opacity = '1';
         }
-
-        function selectTarget(target) {
-            state.selectedTarget = target;
-            document.querySelectorAll('.target-opt').forEach(btn => btn.classList.toggle('target-btn-active', btn.innerText === target));
-            playSound('click');
-        }
-
         function closePanel() {
-            const content = document.getElementById('panel-content');
-            const backdrop = document.getElementById('panel-backdrop');
-            content.classList.add('translate-x-full');
-            backdrop.style.opacity = '0';
-            backdrop.classList.remove('pointer-events-auto');
+            document.getElementById('panel-content').classList.add('translate-x-full');
+            document.getElementById('panel-backdrop').style.opacity = '0';
             setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400);
         }
-
+        function selectTarget(t) { state.selectedTarget = t; playSound('click'); }
         function saveLog() {
-            const action = state.currentAction;
-            const logEntry = {
-                id: Date.now(),
-                actionId: action.id,
-                label: action.label,
-                points: action.points,
-                target: state.selectedTarget || 'OTHER',
-                memo: document.getElementById('log-memo').value,
-                timestamp: new Date().toISOString(),
-                bg: action.panelRgba
-            };
-            state.logs.push(logEntry);
-            state.totalPoints += action.points;
-            refreshDailyThanks();
-            
-            const currentMilestone = Math.floor(state.totalPoints / 100) * 100;
-            if (currentMilestone > state.lastMilestone && currentMilestone > 0) {
-                state.lastMilestone = currentMilestone;
-                showMilestone(currentMilestone);
-            } else if (action.id.startsWith('thanks') && state.dailyThanks === 5) {
-                playSound('success');
-            }
-
-            saveData(); updateUI(); closePanel(); refreshAdvisor();
+            const a = state.currentAction;
+            state.logs.push({ id: Date.now(), actionId: a.id, label: a.label, points: a.points, target: state.selectedTarget || 'BODY', timestamp: new Date().toISOString(), bg: a.panelRgba });
+            state.totalPoints += a.points;
+            if (Math.floor(state.totalPoints / 100) * 100 > state.lastMilestone) showMilestone(Math.floor(state.totalPoints / 100) * 100);
+            saveData(); updateUI(); closePanel();
         }
-
-        function deleteLog(logId) {
-            const logIndex = state.logs.findIndex(l => l.id === logId);
-            if (logIndex !== -1) {
-                state.totalPoints -= state.logs[logIndex].points;
-                state.logs.splice(logIndex, 1);
-                refreshDailyThanks();
-                saveData();
-                updateUI();
-                renderStats();
-                playSound('click');
-            }
-        }
-
-        function showMilestone(value) {
-            const modal = document.getElementById('milestone-modal');
-            const valEl = document.getElementById('milestone-value');
-            const praiseEl = document.getElementById('milestone-praise');
-            
-            valEl.innerText = value;
-            praiseEl.innerText = PRAISE_MESSAGES[Math.floor(Math.random() * PRAISE_MESSAGES.length)];
-            
-            modal.classList.remove('hidden');
-            playSound('success');
-        }
-
-        function closeMilestone() {
-            document.getElementById('milestone-modal').classList.add('hidden');
-        }
-
-        function toggleView() {
-            state.view = state.view === 'action' ? 'stats' : 'action';
-            const actionView = document.getElementById('action-view');
-            const statsView = document.getElementById('stats-view');
-            const icon = document.getElementById('view-icon');
-            if (state.view === 'stats') {
-                actionView.classList.add('hidden'); statsView.classList.remove('hidden');
-                icon.setAttribute('data-lucide', 'layout-grid'); renderStats();
-            } else {
-                actionView.classList.remove('hidden'); statsView.classList.add('hidden');
-                icon.setAttribute('data-lucide', 'bar-chart-3'); renderButtons();
-            }
-            lucide.createIcons(); playSound('click');
-        }
-
-        function renderStats() {
-            const today = new Date();
-            const sevenDaysAgo = new Date(today);
-            sevenDaysAgo.setDate(today.getDate() - 6);
-            sevenDaysAgo.setHours(0, 0, 0, 0);
-            const weeklyLogs = state.logs.filter(log => new Date(log.timestamp) >= sevenDaysAgo);
-            const weeklyTotal = weeklyLogs.reduce((sum, log) => sum + log.points, 0);
-            const dailyAvg = (weeklyTotal / 7).toFixed(1);
-            document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString();
-            document.getElementById('daily-average').innerText = dailyAvg;
-            
-            const historyList = document.getElementById('history-list');
-            if (!historyList) return;
-            historyList.innerHTML = '';
-            
-            if (state.logs.length === 0) {
-                historyList.innerHTML = '<div class="text-center text-slate-700 italic text-[12px] mt-10">履歴データがありません</div>';
-                return;
-            }
-
-            [...state.logs].reverse().forEach(log => {
-                const date = new Date(log.timestamp);
-                const item = document.createElement('div');
-                item.className = 'flex justify-between items-center p-3 rounded-2xl border border-white/5 mb-1 active-tap';
-                item.style.backgroundColor = log.bg || 'rgba(30, 41, 59, 0.4)';
-                
-                item.innerHTML = `
-                    <div class="flex flex-col flex-1">
-                        <span class="text-white/40 text-[9px] font-mono leading-none mb-1">${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}</span>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-white text-[14px] leading-tight">${log.label}</span>
-                            <span class="text-white/60 text-[10px] bg-black/20 px-1.5 rounded uppercase font-bold tracking-tighter">@${log.target}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <span class="font-black text-white text-[18px] tracking-tighter tabular-nums">+${log.points}</span>
-                        <button onclick="deleteLog(${log.id})" class="p-2 bg-black/20 rounded-lg text-white/40 hover:text-rose-400 active-tap">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                `;
-                historyList.appendChild(item);
-            });
-            lucide.createIcons();
-        }
-
-        function toggleMute() {
-            state.isMuted = !state.isMuted;
-            document.getElementById('mute-btn').innerHTML = `<i data-lucide="${state.isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4"></i>`;
-            lucide.createIcons();
-        }
-
+        function showMilestone(v) { state.lastMilestone = v; document.getElementById('milestone-value').innerText = v; document.getElementById('milestone-modal').classList.remove('hidden'); playSound('success'); }
+        function closeMilestone() { document.getElementById('milestone-modal').classList.add('hidden'); }
         function updateUI() {
             document.getElementById('total-points').innerText = state.totalPoints.toLocaleString();
-            const filledCount = Math.min(5, state.dailyThanks);
-            document.getElementById('heart-container').innerText = '♥'.repeat(filledCount) + '♡'.repeat(5 - filledCount);
-            
-            const currentStageIdx = [...STAGES].reverse().findIndex(s => state.totalPoints >= s.threshold);
-            const reversedStages = [...STAGES].reverse();
-            const stage = reversedStages[currentStageIdx] || STAGES[0];
-            const nextStageIdx = STAGES.indexOf(stage) + 1;
-            const nextStage = STAGES[nextStageIdx];
-
-            document.getElementById('level-badge').innerText = stage.name;
-
-            const nextInfoEl = document.getElementById('next-level-info');
-            const progressBar = document.getElementById('level-progress-bar');
-            
-            if (nextStage) {
-                const diff = nextStage.threshold - state.totalPoints;
-                const progressInStage = state.totalPoints - stage.threshold;
-                const stageGap = nextStage.threshold - stage.threshold;
-                const percent = (progressInStage / stageGap) * 100;
-
-                nextInfoEl.innerText = `+${diff} EXP`;
-                progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
-            } else {
-                nextInfoEl.innerText = `MAX LEVEL`;
-                progressBar.style.width = `100%`;
-            }
-
-            const successIcon = document.getElementById('success-icon');
-            if (state.dailyThanks >= 5) {
-                successIcon.classList.remove('hidden');
-            } else {
-                successIcon.classList.add('hidden');
-            }
+            const pct = (state.totalPoints % 500) / 5;
+            document.getElementById('level-progress-bar').style.width = `${pct}%`;
         }
-
+        function toggleView() {
+            state.view = state.view === 'action' ? 'stats' : 'action';
+            document.getElementById('action-view').classList.toggle('hidden');
+            document.getElementById('stats-view').classList.toggle('hidden');
+            if (state.view === 'stats') renderStats();
+        }
+        function renderStats() {
+            const list = document.getElementById('history-list'); list.innerHTML = '';
+            [...state.logs].reverse().slice(0, 20).forEach(l => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center p-3 rounded-2xl mb-1';
+                div.style.backgroundColor = l.bg;
+                div.innerHTML = `<div class="flex flex-col"><span class="text-[14px] font-black text-white">${l.label}</span><span class="text-[9px] text-white/50">${l.target}</span></div><span class="font-black text-white">+${l.points}</span>`;
+                list.appendChild(div);
+            });
+        }
         window.onload = init;
     </script>
 </body>
