@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EQ-Logic Pro | Physical Edition</title>
+    <title>EQ-Logic Pro | Lime Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -18,8 +18,9 @@
             touch-action: manipulation;
         }
 
-        .emerald-glow {
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+        /* Changed from emerald to lime */
+        .theme-glow {
+            box-shadow: 0 0 25px rgba(132, 204, 22, 0.15);
         }
 
         .slide-in {
@@ -38,7 +39,7 @@
 
         .btn-gradient {
             position: relative;
-            border-bottom: 4px solid rgba(0,0,0,0.3);
+            border-bottom: 3px solid rgba(0,0,0,0.3);
             overflow: hidden;
         }
         
@@ -52,7 +53,7 @@
 
         .active-tap:active {
             transform: translateY(2px);
-            border-bottom-width: 2px;
+            border-bottom-width: 1px;
             filter: brightness(0.9);
         }
 
@@ -69,10 +70,11 @@
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
+        /* Changed cursor to lime */
         .cursor-active::after {
             content: '|';
             animation: blink 1s step-end infinite;
-            color: #10b981;
+            color: #84cc16; 
             margin-left: 2px;
         }
 
@@ -86,12 +88,14 @@
 
     <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-3 gap-2 relative">
         
-        <header class="bg-slate-900/80 border border-slate-800 rounded-3xl p-3 relative overflow-hidden emerald-glow shrink-0">
-            <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
+        <!-- HEADER -->
+        <header class="bg-slate-900/80 border border-slate-800 rounded-3xl p-3 relative overflow-hidden theme-glow shrink-0">
+            <!-- Lime accent line -->
+            <div class="absolute top-0 left-0 w-1 h-full bg-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.5)]"></div>
             
             <div class="flex items-start justify-between mb-2 px-1">
                 <div class="flex flex-col">
-                    <div class="text-[8px] font-black text-emerald-500 tracking-[0.2em] mb-0.5 uppercase opacity-80">EQ ASSET LOGIC</div>
+                    <div class="text-[8px] font-black text-lime-500 tracking-[0.2em] mb-0.5 uppercase opacity-80">EQ ASSET LOGIC</div>
                     <div class="flex items-baseline gap-1">
                         <span id="total-points" class="text-4xl font-black text-white leading-none tracking-tighter tabular-nums">0</span>
                         <span class="text-[12px] font-black text-slate-500 uppercase tracking-tighter">EXP</span>
@@ -107,7 +111,7 @@
                             <i data-lucide="volume-2" class="w-4 h-4"></i>
                         </button>
                     </div>
-                    <div id="heart-container" class="heart-display text-emerald-500 font-bold tracking-[0.2em]">♡♡♡♡♡</div>
+                    <div id="heart-container" class="heart-display text-lime-500 font-bold tracking-[0.2em]">♡♡♡♡♡</div>
                 </div>
             </div>
 
@@ -115,7 +119,7 @@
                 <div class="flex justify-between items-center mb-1.5">
                     <div class="flex flex-col">
                         <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Strategy Stage</span>
-                        <span id="level-badge" class="text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none">Lv.1 Specialist</span>
+                        <span id="level-badge" class="text-[10px] font-black text-lime-400 uppercase tracking-widest leading-none">Lv.1 Specialist</span>
                     </div>
                     <div class="flex flex-col items-end">
                         <span class="text-[10px] font-black text-slate-500 uppercase leading-none mb-1">Gap to Level Up</span>
@@ -123,29 +127,32 @@
                     </div>
                 </div>
                 <div class="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden p-[1px]">
-                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-300 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.4)]" style="width: 0%"></div>
+                    <!-- Lime progress bar -->
+                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 via-lime-400 to-lime-300 rounded-full shadow-[0_0_15px_rgba(132,204,22,0.4)]" style="width: 0%"></div>
                 </div>
             </div>
         </header>
 
         <!-- ADVISOR -->
-        <div id="advisor-box" class="bg-slate-950 p-4 rounded-2xl flex items-center gap-3 border border-emerald-900/50 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+        <div id="advisor-box" class="bg-slate-950 p-4 rounded-2xl flex items-center gap-3 border border-lime-900/50 shrink-0 shadow-[0_0_15px_rgba(132,204,22,0.1)]">
+            <div class="w-10 h-10 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-center text-lime-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
             <div class="flex-1 min-h-[52px]">
-                <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">Human Intelligence Advisor</p>
-                <p id="advisor-text" class="text-[14px] font-bold text-emerald-400 leading-snug tracking-tight">Initializing Strategic OS...</p>
+                <p class="text-[8px] font-black text-lime-500/60 uppercase tracking-widest mb-1">Human Intelligence Advisor</p>
+                <p id="advisor-text" class="text-[14px] font-bold text-lime-400 leading-snug tracking-tight">Initializing Strategic OS...</p>
             </div>
         </div>
 
+        <!-- MAIN VIEW -->
         <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5"></div>
 
+        <!-- STATS VIEW -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
                     <span class="text-[8px] font-black text-slate-500 uppercase mb-1">Weekly Momentum</span>
-                    <span id="weekly-total" class="text-xl font-black text-emerald-400">0</span>
+                    <span id="weekly-total" class="text-xl font-black text-lime-400">0</span>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
                     <span class="text-[8px] font-black text-slate-500 uppercase mb-1">Daily Precision</span>
@@ -157,10 +164,10 @@
 
         <footer class="bg-slate-900/40 p-2.5 rounded-2xl flex items-center justify-between border border-white/5 shrink-0 backdrop-blur-sm">
             <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.4</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.5</div>
         </footer>
     </div>
 
@@ -193,11 +200,11 @@
 
     <div id="milestone-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden pointer-events-none">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
-        <div class="bg-slate-900 border border-emerald-500/30 rounded-[2.5rem] p-8 max-w-sm w-full text-center relative emerald-glow milestone-bounce pointer-events-auto">
-            <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="award" class="w-10 h-10 text-white"></i></div>
+        <div class="bg-slate-900 border border-lime-500/30 rounded-[2.5rem] p-8 max-w-sm w-full text-center relative theme-glow milestone-bounce pointer-events-auto">
+            <div class="w-20 h-20 bg-gradient-to-br from-lime-400 to-lime-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="award" class="w-10 h-10 text-white"></i></div>
             <h3 class="text-3xl font-black text-white mb-2"><span id="milestone-value">0</span> EXP</h3>
             <p id="milestone-praise" class="text-slate-300 text-sm italic mb-8"></p>
-            <button onclick="closeMilestone()" class="w-full bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm">Confirm</button>
+            <button onclick="closeMilestone()" class="w-full bg-lime-600 text-white font-black py-4 rounded-2xl text-sm">Confirm</button>
         </div>
     </div>
 
@@ -246,11 +253,11 @@
             container.innerHTML = '';
             ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
-                // Decreased min-h from 60px to 52px for a super compact look
-                btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-2 rounded-2xl active-tap transition-all shadow-lg min-h-[52px]`;
+                // Further narrowed from 52px to 46px
+                btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-1.5 rounded-2xl active-tap transition-all shadow-lg min-h-[46px]`;
                 btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
-                // Adjusted to 12pt as requested ("a bit smaller" than previous 13pt)
-                btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-5 h-5"></i></div>
+                // Using 12pt font as baseline
+                btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div>
                                  <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[12pt] tracking-tight uppercase">${action.label}</span></div>
                                  <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[12pt] tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
@@ -278,11 +285,12 @@
         function playSound(type) {
             if (state.isMuted) return;
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            osc.connect(g); g.connect(audioCtx.destination);
+            const osc = audioCtx.current; // Audio session logic handled by browser
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
-            if (type === 'click') { osc.frequency.setValueAtTime(880, now); g.gain.setValueAtTime(0.04, now); osc.start(now); osc.stop(now + 0.1); }
-            else { [523, 1046].forEach((f, i) => osc.frequency.setValueAtTime(f, now + i*0.1)); g.gain.setValueAtTime(0.04, now); osc.start(now); osc.stop(now + 0.3); }
+            if (type === 'click') { o.frequency.setValueAtTime(880, now); g.gain.setValueAtTime(0.04, now); o.start(now); o.stop(now + 0.1); }
+            else { [523, 1046].forEach((f, i) => o.frequency.setValueAtTime(f, now + i*0.1)); g.gain.setValueAtTime(0.04, now); o.start(now); o.stop(now + 0.3); }
         }
 
         function openPanel(action) {
@@ -308,7 +316,6 @@
         function selectTarget(t) {
             state.selectedTarget = t;
             playSound('click');
-            
             const mapping = { 'AKS': 'AKS', 'YSD': 'YSD', 'YKO': 'YKO', 'BODY': 'HEALTH' };
             document.querySelectorAll('.target-opt').forEach(btn => {
                 if (btn.innerText === mapping[t]) {
@@ -337,15 +344,22 @@
             state.view = state.view === 'action' ? 'stats' : 'action';
             document.getElementById('action-view').classList.toggle('hidden');
             document.getElementById('stats-view').classList.toggle('hidden');
-            if (state.view === 'stats') renderStats();
+            const icon = document.getElementById('view-icon');
+            if (state.view === 'stats') {
+                icon.setAttribute('data-lucide', 'layout-grid');
+                renderStats();
+            } else {
+                icon.setAttribute('data-lucide', 'bar-chart-3');
+            }
+            lucide.createIcons();
         }
         function renderStats() {
             const list = document.getElementById('history-list'); list.innerHTML = '';
             [...state.logs].reverse().slice(0, 20).forEach(l => {
                 const div = document.createElement('div');
-                div.className = 'flex justify-between items-center p-3 rounded-2xl mb-1';
+                div.className = 'flex justify-between items-center p-2 rounded-xl mb-1';
                 div.style.backgroundColor = l.bg;
-                div.innerHTML = `<div class="flex flex-col"><span class="text-[14px] font-black text-white">${l.label}</span><span class="text-[9px] text-white/50">${l.target}</span></div><span class="font-black text-white">+${l.points}</span>`;
+                div.innerHTML = `<div class="flex flex-col"><span class="text-[12px] font-black text-white">${l.label}</span><span class="text-[8px] text-white/50">${l.target}</span></div><span class="font-black text-white text-[12px]">+${l.points}</span>`;
                 list.appendChild(div);
             });
         }
