@@ -128,6 +128,7 @@
             </div>
         </header>
 
+        <!-- ADVISOR -->
         <div id="advisor-box" class="bg-slate-950 p-4 rounded-2xl flex items-center gap-3 border border-emerald-900/50 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
@@ -159,7 +160,7 @@
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.0</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.1</div>
         </footer>
     </div>
 
@@ -247,10 +248,10 @@
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
                 btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
-                // Fixed/Decreased font size and weight: font-normal, text-[13px] for label, text-[18px] for points
+                // Applied font-normal and text-[14pt] as requested
                 btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
-                                 <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[13px] tracking-tight uppercase">${action.label}</span></div>
-                                 <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[18px] tracking-tighter tabular-nums">+${action.points}</span></div>`;
+                                 <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[14pt] tracking-tight uppercase">${action.label}</span></div>
+                                 <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[14pt] tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
