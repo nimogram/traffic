@@ -160,7 +160,7 @@
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.1</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.2</div>
         </footer>
     </div>
 
@@ -209,7 +209,7 @@
             { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-emerald-400 to-teal-600', panelRgba: 'rgba(52, 211, 153, 0.4)' },
             { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-400 to-rose-600', panelRgba: 'rgba(244, 114, 182, 0.4)' },
             { id: 'stairs', label: '階段利用', points: 2, icon: 'trending-up', color: 'from-orange-400 to-rose-500', panelRgba: 'rgba(251, 146, 60, 0.4)' },
-            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'from-yellow-400 to-orange-600', panelRgba: 'rgba(250, 204, 21, 0.4)' },
+            { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-yellow-400 to-orange-600', panelRgba: 'rgba(250, 204, 21, 0.4)' },
             { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-emerald-500', panelRgba: 'rgba(163, 230, 53, 0.4)' }
         ];
 
@@ -248,10 +248,10 @@
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
                 btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
-                // Applied font-normal and text-[14pt] as requested
+                // Updated to 13pt and normal weight as requested
                 btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
-                                 <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[14pt] tracking-tight uppercase">${action.label}</span></div>
-                                 <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[14pt] tracking-tighter tabular-nums">+${action.points}</span></div>`;
+                                 <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[13pt] tracking-tight uppercase">${action.label}</span></div>
+                                 <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[13pt] tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
