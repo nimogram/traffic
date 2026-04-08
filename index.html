@@ -159,10 +159,11 @@
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v5.8</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.0</div>
         </footer>
     </div>
 
+    <!-- REGISTRATION PANEL -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
@@ -177,10 +178,10 @@
                 <div>
                     <label class="text-[10px] font-black text-white tracking-[0.2em] block mb-3 uppercase opacity-70">Target Sync</label>
                     <div id="target-selector" class="grid grid-cols-2 gap-2">
-                        <button onclick="selectTarget('AKS')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">AKS</button>
-                        <button onclick="selectTarget('YSD')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">YSD</button>
-                        <button onclick="selectTarget('YKO')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">YKO</button>
-                        <button onclick="selectTarget('BODY')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white">HEALTH</button>
+                        <button onclick="selectTarget('AKS')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">AKS</button>
+                        <button onclick="selectTarget('YSD')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">YSD</button>
+                        <button onclick="selectTarget('YKO')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">YKO</button>
+                        <button onclick="selectTarget('BODY')" class="target-opt bg-white/10 border border-white/20 rounded-xl py-3 text-xs font-bold text-white transition-all active-tap">HEALTH</button>
                     </div>
                 </div>
                 <textarea id="log-memo" rows="4" placeholder="状況、反応、改善ロジック..." class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none placeholder:text-white/30"></textarea>
@@ -201,14 +202,14 @@
 
     <script>
         const ACTIONS = [
-            { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-blue-600 to-blue-400', panelRgba: 'rgba(52, 152, 219, 0.4)' },
-            { id: 'vision', label: '顧客視点', points: 20, icon: 'target', color: 'from-indigo-700 to-indigo-500', panelRgba: 'rgba(41, 128, 185, 0.4)' },
-            { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-purple-700 to-purple-500', panelRgba: 'rgba(142, 68, 173, 0.4)' },
-            { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-teal-600 to-teal-400', panelRgba: 'rgba(22, 160, 133, 0.4)' },
-            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-600 to-pink-400', panelRgba: 'rgba(233, 30, 99, 0.4)' },
-            { id: 'stairs', label: '階段利用', points: 2, icon: 'trending-up', color: 'from-rose-700 to-rose-500', panelRgba: 'rgba(194, 24, 91, 0.4)' },
-            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'from-orange-600 to-orange-400', panelRgba: 'rgba(243, 156, 18, 0.4)' },
-            { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-slate-700 to-slate-500', panelRgba: 'rgba(52, 73, 94, 0.4)' }
+            { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-cyan-400 to-blue-600', panelRgba: 'rgba(34, 211, 238, 0.4)' },
+            { id: 'vision', label: '顧客視点', points: 20, icon: 'target', color: 'from-indigo-400 to-violet-600', panelRgba: 'rgba(167, 139, 250, 0.4)' },
+            { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-fuchsia-500 to-purple-600', panelRgba: 'rgba(217, 70, 239, 0.4)' },
+            { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-emerald-400 to-teal-600', panelRgba: 'rgba(52, 211, 153, 0.4)' },
+            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-400 to-rose-600', panelRgba: 'rgba(244, 114, 182, 0.4)' },
+            { id: 'stairs', label: '階段利用', points: 2, icon: 'trending-up', color: 'from-orange-400 to-rose-500', panelRgba: 'rgba(251, 146, 60, 0.4)' },
+            { id: 'thanks_pub', label: '公開称賛', points: 30, icon: 'trophy', color: 'from-yellow-400 to-orange-600', panelRgba: 'rgba(250, 204, 21, 0.4)' },
+            { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-emerald-500', panelRgba: 'rgba(163, 230, 53, 0.4)' }
         ];
 
         const ADVISORY_DATABASE = [
@@ -246,9 +247,10 @@
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
                 btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
+                // Fixed/Decreased font size and weight: font-normal, text-[13px] for label, text-[18px] for points
                 btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
-                                 <div class="flex-1 text-center px-1"><span class="font-black text-white text-[15px] tracking-tight uppercase">${action.label}</span></div>
-                                 <div class="w-14 shrink-0 text-right"><span class="font-black text-white text-[22px] tracking-tighter tabular-nums">+${action.points}</span></div>`;
+                                 <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[13px] tracking-tight uppercase">${action.label}</span></div>
+                                 <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[18px] tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
@@ -289,13 +291,32 @@
             p.classList.remove('pointer-events-none');
             document.getElementById('panel-content').classList.remove('translate-x-full');
             document.getElementById('panel-backdrop').style.opacity = '1';
+            
+            state.selectedTarget = null;
+            document.querySelectorAll('.target-opt').forEach(btn => {
+                btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]');
+            });
         }
         function closePanel() {
             document.getElementById('panel-content').classList.add('translate-x-full');
             document.getElementById('panel-backdrop').style.opacity = '0';
             setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400);
         }
-        function selectTarget(t) { state.selectedTarget = t; playSound('click'); }
+
+        function selectTarget(t) {
+            state.selectedTarget = t;
+            playSound('click');
+            
+            const mapping = { 'AKS': 'AKS', 'YSD': 'YSD', 'YKO': 'YKO', 'BODY': 'HEALTH' };
+            document.querySelectorAll('.target-opt').forEach(btn => {
+                if (btn.innerText === mapping[t]) {
+                    btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]');
+                } else {
+                    btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]');
+                }
+            });
+        }
+
         function saveLog() {
             const a = state.currentAction;
             state.logs.push({ id: Date.now(), actionId: a.id, label: a.label, points: a.points, target: state.selectedTarget || 'BODY', timestamp: new Date().toISOString(), bg: a.panelRgba });
