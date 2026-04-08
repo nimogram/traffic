@@ -160,7 +160,7 @@
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.2</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v6.3</div>
         </footer>
     </div>
 
@@ -246,10 +246,10 @@
             container.innerHTML = '';
             ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
-                btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-3 rounded-2xl active-tap transition-all shadow-lg min-h-[72px]`;
+                // Decreased min-h from 72px to 60px for a more compact look
+                btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center p-2 rounded-2xl active-tap transition-all shadow-lg min-h-[60px]`;
                 btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
-                // Updated to 13pt and normal weight as requested
-                btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-6 h-6"></i></div>
+                btn.innerHTML = `<div class="w-8 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-5 h-5"></i></div>
                                  <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[13pt] tracking-tight uppercase">${action.label}</span></div>
                                  <div class="w-14 shrink-0 text-right"><span class="font-normal text-white text-[13pt] tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
