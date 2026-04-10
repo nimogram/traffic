@@ -146,7 +146,7 @@
         <!-- MAIN VIEW -->
         <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5 content-start"></div>
 
-        <!-- STATS VIEW -->
+        <!-- STATS VIEW (Log Screen) -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
@@ -166,7 +166,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v7.5</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v7.7</div>
         </footer>
     </div>
 
@@ -261,6 +261,7 @@
         async function saveToGas(points, label, target, memo) {
             if (!GAS_WEBAPP_URL) return;
             try {
+                // Using POST for GAS Web App
                 await fetch(GAS_WEBAPP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -284,19 +285,16 @@
             ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center px-3 rounded-2xl active-tap transition-all shadow-lg h-[76px]`;
-                
-                // Logic updated for Physical Actions: Direct Save without panel
                 btn.onclick = () => { 
                     playSound('click'); 
                     state.currentAction = action;
                     if (action.id === 'stairs' || action.id === 'bike') {
-                        state.selectedTarget = 'BODY'; // Map to HEALTH
-                        saveLog(""); // Pass empty memo for direct save
+                        state.selectedTarget = 'BODY'; 
+                        saveLog(""); 
                     } else {
                         openPanel(action);
                     }
                 };
-                
                 btn.innerHTML = `<div class="w-6 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div>
                                  <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[10pt] leading-none tracking-tight uppercase">${action.label}</span></div>
                                  <div class="w-10 shrink-0 text-right"><span class="font-normal text-white text-[10pt] leading-none tracking-tighter tabular-nums">+${action.points}</span></div>`;
@@ -378,11 +376,11 @@
                 points: a.points, 
                 target: target, 
                 timestamp: new Date().toISOString(), 
-                bg: (a.id === 'stairs' || a.id === 'bike') ? 'rgba(132, 204, 22, 0.4)' : a.panelRgba 
+                colorClass: a.color 
             });
             state.totalPoints += a.points;
             
-            // GASPersistence
+            // Auto-send to GAS
             saveToGas(a.points, a.label, target, memo);
 
             if (Math.floor(state.totalPoints / 100) * 100 > state.lastMilestone) showMilestone(Math.floor(state.totalPoints / 100) * 100);
@@ -416,10 +414,22 @@
         function renderStats() {
             const list = document.getElementById('history-list'); list.innerHTML = '';
             [...state.logs].reverse().slice(0, 20).forEach(l => {
+                const dateObj = new Date(l.timestamp);
+                const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+                const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+                
                 const div = document.createElement('div');
-                div.className = 'flex justify-between items-center p-2 rounded-xl mb-1';
-                div.style.backgroundColor = l.bg;
-                div.innerHTML = `<div class="flex flex-col"><span class="text-[12px] font-black text-white">${l.label}</span><span class="text-[8px] text-white/50">${l.target}</span></div><span class="font-black text-white text-[12px]">+${l.points}</span>`;
+                div.className = `flex justify-between items-center p-2 rounded-xl mb-1 bg-gradient-to-r ${l.colorClass || 'from-slate-800 to-slate-900'} border-b border-black/20 shadow-sm`;
+                div.innerHTML = `
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[12px] font-black text-white">${l.label}</span>
+                            <span class="text-[8px] font-bold text-white/50 tabular-nums">${dateStr} ${timeStr}</span>
+                        </div>
+                        <span class="text-[8px] text-white/70 uppercase font-black tracking-widest leading-none mt-0.5">${l.target}</span>
+                    </div>
+                    <span class="font-black text-white text-[12px] tracking-tighter tabular-nums">+${l.points}</span>
+                `;
                 list.appendChild(div);
             });
         }
