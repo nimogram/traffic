@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -165,7 +166,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v7.3</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v7.5</div>
         </footer>
     </div>
 
@@ -208,7 +209,7 @@
 
     <script>
         // --- GAS INTEGRATION SETTINGS ---
-        const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx-kT00SxnbUqzobW-CZoRFrPZfyAmz2wiplvjfGZlbmsbf8RMXLKIOL-rk_QMGSTpDAg/exec"; // ニモさん、ここにGASのデプロイURLを貼り付けてください
+        const GAS_WEBAPP_URL = ""; 
 
         const ACTIONS = [
             { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-cyan-400 to-blue-600', panelRgba: 'rgba(34, 211, 238, 0.4)' },
@@ -226,10 +227,18 @@
             "沈黙の3秒は、相手が本音を話すための『招待状』。自転車通勤後の脳なら余裕で待てます。",
             "階段利用（+2 EXP）は、ニモさんの筋肉という名の資産運用です。複利で効きますよ。",
             "雑談は信頼の帯域幅。札幌の風を感じながら走る自転車のように、軽やかに会話を。",
-            "🎯 相手が大事にしていることを知り、そこを起点に交渉する。",
+            "🎯 相手が大事にしていることを知り、そこを起点に交渉するのがニモさん流です。",
             "🎯 論破は短期的な勝利、共感は長期的な支配。階段を一歩ずつ登るように着実に。",
             "⏱ 妻への家族イベント共有、今日のうちに。自転車のギアチェンジのようにスムーズに。",
-            "ニモさん、今日は『たぬき』の愛嬌を30%混ぜて。アイスバーンでの自転車走行並みの慎重さと柔軟性を。"
+            "ニモさん、今日は『たぬき』の愛嬌を30%混ぜて。アイスバーンでの自転車走行並みの慎重さと柔軟性を。",
+            "枕詞：『〇〇さんの知見を拝借したいのですが』は、相手のガードを下げる最強の解除キーですよ。",
+            "正論は『正しさ』の証明ではなく、時に『攻撃』として処理されます。ニモさんの知性で包み込んでくださいね。",
+            "相手が感情的な時は、論理回路を一時スリープさせ、共感エミュレータを起動するのが戦略的です。",
+            "『少しお力添えいただけますか？』という一言で、相手に役割と自尊心を与え、味方に引き込みましょう。",
+            "『ありがとう』は、次の依頼を優先的に処理させるための先行投資。ニモさんならその価値がわかりますよね。",
+            "SEの視座が低いと感じるなら、顧客の痛みがパケットとして届いていないのかも。情報のブリッジになりましょう。",
+            "結論を急ぐ前に『どう思いますか？』と問い、相手の演算リソースをこちらに向けさせるのが参謀のやり方です。",
+            "非効率な人間関係こそ、組織という巨大なシステムの摩擦を減らす潤滑油。無駄を愛でる余裕を持ってください。"
         ];
 
         let state = { totalPoints: 0, dailyThanks: 0, lastMilestone: 0, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [] };
@@ -275,7 +284,19 @@
             ACTIONS.forEach(action => {
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center px-3 rounded-2xl active-tap transition-all shadow-lg h-[76px]`;
-                btn.onclick = () => { playSound('click'); state.currentAction = action; openPanel(action); };
+                
+                // Logic updated for Physical Actions: Direct Save without panel
+                btn.onclick = () => { 
+                    playSound('click'); 
+                    state.currentAction = action;
+                    if (action.id === 'stairs' || action.id === 'bike') {
+                        state.selectedTarget = 'BODY'; // Map to HEALTH
+                        saveLog(""); // Pass empty memo for direct save
+                    } else {
+                        openPanel(action);
+                    }
+                };
+                
                 btn.innerHTML = `<div class="w-6 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div>
                                  <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[10pt] leading-none tracking-tight uppercase">${action.label}</span></div>
                                  <div class="w-10 shrink-0 text-right"><span class="font-normal text-white text-[10pt] leading-none tracking-tighter tabular-nums">+${action.points}</span></div>`;
@@ -345,20 +366,29 @@
             });
         }
 
-        function saveLog() {
+        function saveLog(manualMemo = null) {
             const a = state.currentAction;
             const target = state.selectedTarget || 'BODY';
-            const memo = document.getElementById('log-memo').value;
+            const memo = manualMemo !== null ? manualMemo : document.getElementById('log-memo').value;
             
-            state.logs.push({ id: Date.now(), actionId: a.id, label: a.label, points: a.points, target: target, timestamp: new Date().toISOString(), bg: a.panelRgba });
+            state.logs.push({ 
+                id: Date.now(), 
+                actionId: a.id, 
+                label: a.label, 
+                points: a.points, 
+                target: target, 
+                timestamp: new Date().toISOString(), 
+                bg: (a.id === 'stairs' || a.id === 'bike') ? 'rgba(132, 204, 22, 0.4)' : a.panelRgba 
+            });
             state.totalPoints += a.points;
             
-            // GASへの自動保存
+            // GASPersistence
             saveToGas(a.points, a.label, target, memo);
 
             if (Math.floor(state.totalPoints / 100) * 100 > state.lastMilestone) showMilestone(Math.floor(state.totalPoints / 100) * 100);
             saveData(); updateUI(); closePanel();
         }
+        
         function showMilestone(v) { state.lastMilestone = v; document.getElementById('milestone-value').innerText = v; document.getElementById('milestone-modal').classList.remove('hidden'); playSound('success'); }
         function closeMilestone() { document.getElementById('milestone-modal').classList.add('hidden'); }
         function updateUI() {
@@ -397,3 +427,5 @@
     </script>
 </body>
 </html>
+
+```
