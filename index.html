@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -241,7 +242,7 @@
         </div>
 
         <!-- MASTER VIEW (Top-Slide Overlay) -->
-        <div id="master-view" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-2xl p-6 flex flex-col overflow-y-auto slide-vertical -translate-y-full">
+        <div id="master-view" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-2xl p-6 flex flex-col overflow-y-auto slide-vertical -translate-y-full">
             <div class="max-w-md mx-auto w-full flex flex-col h-full">
                 <div class="flex justify-between items-center mb-6 shrink-0">
                     <div class="flex items-center gap-2">
@@ -268,14 +269,14 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest tracking-tighter">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.0</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.2</div>
         </footer>
     </div>
 
     <!-- REGISTRATION PANEL (Side-Slide) -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
-        <div id="panel-content" class="w-[85%] max-w-sm h-full bg-slate-900/70 backdrop-blur-2xl border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+        <div id="panel-content" class="w-[85%] max-w-sm h-full backdrop-blur-2xl border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] opacity-90">
             <div class="flex justify-between items-center border-b border-white/10 pb-4">
                 <div>
                     <h2 id="panel-title" class="text-xl font-black text-white">Execution Log</h2>
@@ -402,10 +403,19 @@
         function typeWriter(el, txt) { if (typeWriterTimeout) clearTimeout(typeWriterTimeout); el.innerText = ''; el.classList.add('cursor-active'); let i = 0; function step() { if (i < txt.length) { el.innerText += txt.charAt(i); i++; typeWriterTimeout = setTimeout(step, 60); } else el.classList.remove('cursor-active'); } step(); }
 
         function openPanel(action) {
-            const p = document.getElementById('detail-panel'); document.getElementById('panel-title').innerText = `${action.label} Log`; document.getElementById('panel-points').innerText = `+${action.points} EXP`; 
-            // 登録画面の背景色を半透明にする（Tailwindの透過クラスとbackdrop-blurを優先）
-            p.classList.remove('pointer-events-none'); document.getElementById('panel-content').classList.remove('translate-x-full'); document.getElementById('panel-backdrop').style.opacity = '1';
-            state.selectedTarget = null; document.getElementById('log-memo').value = '';
+            const p = document.getElementById('detail-panel');
+            const content = document.getElementById('panel-content');
+            document.getElementById('panel-title').innerText = `${action.label} Log`;
+            document.getElementById('panel-points').innerText = `+${action.points} EXP`;
+            
+            // パネルのクラスをリセットして、ボタンと同じグラデーションを適用（半透明度はopacityクラスで維持）
+            content.className = `w-[85%] max-w-sm h-full backdrop-blur-2xl border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] opacity-95 bg-gradient-to-br ${action.color}`;
+            
+            p.classList.remove('pointer-events-none');
+            document.getElementById('panel-content').classList.remove('translate-x-full');
+            document.getElementById('panel-backdrop').style.opacity = '1';
+            state.selectedTarget = null;
+            document.getElementById('log-memo').value = '';
             document.querySelectorAll('.target-opt').forEach(btn => btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'));
         }
         function closePanel() { document.getElementById('panel-content').classList.add('translate-x-full'); document.getElementById('panel-backdrop').style.opacity = '0'; setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400); }
@@ -453,7 +463,7 @@
             
             if (isOpening) {
                 state.view = 'master';
-                masterEl.classList.remove('hidden'); // hiddenを一時的に外す必要がある場合のため
+                masterEl.classList.remove('hidden');
                 masterEl.classList.remove('-translate-y-full');
                 renderMasterView();
                 playSound('click');
