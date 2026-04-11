@@ -98,7 +98,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 12px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             touch-action: pan-y;
             animation: fadeInUp 0.3s ease forwards;
         }
@@ -133,19 +133,19 @@
             transition: opacity 0.3s ease;
         }
         
-        /* Fixed Toggle Button position */
+        /* Floating Action Button for Logs */
         .fab-button {
             position: fixed;
             bottom: 70px;
             right: 20px;
             z-index: 50;
-            width: 54px;
-            height: 54px;
-            border-radius: 18px;
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(132, 204, 22, 0.3);
+            box-shadow: 0 10px 25px rgba(132, 204, 22, 0.4);
         }
     </style>
 </head>
@@ -168,7 +168,6 @@
 
                 <div class="flex flex-col items-end gap-2">
                     <div class="flex gap-2">
-                        <!-- Removed toggle from header per request -->
                         <button onclick="toggleMute()" id="mute-btn" class="p-2 rounded-xl bg-slate-800/80 text-slate-400 active-tap border border-white/5">
                             <i id="mute-icon" data-lucide="volume-2" class="w-4 h-4"></i>
                         </button>
@@ -223,10 +222,10 @@
                     <span id="daily-average" class="text-xl font-black text-blue-400">0.0</span>
                 </div>
             </div>
-            <div id="history-list" class="space-y-1 flex-1 overflow-y-auto pr-1"></div>
+            <div id="history-list" class="space-y-1 flex-1 overflow-y-auto pr-1 pb-20"></div>
         </div>
 
-        <!-- TOGGLE BUTTON (Moved to Bottom Right) -->
+        <!-- FLOATING TOGGLE BUTTON -->
         <button id="toggle-view-btn" onclick="toggleView()" class="fab-button bg-lime-500 text-slate-950 active-tap">
             <i id="view-icon" data-lucide="bar-chart-3" class="w-6 h-6"></i>
         </button>
@@ -236,7 +235,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.1</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.2</div>
         </footer>
     </div>
 
@@ -294,17 +293,16 @@
 
         const ADVISORY_DATABASE = [
             "相手の『なぜ』を先に理解することが、最速の合意形成への近道ですよ。",
-            "沈黙の3秒は、相手が本音を話すための『招待状』。自転車通勤後の脳なら余裕で待てます。",
+            "沈黙の3秒は、相手が本音を話すための『招待状』。",
             "階段利用（+2 EXP）は、ニモさんの筋肉という名の資産運用です。複利で効きますよ。",
             "雑談は信頼の帯域幅。札幌の風を感じながら走る自転車のように、軽やかに会話を。",
             "🎯 相手が大事にしていることを知り、そこを起点に交渉するのがニモさん流です。",
             "⏱ 妻への家族イベント共有、今日のうちに。自転車のギアチェンジのようにスムーズに。",
-            "枕詞：『〇〇さんの知見を拝借したいのですが』は、相手のガードを下げる最強の解除キーですよ。",
-            "正論は『正しさ』の証明ではなく、時に『攻撃』として処理されます。ニモさんの知性で包み込んでくださいね。",
-            "『少しお力添えいただけますか？』という一言で、相手に役割と自尊心を与え、味方に引き込みましょう。",
-            "『ありがとう』は、次の依頼を優先的に処理させるための先行投資。ニモさんならその価値がわかりますよね。",
-            "結論を急ぐ前に『どう思いますか？』と問い、相手の演算リソースをこちらに向けさせるのが参謀のやり方です。",
-            "非効率な人間関係こそ、組織という巨大なシステムの摩擦を減らす潤滑油。無駄を愛でる余裕を持ってください。",
+            "枕詞：『〇〇さんの知見を拝借したいのですが』は最強の解除キーですよ。",
+            "正論は時に『攻撃』として処理されます。ニモさんの知性で包み込んでくださいね。",
+            "『少しお力添えいただけますか？』で、相手に自尊心を与え、味方に引き込みましょう。",
+            "『ありがとう』は次の依頼のための先行投資。ニモさんならその価値がわかりますよね。",
+            "結論を急ぐ前に『どう思いますか？』と問い、相手の演算リソースをこちらに向けさせましょう。",
             "GYM（+20 EXP）での筋肥大は、札幌の冬を乗り切るための最高密度の断熱材ですよ。",
             "スクワットの1レップは、将来のニモさんへの配当金です。限界の先を楽しみましょう。",
             "筋肉は裏切りませんが、トレーニングのサボりは翌日のパフォーマンスに直結します。"
@@ -488,27 +486,26 @@
         function renderStats() {
             const list = document.getElementById('history-list'); list.innerHTML = '';
             const now = new Date();
-            const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            const todayStart = new Date(now.setHours(0,0,0,0)).getTime();
+            const todayStart = new Date(now).setHours(0,0,0,0);
+            const threeDaysAgo = now.getTime() - (3 * 24 * 60 * 60 * 1000);
+            const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
             
-            // Stats Calculation
-            let weeklyTotal = 0;
-            let todayPoints = 0;
-            let todayCount = 0;
+            let weeklyTotal = 0; let todayPoints = 0; let todayCount = 0;
 
+            // Stats Logic
             state.logs.forEach(l => {
                 const logTime = new Date(l.timestamp).getTime();
-                if (logTime >= sevenDaysAgo.getTime()) weeklyTotal += l.points;
-                if (logTime >= todayStart) {
-                    todayPoints += l.points;
-                    todayCount++;
-                }
+                if (logTime >= sevenDaysAgo) weeklyTotal += l.points;
+                if (logTime >= todayStart) { todayPoints += l.points; todayCount++; }
             });
 
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString();
             document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
 
-            [...state.logs].reverse().slice(0, 50).forEach(l => {
+            // Render filtered logs (last 3 days) with larger font
+            const filteredLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= threeDaysAgo);
+
+            [...filteredLogs].reverse().forEach(l => {
                 const dateObj = new Date(l.timestamp);
                 const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
                 const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
@@ -518,15 +515,15 @@
                 container.className = 'log-item-container';
                 container.innerHTML = `
                     <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
-                    <div class="log-item-content flex justify-between items-center p-2 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}">
+                    <div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}">
                         <div class="flex flex-col">
                             <div class="flex items-center gap-2">
-                                <span class="text-[12px] font-black text-white">${l.label}</span>
-                                <span class="text-[11px] font-bold text-white tabular-nums">${dateStr} ${timeStr}</span>
+                                <span class="text-[14px] font-black text-white">${l.label}</span>
+                                <span class="text-[13px] font-bold text-white tabular-nums">${dateStr} ${timeStr}</span>
                             </div>
-                            <span class="text-[8px] text-white/90 uppercase font-black tracking-widest leading-none mt-0.5">${l.target}</span>
+                            <span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span>
                         </div>
-                        <span class="font-black text-white text-[12px] tracking-tighter tabular-nums">+${l.points}</span>
+                        <span class="font-black text-white text-[15px] tracking-tighter tabular-nums">+${l.points}</span>
                     </div>`;
 
                 const content = container.querySelector('.log-item-content');
