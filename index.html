@@ -147,6 +147,22 @@
             justify-content: center;
             box-shadow: 0 10px 25px rgba(132, 204, 22, 0.4);
         }
+
+        /* Master View Inputs */
+        .master-input {
+            background-color: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .master-input:focus {
+            border-color: #84cc16;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -155,14 +171,14 @@
         
         <!-- HEADER -->
         <header class="bg-slate-900/80 border border-slate-800 rounded-3xl p-3 relative overflow-hidden theme-glow shrink-0 animate-entry" style="animation-delay: 0.1s">
-            <div class="absolute top-0 left-0 w-1 h-full bg-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.5)]"></div>
+            <div class="absolute top-0 left-0 w-1 h-full bg-lime-500 shadow-[0_0_15px_rgba(132, 204, 22, 0.5)]"></div>
             
             <div class="flex items-start justify-between mb-2 px-1">
                 <div class="flex flex-col">
                     <div class="text-[8px] font-black text-lime-500 tracking-[0.2em] mb-0.5 uppercase opacity-80">EQ ASSET LOGIC</div>
                     <div class="flex items-baseline gap-1">
                         <span id="total-points" class="text-4xl font-black text-white leading-none tracking-tighter tabular-nums">0</span>
-                        <span class="text-[12px] font-black text-slate-500 uppercase tracking-tighter">EXP</span>
+                        <span class="text-[12px] font-black text-slate-500 uppercase tracking-tighter">EXP Asset</span>
                     </div>
                 </div>
 
@@ -191,13 +207,13 @@
                     </div>
                 </div>
                 <div class="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden p-[1px]">
-                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 via-lime-400 to-lime-300 rounded-full shadow-[0_0_15px_rgba(132,204,22,0.4)]" style="width: 0%"></div>
+                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 via-lime-400 to-lime-300 rounded-full shadow-[0_0_15px_rgba(132, 204, 22, 0.4)]" style="width: 0%"></div>
                 </div>
             </div>
         </header>
 
         <!-- ADVISOR -->
-        <div id="advisor-box" class="bg-slate-950 p-3 rounded-2xl flex items-center gap-3 border border-lime-900/50 shrink-0 shadow-[0_0_15px_rgba(132,204,22,0.1)] animate-entry" style="animation-delay: 0.2s">
+        <div id="advisor-box" class="bg-slate-950 p-3 rounded-2xl flex items-center gap-3 border border-lime-900/50 shrink-0 shadow-[0_0_15px_rgba(132, 204, 22, 0.1)] animate-entry" style="animation-delay: 0.2s">
             <div class="w-10 h-10 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-center text-lime-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
@@ -225,6 +241,24 @@
             <div id="history-list" class="space-y-1 flex-1 overflow-y-auto pr-1 pb-20"></div>
         </div>
 
+        <!-- MASTER VIEW (Full-Screen Overlay) -->
+        <div id="master-view" class="hidden fixed inset-0 z-[80] bg-slate-950/80 backdrop-blur-xl p-6 flex flex-col overflow-y-auto">
+            <div class="max-w-md mx-auto w-full flex flex-col h-full">
+                <div class="flex justify-between items-center mb-6 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-lime-500"></i>
+                        <h3 class="text-[12px] font-black text-white uppercase tracking-widest">Master Maintenance</h3>
+                    </div>
+                    <button onclick="toggleMasterView()" class="p-2 bg-white/10 rounded-full text-white active-tap">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="master-list" class="space-y-4 pb-12 flex-1">
+                    <!-- Actions injected here -->
+                </div>
+            </div>
+        </div>
+
         <!-- FLOATING TOGGLE BUTTON -->
         <button id="toggle-view-btn" onclick="toggleView()" class="fab-button bg-lime-500 text-slate-950 active-tap">
             <i id="view-icon" data-lucide="bar-chart-3" class="w-6 h-6"></i>
@@ -235,7 +269,10 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.2</div>
+            <button onclick="toggleMasterView()" class="p-1 rounded-md hover:bg-white/10 text-slate-500 transition-colors active-tap">
+                <i data-lucide="settings" class="w-3 h-3"></i>
+            </button>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.6</div>
         </footer>
     </div>
 
@@ -280,13 +317,13 @@
     <script>
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx-kT00SxnbUqzobW-CZoRFrPZfyAmz2wiplvjfGZlbmsbf8RMXLKIOL-rk_QMGSTpDAg/exec"; 
 
-        const ACTIONS = [
+        const DEFAULT_ACTIONS = [
             { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-cyan-400 to-blue-600', panelRgba: 'rgba(34, 211, 238, 0.4)' },
             { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-indigo-400 to-violet-600', panelRgba: 'rgba(167, 139, 250, 0.4)' },
-            { id: 'buffer', label: '3秒待機', points: 50, icon: 'cpu', color: 'from-fuchsia-500 to-purple-600', panelRgba: 'rgba(217, 70, 239, 0.4)' },
-            { id: 'network', label: '雑談', points: 40, icon: 'users', color: 'from-emerald-400 to-teal-600', panelRgba: 'rgba(52, 211, 153, 0.4)' },
+            { id: 'buffer', label: '3秒待機', points: 10, icon: 'cpu', color: 'from-fuchsia-500 to-purple-600', panelRgba: 'rgba(217, 70, 239, 0.4)' },
+            { id: 'network', label: '雑談', points: 15, icon: 'users', color: 'from-emerald-400 to-teal-600', panelRgba: 'rgba(52, 211, 153, 0.4)' },
             { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-400 to-rose-600', panelRgba: 'rgba(244, 114, 182, 0.4)' },
-            { id: 'stairs', label: '階段利用', points: 2, icon: 'trending-up', color: 'from-orange-400 to-rose-500', panelRgba: 'rgba(251, 146, 60, 0.4)' },
+            { id: 'stairs', label: '階段利用', points: 5, icon: 'trending-up', color: 'from-orange-400 to-rose-500', panelRgba: 'rgba(251, 146, 60, 0.4)' },
             { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-yellow-400 to-orange-600', panelRgba: 'rgba(250, 204, 21, 0.4)' },
             { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-emerald-500', panelRgba: 'rgba(163, 230, 53, 0.4)' }
         ];
@@ -294,7 +331,7 @@
         const ADVISORY_DATABASE = [
             "相手の『なぜ』を先に理解することが、最速の合意形成への近道ですよ。",
             "沈黙の3秒は、相手が本音を話すための『招待状』。",
-            "階段利用（+2 EXP）は、ニモさんの筋肉という名の資産運用です。複利で効きますよ。",
+            "階段利用（+5 EXP）は、地道ですが確実な筋肉への投資。ニモさんの忍耐力の証明です。",
             "雑談は信頼の帯域幅。札幌の風を感じながら走る自転車のように、軽やかに会話を。",
             "🎯 相手が大事にしていることを知り、そこを起点に交渉するのがニモさん流です。",
             "⏱ 妻への家族イベント共有、今日のうちに。自転車のギアチェンジのようにスムーズに。",
@@ -308,12 +345,23 @@
             "筋肉は裏切りませんが、トレーニングのサボりは翌日のパフォーマンスに直結します。"
         ];
 
-        let state = { totalPoints: 0, lastMilestone: 0, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [] };
+        let state = { 
+            totalPoints: 0, 
+            lastMilestone: 0, 
+            isMuted: false, 
+            currentAction: null, 
+            selectedTarget: null, 
+            view: 'action', 
+            logs: [],
+            actions: [] 
+        };
+
         let audioCtx = null;
         let advisorInterval = null;
         let typeWriterTimeout = null;
 
         function init() { loadData(); lucide.createIcons(); renderButtons(); updateUI(); startAdvisorRotation(); }
+        
         function loadData() {
             const saved = localStorage.getItem('eq_logic_v3');
             if (saved) {
@@ -321,9 +369,19 @@
                 state.totalPoints = p.totalPoints || 0;
                 state.logs = p.logs || [];
                 state.lastMilestone = Math.floor(state.totalPoints / 100) * 100;
+                state.actions = p.actions || DEFAULT_ACTIONS;
+            } else {
+                state.actions = DEFAULT_ACTIONS;
             }
         }
-        function saveData() { localStorage.setItem('eq_logic_v3', JSON.stringify({ totalPoints: state.totalPoints, logs: state.logs })); }
+
+        function saveData() { 
+            localStorage.setItem('eq_logic_v3', JSON.stringify({ 
+                totalPoints: state.totalPoints, 
+                logs: state.logs,
+                actions: state.actions 
+            })); 
+        }
 
         async function saveToGas(points, label, target, memo) {
             if (!GAS_WEBAPP_URL) return;
@@ -374,7 +432,7 @@
         function renderButtons() {
             const container = document.getElementById('action-view');
             container.innerHTML = '';
-            ACTIONS.forEach((action, index) => {
+            state.actions.forEach((action, index) => {
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center px-3 rounded-2xl active-tap transition-all shadow-lg h-[76px] animate-entry`;
                 btn.style.animationDelay = `${0.3 + index * 0.05}s`;
@@ -430,8 +488,12 @@
             state.selectedTarget = t; playSound('click');
             const mapping = { 'AKS': 'AKS', 'YSD': 'YSD', 'YKO': 'YKO', 'BODY': 'HEALTH' };
             document.querySelectorAll('.target-opt').forEach(btn => {
-                if (btn.innerText === mapping[t]) { btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); } 
-                else { btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); }
+                const btnLabel = btn.innerText.trim();
+                if (btnLabel === mapping[t]) { 
+                    btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); 
+                } else { 
+                    btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); 
+                }
             });
         }
 
@@ -467,9 +529,10 @@
         }
 
         function toggleView() {
+            if (state.view === 'master') { toggleMasterView(); return; }
             state.view = state.view === 'action' ? 'stats' : 'action';
-            document.getElementById('action-view').classList.toggle('hidden');
-            document.getElementById('stats-view').classList.toggle('hidden');
+            document.getElementById('action-view').classList.toggle('hidden', state.view !== 'action');
+            document.getElementById('stats-view').classList.toggle('hidden', state.view !== 'stats');
             const icon = document.getElementById('view-icon');
             const btn = document.getElementById('toggle-view-btn');
             if (state.view === 'stats') {
@@ -483,34 +546,35 @@
             lucide.createIcons(); playSound('click');
         }
 
+        function toggleMasterView() {
+            const isClosing = state.view === 'master';
+            state.view = isClosing ? 'action' : 'master';
+            const masterEl = document.getElementById('master-view');
+            masterEl.classList.toggle('hidden', isClosing);
+            if (!isClosing) { renderMasterView(); playSound('click'); } else { playSound('click'); }
+            lucide.createIcons();
+        }
+
         function renderStats() {
             const list = document.getElementById('history-list'); list.innerHTML = '';
             const now = new Date();
             const todayStart = new Date(now).setHours(0,0,0,0);
             const threeDaysAgo = now.getTime() - (3 * 24 * 60 * 60 * 1000);
             const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
-            
             let weeklyTotal = 0; let todayPoints = 0; let todayCount = 0;
-
-            // Stats Logic
             state.logs.forEach(l => {
                 const logTime = new Date(l.timestamp).getTime();
                 if (logTime >= sevenDaysAgo) weeklyTotal += l.points;
                 if (logTime >= todayStart) { todayPoints += l.points; todayCount++; }
             });
-
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString();
             document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
-
-            // Render filtered logs (last 3 days) with larger font
             const filteredLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= threeDaysAgo);
-
             [...filteredLogs].reverse().forEach(l => {
                 const dateObj = new Date(l.timestamp);
                 const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
                 const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
-                let colorClass = l.colorClass || ACTIONS.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
-
+                let colorClass = l.colorClass || state.actions.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
                 const container = document.createElement('div');
                 container.className = 'log-item-container';
                 container.innerHTML = `
@@ -525,7 +589,6 @@
                         </div>
                         <span class="font-black text-white text-[15px] tracking-tighter tabular-nums">+${l.points}</span>
                     </div>`;
-
                 const content = container.querySelector('.log-item-content');
                 let startX = 0; let currentTranslate = 0;
                 content.addEventListener('touchstart', e => { startX = e.touches[0].clientX; content.style.transition = 'none'; });
@@ -535,12 +598,44 @@
                 });
                 content.addEventListener('touchend', () => {
                     content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-                    if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } 
-                    else { content.style.transform = 'translateX(0)'; }
+                    if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; }
                 });
                 list.appendChild(container);
             });
         }
+
+        function renderMasterView() {
+            const list = document.getElementById('master-list');
+            list.innerHTML = '';
+            state.actions.forEach((action, index) => {
+                const item = document.createElement('div');
+                item.className = `p-5 rounded-2xl bg-gradient-to-r ${action.color} border border-white/20 shadow-xl`;
+                item.innerHTML = `
+                    <div class="flex items-center gap-3 mb-4">
+                        <i data-lucide="${action.icon}" class="w-5 h-5 text-white"></i>
+                        <span class="text-[11px] font-black text-white uppercase tracking-[0.2em] opacity-80">${action.id}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[9px] font-bold text-white/70 uppercase tracking-widest">Label</label>
+                            <input type="text" value="${action.label}" onchange="updateAction(${index}, 'label', this.value)" class="master-input">
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[9px] font-bold text-white/70 uppercase tracking-widest">Points</label>
+                            <input type="number" value="${action.points}" onchange="updateAction(${index}, 'points', this.value)" class="master-input">
+                        </div>
+                    </div>`;
+                list.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function updateAction(index, key, value) {
+            if (key === 'points') value = parseInt(value) || 0;
+            state.actions[index][key] = value;
+            saveData(); renderButtons(); playSound('click');
+        }
+
         window.onload = init;
     </script>
 </body>
