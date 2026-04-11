@@ -50,7 +50,6 @@
             pointer-events: none;
         }
 
-        /* Micro-animations */
         .active-tap {
             transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -129,11 +128,6 @@
             border-radius: 12px;
         }
 
-        #advisor-text {
-            transition: opacity 0.3s ease;
-        }
-        
-        /* Floating Action Button for Logs */
         .fab-button {
             position: fixed;
             bottom: 70px;
@@ -148,7 +142,6 @@
             box-shadow: 0 10px 25px rgba(132, 204, 22, 0.4);
         }
 
-        /* Master View Inputs */
         .master-input {
             background-color: rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.2);
@@ -158,10 +151,6 @@
             font-size: 14px;
             width: 100%;
             outline: none;
-            transition: border-color 0.2s;
-        }
-        .master-input:focus {
-            border-color: #84cc16;
         }
     </style>
 </head>
@@ -169,9 +158,8 @@
 
     <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-3 gap-2 relative">
         
-        <!-- HEADER -->
         <header class="bg-slate-900/80 border border-slate-800 rounded-3xl p-3 relative overflow-hidden theme-glow shrink-0 animate-entry" style="animation-delay: 0.1s">
-            <div class="absolute top-0 left-0 w-1 h-full bg-lime-500 shadow-[0_0_15px_rgba(132, 204, 22, 0.5)]"></div>
+            <div class="absolute top-0 left-0 w-1 h-full bg-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.5)]"></div>
             
             <div class="flex items-start justify-between mb-2 px-1">
                 <div class="flex flex-col">
@@ -207,13 +195,12 @@
                     </div>
                 </div>
                 <div class="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden p-[1px]">
-                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 via-lime-400 to-lime-300 rounded-full shadow-[0_0_15px_rgba(132, 204, 22, 0.4)]" style="width: 0%"></div>
+                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 via-lime-400 to-lime-300 rounded-full shadow-[0_0_15px_rgba(132,204,22,0.4)]" style="width: 0%"></div>
                 </div>
             </div>
         </header>
 
-        <!-- ADVISOR -->
-        <div id="advisor-box" class="bg-slate-950 p-3 rounded-2xl flex items-center gap-3 border border-lime-900/50 shrink-0 shadow-[0_0_15px_rgba(132, 204, 22, 0.1)] animate-entry" style="animation-delay: 0.2s">
+        <div id="advisor-box" class="bg-slate-950 p-3 rounded-2xl flex items-center gap-3 border border-lime-900/50 shrink-0 shadow-[0_0_15px_rgba(132,204,22,0.1)] animate-entry" style="animation-delay: 0.2s">
             <div class="w-10 h-10 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-center text-lime-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
@@ -223,10 +210,8 @@
             </div>
         </div>
 
-        <!-- MAIN VIEW -->
         <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5 content-start"></div>
 
-        <!-- STATS VIEW -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
@@ -241,8 +226,7 @@
             <div id="history-list" class="space-y-1 flex-1 overflow-y-auto pr-1 pb-20"></div>
         </div>
 
-        <!-- MASTER VIEW (Full-Screen Overlay) -->
-        <div id="master-view" class="hidden fixed inset-0 z-[80] bg-slate-950/80 backdrop-blur-xl p-6 flex flex-col overflow-y-auto">
+        <div id="master-view" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-xl p-6 flex flex-col overflow-y-auto">
             <div class="max-w-md mx-auto w-full flex flex-col h-full">
                 <div class="flex justify-between items-center mb-6 shrink-0">
                     <div class="flex items-center gap-2">
@@ -254,12 +238,10 @@
                     </button>
                 </div>
                 <div id="master-list" class="space-y-4 pb-12 flex-1">
-                    <!-- Actions injected here -->
-                </div>
+                    </div>
             </div>
         </div>
 
-        <!-- FLOATING TOGGLE BUTTON -->
         <button id="toggle-view-btn" onclick="toggleView()" class="fab-button bg-lime-500 text-slate-950 active-tap">
             <i id="view-icon" data-lucide="bar-chart-3" class="w-6 h-6"></i>
         </button>
@@ -268,15 +250,14 @@
             <div class="flex items-center gap-2">
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
+                <button onclick="toggleMasterView()" class="p-1 rounded-md hover:bg-white/10 text-slate-500 transition-colors active-tap">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
             </div>
-            <button onclick="toggleMasterView()" class="p-1 rounded-md hover:bg-white/10 text-slate-500 transition-colors active-tap">
-                <i data-lucide="settings" class="w-3 h-3"></i>
-            </button>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.6</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.7</div>
         </footer>
     </div>
 
-    <!-- REGISTRATION PANEL -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
@@ -303,7 +284,6 @@
         </div>
     </div>
 
-    <!-- MILESTONE MODAL -->
     <div id="milestone-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden pointer-events-none">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
         <div class="bg-slate-900 border border-lime-500/30 rounded-[2.5rem] p-8 max-w-sm w-full text-center relative theme-glow milestone-bounce pointer-events-auto">
@@ -345,17 +325,7 @@
             "筋肉は裏切りませんが、トレーニングのサボりは翌日のパフォーマンスに直結します。"
         ];
 
-        let state = { 
-            totalPoints: 0, 
-            lastMilestone: 0, 
-            isMuted: false, 
-            currentAction: null, 
-            selectedTarget: null, 
-            view: 'action', 
-            logs: [],
-            actions: [] 
-        };
-
+        let state = { totalPoints: 0, lastMilestone: 0, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [], actions: [] };
         let audioCtx = null;
         let advisorInterval = null;
         let typeWriterTimeout = null;
@@ -370,29 +340,17 @@
                 state.logs = p.logs || [];
                 state.lastMilestone = Math.floor(state.totalPoints / 100) * 100;
                 state.actions = p.actions || DEFAULT_ACTIONS;
-            } else {
-                state.actions = DEFAULT_ACTIONS;
-            }
+            } else { state.actions = DEFAULT_ACTIONS; }
         }
 
         function saveData() { 
-            localStorage.setItem('eq_logic_v3', JSON.stringify({ 
-                totalPoints: state.totalPoints, 
-                logs: state.logs,
-                actions: state.actions 
-            })); 
+            localStorage.setItem('eq_logic_v3', JSON.stringify({ totalPoints: state.totalPoints, logs: state.logs, actions: state.actions })); 
         }
 
         async function saveToGas(points, label, target, memo) {
             if (!GAS_WEBAPP_URL) return;
-            try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ points, label, target, memo, timestamp: new Date().toISOString() })
-                });
-            } catch (e) { console.error("GAS Persistence Error:", e); }
+            try { await fetch(GAS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ points, label, target, memo, timestamp: new Date().toISOString() }) }); } 
+            catch (e) { console.error("GAS Persistence Error:", e); }
         }
 
         function playSound(type) {
@@ -402,239 +360,120 @@
             o.connect(g); g.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
             switch(type) {
-                case 'click':
-                    o.type = 'sine'; o.frequency.setValueAtTime(1200, now); o.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-                    g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-                    o.start(now); o.stop(now + 0.1); break;
-                case 'success':
-                    [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-                        const osc = audioCtx.createOscillator(); const gn = audioCtx.createGain();
-                        osc.connect(gn); gn.connect(audioCtx.destination);
-                        osc.frequency.setValueAtTime(f, now + i * 0.1); gn.gain.setValueAtTime(0.05, now + i * 0.1);
-                        gn.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
-                        osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.5);
-                    }); break;
-                case 'delete':
-                    o.type = 'square'; o.frequency.setValueAtTime(440, now); o.frequency.exponentialRampToValueAtTime(110, now + 0.2);
-                    g.gain.setValueAtTime(0.03, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-                    o.start(now); o.stop(now + 0.2); break;
+                case 'click': o.type = 'sine'; o.frequency.setValueAtTime(1200, now); o.frequency.exponentialRampToValueAtTime(800, now + 0.1); g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.1); o.start(now); o.stop(now + 0.1); break;
+                case 'success': [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => { const osc = audioCtx.createOscillator(); const gn = audioCtx.createGain(); osc.connect(gn); gn.connect(audioCtx.destination); osc.frequency.setValueAtTime(f, now + i * 0.1); gn.gain.setValueAtTime(0.05, now + i * 0.1); gn.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4); osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.5); }); break;
+                case 'delete': o.type = 'square'; o.frequency.setValueAtTime(440, now); o.frequency.exponentialRampToValueAtTime(110, now + 0.2); g.gain.setValueAtTime(0.03, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.2); o.start(now); o.stop(now + 0.2); break;
             }
         }
 
-        function toggleMute() {
-            state.isMuted = !state.isMuted;
-            const icon = document.getElementById('mute-icon');
-            icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2');
-            lucide.createIcons();
-            if (!state.isMuted) playSound('click');
-        }
+        function toggleMute() { state.isMuted = !state.isMuted; const icon = document.getElementById('mute-icon'); icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2'); lucide.createIcons(); if (!state.isMuted) playSound('click'); }
 
         function renderButtons() {
-            const container = document.getElementById('action-view');
-            container.innerHTML = '';
+            const container = document.getElementById('action-view'); container.innerHTML = '';
             state.actions.forEach((action, index) => {
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center px-3 rounded-2xl active-tap transition-all shadow-lg h-[76px] animate-entry`;
                 btn.style.animationDelay = `${0.3 + index * 0.05}s`;
-                btn.onclick = () => { 
-                    playSound('click'); state.currentAction = action;
-                    if (action.id === 'stairs' || action.id === 'bike') { state.selectedTarget = 'BODY'; saveLog(""); } 
-                    else { openPanel(action); }
-                };
-                btn.innerHTML = `<div class="w-6 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div>
-                                 <div class="flex-1 text-center px-1"><span class="font-normal text-white text-[10pt] leading-none tracking-tight uppercase">${action.label}</span></div>
-                                 <div class="w-10 shrink-0 text-right"><span class="font-normal text-white text-[10pt] leading-none tracking-tighter tabular-nums">+${action.points}</span></div>`;
+                btn.onclick = () => { playSound('click'); state.currentAction = action; if (action.id === 'stairs' || action.id === 'bike') { state.selectedTarget = 'BODY'; saveLog(""); } else { openPanel(action); } };
+                btn.innerHTML = `<div class="w-6 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div><div class="flex-1 text-center px-1"><span class="font-normal text-white text-[10pt] leading-none tracking-tight uppercase">${action.label}</span></div><div class="w-10 shrink-0 text-right"><span class="font-normal text-white text-[10pt] leading-none tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
         }
 
         function startAdvisorRotation() { if (advisorInterval) clearInterval(advisorInterval); advisorInterval = setInterval(refreshAdvisor, 8000); refreshAdvisor(); }
-        function refreshAdvisor() {
-            const el = document.getElementById('advisor-text');
-            const txt = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
-            el.style.opacity = '0';
-            setTimeout(() => { typeWriter(el, txt); el.style.opacity = '1'; }, 300);
-        }
-        function typeWriter(el, txt) {
-            if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
-            el.innerText = ''; el.classList.add('cursor-active');
-            let i = 0;
-            function step() {
-                if (i < txt.length) { el.innerText += txt.charAt(i); i++; typeWriterTimeout = setTimeout(step, 60); }
-                else el.classList.remove('cursor-active');
-            }
-            step();
-        }
+        function refreshAdvisor() { const el = document.getElementById('advisor-text'); const txt = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)]; el.style.opacity = '0'; setTimeout(() => { typeWriter(el, txt); el.style.opacity = '1'; }, 300); }
+        function typeWriter(el, txt) { if (typeWriterTimeout) clearTimeout(typeWriterTimeout); el.innerText = ''; el.classList.add('cursor-active'); let i = 0; function step() { if (i < txt.length) { el.innerText += txt.charAt(i); i++; typeWriterTimeout = setTimeout(step, 60); } else el.classList.remove('cursor-active'); } step(); }
 
         function openPanel(action) {
-            const p = document.getElementById('detail-panel');
-            document.getElementById('panel-title').innerText = `${action.label} Log`;
-            document.getElementById('panel-points').innerText = `+${action.points} EXP`;
-            document.getElementById('panel-content').style.backgroundColor = action.panelRgba;
-            p.classList.remove('pointer-events-none');
-            document.getElementById('panel-content').classList.remove('translate-x-full');
-            document.getElementById('panel-backdrop').style.opacity = '1';
-            state.selectedTarget = null;
-            document.getElementById('log-memo').value = '';
+            const p = document.getElementById('detail-panel'); document.getElementById('panel-title').innerText = `${action.label} Log`; document.getElementById('panel-points').innerText = `+${action.points} EXP`; document.getElementById('panel-content').style.backgroundColor = action.panelRgba;
+            p.classList.remove('pointer-events-none'); document.getElementById('panel-content').classList.remove('translate-x-full'); document.getElementById('panel-backdrop').style.opacity = '1';
+            state.selectedTarget = null; document.getElementById('log-memo').value = '';
+            document.querySelectorAll('.target-opt').forEach(btn => btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'));
         }
-        function closePanel() {
-            document.getElementById('panel-content').classList.add('translate-x-full');
-            document.getElementById('panel-backdrop').style.opacity = '0';
-            setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400);
-        }
+        function closePanel() { document.getElementById('panel-content').classList.add('translate-x-full'); document.getElementById('panel-backdrop').style.opacity = '0'; setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400); }
 
         function selectTarget(t) {
             state.selectedTarget = t; playSound('click');
             const mapping = { 'AKS': 'AKS', 'YSD': 'YSD', 'YKO': 'YKO', 'BODY': 'HEALTH' };
             document.querySelectorAll('.target-opt').forEach(btn => {
                 const btnLabel = btn.innerText.trim();
-                if (btnLabel === mapping[t]) { 
-                    btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); 
-                } else { 
-                    btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); 
-                }
+                if (btnLabel === mapping[t]) { btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); } 
+                else { btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); }
             });
         }
 
         function saveLog(manualMemo = null) {
-            const a = state.currentAction; const target = state.selectedTarget || 'BODY';
-            const memo = manualMemo !== null ? manualMemo : document.getElementById('log-memo').value;
+            const a = state.currentAction; const target = state.selectedTarget || 'BODY'; const memo = manualMemo !== null ? manualMemo : document.getElementById('log-memo').value;
             state.logs.push({ id: Date.now(), actionId: a.id, label: a.label, points: a.points, target: target, timestamp: new Date().toISOString(), colorClass: a.color });
-            state.totalPoints += a.points;
-            saveToGas(a.points, a.label, target, memo);
+            state.totalPoints += a.points; saveToGas(a.points, a.label, target, memo);
             if (Math.floor(state.totalPoints / 100) * 100 > state.lastMilestone) { setTimeout(() => showMilestone(Math.floor(state.totalPoints / 100) * 100), 400); }
             saveData(); updateUI(); closePanel();
         }
 
-        function deleteLog(logId) {
-            const index = state.logs.findIndex(l => l.id === logId);
-            if (index > -1) {
-                playSound('delete');
-                state.totalPoints -= state.logs[index].points;
-                state.logs.splice(index, 1);
-                saveData(); updateUI(); renderStats();
-            }
-        }
-        
+        function deleteLog(logId) { const index = state.logs.findIndex(l => l.id === logId); if (index > -1) { playSound('delete'); state.totalPoints -= state.logs[index].points; state.logs.splice(index, 1); saveData(); updateUI(); renderStats(); } }
         function showMilestone(v) { state.lastMilestone = v; document.getElementById('milestone-value').innerText = v; document.getElementById('milestone-modal').classList.remove('hidden'); playSound('success'); }
         function closeMilestone() { document.getElementById('milestone-modal').classList.add('hidden'); }
-        
-        function updateUI() {
-            document.getElementById('total-points').innerText = state.totalPoints.toLocaleString();
-            const pct = (state.totalPoints % 500) / 5;
-            document.getElementById('level-progress-bar').style.width = `${pct}%`;
-            const diff = 501 - (state.totalPoints % 500); 
-            document.getElementById('next-level-info').innerText = `+${diff}`;
-        }
+        function updateUI() { document.getElementById('total-points').innerText = state.totalPoints.toLocaleString(); const pct = (state.totalPoints % 500) / 5; document.getElementById('level-progress-bar').style.width = `${pct}%`; const diff = 501 - (state.totalPoints % 500); document.getElementById('next-level-info').innerText = `+${diff}`; }
 
         function toggleView() {
             if (state.view === 'master') { toggleMasterView(); return; }
             state.view = state.view === 'action' ? 'stats' : 'action';
             document.getElementById('action-view').classList.toggle('hidden', state.view !== 'action');
             document.getElementById('stats-view').classList.toggle('hidden', state.view !== 'stats');
-            const icon = document.getElementById('view-icon');
-            const btn = document.getElementById('toggle-view-btn');
-            if (state.view === 'stats') {
-                icon.setAttribute('data-lucide', 'layout-grid');
-                btn.classList.replace('bg-lime-500', 'bg-blue-500');
-                renderStats();
-            } else {
-                icon.setAttribute('data-lucide', 'bar-chart-3');
-                btn.classList.replace('bg-blue-500', 'bg-lime-500');
-            }
+            const icon = document.getElementById('view-icon'); const btn = document.getElementById('toggle-view-btn');
+            if (state.view === 'stats') { icon.setAttribute('data-lucide', 'layout-grid'); btn.classList.replace('bg-lime-500', 'bg-blue-500'); renderStats(); } 
+            else { icon.setAttribute('data-lucide', 'bar-chart-3'); btn.classList.replace('bg-blue-500', 'bg-lime-500'); }
             lucide.createIcons(); playSound('click');
         }
 
         function toggleMasterView() {
-            const isClosing = state.view === 'master';
-            state.view = isClosing ? 'action' : 'master';
             const masterEl = document.getElementById('master-view');
-            masterEl.classList.toggle('hidden', isClosing);
-            if (!isClosing) { renderMasterView(); playSound('click'); } else { playSound('click'); }
+            const isOpening = masterEl.classList.contains('hidden');
+            
+            if (isOpening) {
+                state.view = 'master';
+                masterEl.classList.remove('hidden');
+                renderMasterView();
+                playSound('click');
+            } else {
+                state.view = 'action';
+                masterEl.classList.add('hidden');
+                playSound('click');
+            }
             lucide.createIcons();
         }
 
         function renderStats() {
-            const list = document.getElementById('history-list'); list.innerHTML = '';
-            const now = new Date();
-            const todayStart = new Date(now).setHours(0,0,0,0);
-            const threeDaysAgo = now.getTime() - (3 * 24 * 60 * 60 * 1000);
-            const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
+            const list = document.getElementById('history-list'); list.innerHTML = ''; const now = new Date(); const todayStart = new Date(now).setHours(0,0,0,0); const threeDaysAgo = now.getTime() - (3 * 24 * 60 * 60 * 1000); const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
             let weeklyTotal = 0; let todayPoints = 0; let todayCount = 0;
-            state.logs.forEach(l => {
-                const logTime = new Date(l.timestamp).getTime();
-                if (logTime >= sevenDaysAgo) weeklyTotal += l.points;
-                if (logTime >= todayStart) { todayPoints += l.points; todayCount++; }
-            });
-            document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString();
-            document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
+            state.logs.forEach(l => { const logTime = new Date(l.timestamp).getTime(); if (logTime >= sevenDaysAgo) weeklyTotal += l.points; if (logTime >= todayStart) { todayPoints += l.points; todayCount++; } });
+            document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString(); document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
             const filteredLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= threeDaysAgo);
             [...filteredLogs].reverse().forEach(l => {
-                const dateObj = new Date(l.timestamp);
-                const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
-                const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+                const dateObj = new Date(l.timestamp); const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`; const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
                 let colorClass = l.colorClass || state.actions.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
-                const container = document.createElement('div');
-                container.className = 'log-item-container';
-                container.innerHTML = `
-                    <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
-                    <div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}">
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[14px] font-black text-white">${l.label}</span>
-                                <span class="text-[13px] font-bold text-white tabular-nums">${dateStr} ${timeStr}</span>
-                            </div>
-                            <span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span>
-                        </div>
-                        <span class="font-black text-white text-[15px] tracking-tighter tabular-nums">+${l.points}</span>
-                    </div>`;
-                const content = container.querySelector('.log-item-content');
-                let startX = 0; let currentTranslate = 0;
+                const container = document.createElement('div'); container.className = 'log-item-container';
+                container.innerHTML = `<div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div><div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}"><div class="flex flex-col"><div class="flex items-center gap-2"><span class="text-[14px] font-black text-white">${l.label}</span><span class="text-[13px] font-bold text-white tabular-nums">${dateStr} ${timeStr}</span></div><span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span></div><span class="font-black text-white text-[15px] tracking-tighter tabular-nums">+${l.points}</span></div>`;
+                const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
                 content.addEventListener('touchstart', e => { startX = e.touches[0].clientX; content.style.transition = 'none'; });
-                content.addEventListener('touchmove', e => {
-                    const diff = e.touches[0].clientX - startX;
-                    if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; }
-                });
-                content.addEventListener('touchend', () => {
-                    content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-                    if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; }
-                });
+                content.addEventListener('touchmove', e => { const diff = e.touches[0].clientX - startX; if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; } });
+                content.addEventListener('touchend', () => { content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; } });
                 list.appendChild(container);
             });
         }
 
         function renderMasterView() {
-            const list = document.getElementById('master-list');
-            list.innerHTML = '';
+            const list = document.getElementById('master-list'); list.innerHTML = '';
             state.actions.forEach((action, index) => {
-                const item = document.createElement('div');
-                item.className = `p-5 rounded-2xl bg-gradient-to-r ${action.color} border border-white/20 shadow-xl`;
-                item.innerHTML = `
-                    <div class="flex items-center gap-3 mb-4">
-                        <i data-lucide="${action.icon}" class="w-5 h-5 text-white"></i>
-                        <span class="text-[11px] font-black text-white uppercase tracking-[0.2em] opacity-80">${action.id}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-[9px] font-bold text-white/70 uppercase tracking-widest">Label</label>
-                            <input type="text" value="${action.label}" onchange="updateAction(${index}, 'label', this.value)" class="master-input">
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-[9px] font-bold text-white/70 uppercase tracking-widest">Points</label>
-                            <input type="number" value="${action.points}" onchange="updateAction(${index}, 'points', this.value)" class="master-input">
-                        </div>
-                    </div>`;
+                const item = document.createElement('div'); item.className = `p-5 rounded-2xl bg-gradient-to-r ${action.color} border border-white/20 shadow-xl`;
+                item.innerHTML = `<div class="flex items-center gap-3 mb-4"><i data-lucide="${action.icon}" class="w-5 h-5 text-white"></i><span class="text-[11px] font-black text-white uppercase tracking-[0.2em] opacity-80">${action.id}</span></div><div class="grid grid-cols-2 gap-4"><div class="flex flex-col gap-1.5"><label class="text-[9px] font-bold text-white/70 uppercase tracking-widest">Label</label><input type="text" value="${action.label}" onchange="updateAction(${index}, 'label', this.value)" class="master-input"></div><div class="flex flex-col gap-1.5"><label class="text-[9px] font-bold text-white/70 uppercase tracking-widest">Points</label><input type="number" value="${action.points}" onchange="updateAction(${index}, 'points', this.value)" class="master-input"></div></div>`;
                 list.appendChild(item);
             });
             lucide.createIcons();
         }
 
-        function updateAction(index, key, value) {
-            if (key === 'points') value = parseInt(value) || 0;
-            state.actions[index][key] = value;
-            saveData(); renderButtons(); playSound('click');
-        }
+        function updateAction(index, key, value) { if (key === 'points') value = parseInt(value) || 0; state.actions[index][key] = value; saveData(); renderButtons(); playSound('click'); }
 
         window.onload = init;
     </script>
