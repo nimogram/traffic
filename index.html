@@ -158,6 +158,7 @@
 
     <div id="app" class="max-w-lg mx-auto w-full h-screen flex flex-col p-3 gap-2 relative">
         
+        <!-- HEADER -->
         <header class="bg-slate-900/80 border border-slate-800 rounded-3xl p-3 relative overflow-hidden theme-glow shrink-0 animate-entry" style="animation-delay: 0.1s">
             <div class="absolute top-0 left-0 w-1 h-full bg-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.5)]"></div>
             
@@ -200,6 +201,7 @@
             </div>
         </header>
 
+        <!-- ADVISOR -->
         <div id="advisor-box" class="bg-slate-950 p-3 rounded-2xl flex items-center gap-3 border border-lime-900/50 shrink-0 shadow-[0_0_15px_rgba(132,204,22,0.1)] animate-entry" style="animation-delay: 0.2s">
             <div class="w-10 h-10 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-center text-lime-400 shrink-0">
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
@@ -210,8 +212,10 @@
             </div>
         </div>
 
+        <!-- MAIN VIEW -->
         <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-0.5 content-start"></div>
 
+        <!-- STATS VIEW -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-3 overflow-y-auto pr-0.5">
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center">
@@ -226,6 +230,7 @@
             <div id="history-list" class="space-y-1 flex-1 overflow-y-auto pr-1 pb-20"></div>
         </div>
 
+        <!-- MASTER VIEW (Full-Screen Overlay) -->
         <div id="master-view" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-xl p-6 flex flex-col overflow-y-auto">
             <div class="max-w-md mx-auto w-full flex flex-col h-full">
                 <div class="flex justify-between items-center mb-6 shrink-0">
@@ -238,10 +243,12 @@
                     </button>
                 </div>
                 <div id="master-list" class="space-y-4 pb-12 flex-1">
-                    </div>
+                    <!-- Actions injected here by renderMasterView -->
+                </div>
             </div>
         </div>
 
+        <!-- FLOATING TOGGLE BUTTON -->
         <button id="toggle-view-btn" onclick="toggleView()" class="fab-button bg-lime-500 text-slate-950 active-tap">
             <i id="view-icon" data-lucide="bar-chart-3" class="w-6 h-6"></i>
         </button>
@@ -250,14 +257,15 @@
             <div class="flex items-center gap-2">
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
-                <button onclick="toggleMasterView()" class="p-1 rounded-md hover:bg-white/10 text-slate-500 transition-colors active-tap">
+                <button onclick="toggleMasterView()" id="settings-trigger" class="p-1 rounded-md hover:bg-white/10 text-slate-500 transition-colors active-tap">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                 </button>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.7</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v8.8</div>
         </footer>
     </div>
 
+    <!-- REGISTRATION PANEL -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
         <div id="panel-content" class="w-[85%] max-w-sm h-full bg-glass border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
@@ -284,6 +292,7 @@
         </div>
     </div>
 
+    <!-- MILESTONE MODAL -->
     <div id="milestone-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden pointer-events-none">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
         <div class="bg-slate-900 border border-lime-500/30 rounded-[2.5rem] p-8 max-w-sm w-full text-center relative theme-glow milestone-bounce pointer-events-auto">
@@ -398,8 +407,11 @@
             const mapping = { 'AKS': 'AKS', 'YSD': 'YSD', 'YKO': 'YKO', 'BODY': 'HEALTH' };
             document.querySelectorAll('.target-opt').forEach(btn => {
                 const btnLabel = btn.innerText.trim();
-                if (btnLabel === mapping[t]) { btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); } 
-                else { btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); }
+                if (btnLabel === mapping[t]) { 
+                    btn.classList.add('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); 
+                } else { 
+                    btn.classList.remove('bg-white/40', 'border-white/80', 'shadow-[0_0_15px_rgba(255,255,255,0.4)]'); 
+                }
             });
         }
 
