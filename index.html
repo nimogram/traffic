@@ -166,7 +166,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v7.7</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v7.8</div>
         </footer>
     </div>
 
@@ -261,7 +261,6 @@
         async function saveToGas(points, label, target, memo) {
             if (!GAS_WEBAPP_URL) return;
             try {
-                // Using POST for GAS Web App
                 await fetch(GAS_WEBAPP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -380,7 +379,6 @@
             });
             state.totalPoints += a.points;
             
-            // Auto-send to GAS
             saveToGas(a.points, a.label, target, memo);
 
             if (Math.floor(state.totalPoints / 100) * 100 > state.lastMilestone) showMilestone(Math.floor(state.totalPoints / 100) * 100);
@@ -418,15 +416,22 @@
                 const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
                 const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
                 
+                // Check color from current ACTIONS if colorClass is missing for older logs
+                let colorClass = l.colorClass;
+                if (!colorClass) {
+                    const found = ACTIONS.find(a => a.id === l.actionId);
+                    colorClass = found ? found.color : 'from-slate-800 to-slate-900';
+                }
+
                 const div = document.createElement('div');
-                div.className = `flex justify-between items-center p-2 rounded-xl mb-1 bg-gradient-to-r ${l.colorClass || 'from-slate-800 to-slate-900'} border-b border-black/20 shadow-sm`;
+                div.className = `flex justify-between items-center p-2 rounded-xl mb-1 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm`;
                 div.innerHTML = `
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
                             <span class="text-[12px] font-black text-white">${l.label}</span>
-                            <span class="text-[8px] font-bold text-white/50 tabular-nums">${dateStr} ${timeStr}</span>
+                            <span class="text-[11px] font-bold text-white tabular-nums">${dateStr} ${timeStr}</span>
                         </div>
-                        <span class="text-[8px] text-white/70 uppercase font-black tracking-widest leading-none mt-0.5">${l.target}</span>
+                        <span class="text-[8px] text-white/90 uppercase font-black tracking-widest leading-none mt-0.5">${l.target}</span>
                     </div>
                     <span class="font-black text-white text-[12px] tracking-tighter tabular-nums">+${l.points}</span>
                 `;
@@ -437,5 +442,3 @@
     </script>
 </body>
 </html>
-
-```
