@@ -160,6 +160,13 @@
             width: 100%;
             outline: none;
         }
+
+        /* Time input customization */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.5;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -269,14 +276,14 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest tracking-tighter">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.2</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.4</div>
         </footer>
     </div>
 
     <!-- REGISTRATION PANEL (Side-Slide) -->
     <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
         <div id="panel-backdrop" class="absolute inset-0 bg-black/50 opacity-0 transition-opacity pointer-events-none backdrop-blur-sm"></div>
-        <div id="panel-content" class="w-[85%] max-w-sm h-full backdrop-blur-2xl border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] opacity-90">
+        <div id="panel-content" class="w-[85%] max-w-sm h-full backdrop-blur-2xl border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] opacity-95">
             <div class="flex justify-between items-center border-b border-white/10 pb-4">
                 <div>
                     <h2 id="panel-title" class="text-xl font-black text-white">Execution Log</h2>
@@ -408,7 +415,6 @@
             document.getElementById('panel-title').innerText = `${action.label} Log`;
             document.getElementById('panel-points').innerText = `+${action.points} EXP`;
             
-            // パネルのクラスをリセットして、ボタンと同じグラデーションを適用（半透明度はopacityクラスで維持）
             content.className = `w-[85%] max-w-sm h-full backdrop-blur-2xl border-l border-white/10 p-6 slide-in translate-x-full pointer-events-auto flex flex-col gap-6 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] opacity-95 bg-gradient-to-br ${action.color}`;
             
             p.classList.remove('pointer-events-none');
@@ -442,6 +448,18 @@
         }
 
         function deleteLog(logId) { const index = state.logs.findIndex(l => l.id === logId); if (index > -1) { playSound('delete'); state.totalPoints -= state.logs[index].points; state.logs.splice(index, 1); saveData(); updateUI(); renderStats(); } }
+
+        /** New Function: Update log timestamp locally */
+        function updateLogTimestamp(logId, newTimestampStr) {
+            const index = state.logs.findIndex(l => l.id === logId);
+            if (index > -1 && newTimestampStr) {
+                state.logs[index].timestamp = new Date(newTimestampStr).toISOString();
+                saveData();
+                playSound('click');
+                renderStats(); // Re-render to update statistics and visual order
+            }
+        }
+
         function showMilestone(v) { state.lastMilestone = v; document.getElementById('milestone-value').innerText = v; document.getElementById('milestone-modal').classList.remove('hidden'); playSound('success'); }
         function closeMilestone() { document.getElementById('milestone-modal').classList.add('hidden'); }
         function updateUI() { document.getElementById('total-points').innerText = state.totalPoints.toLocaleString(); const pct = (state.totalPoints % 500) / 5; document.getElementById('level-progress-bar').style.width = `${pct}%`; const diff = 501 - (state.totalPoints % 500); document.getElementById('next-level-info').innerText = `+${diff}`; }
@@ -460,7 +478,6 @@
         function toggleMasterView() {
             const masterEl = document.getElementById('master-view');
             const isOpening = masterEl.classList.contains('-translate-y-full');
-            
             if (isOpening) {
                 state.view = 'master';
                 masterEl.classList.remove('hidden');
@@ -480,16 +497,48 @@
             let weeklyTotal = 0; let todayPoints = 0; let todayCount = 0;
             state.logs.forEach(l => { const logTime = new Date(l.timestamp).getTime(); if (logTime >= sevenDaysAgo) weeklyTotal += l.points; if (logTime >= todayStart) { todayPoints += l.points; todayCount++; } });
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString(); document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
+            
+            // Filter logs for the last 3 days
             const filteredLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= threeDaysAgo);
-            [...filteredLogs].reverse().forEach(l => {
-                const dateObj = new Date(l.timestamp); const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`; const timeStr = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+            
+            // Render logs (sorted by timestamp descending)
+            [...filteredLogs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => {
+                const dateObj = new Date(l.timestamp);
+                // Adjust for datetime-local value (YYYY-MM-DDTHH:MM)
+                const localISOTime = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
                 let colorClass = l.colorClass || state.actions.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
                 const container = document.createElement('div'); container.className = 'log-item-container';
-                container.innerHTML = `<div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div><div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}"><div class="flex flex-col"><div class="flex items-center gap-2"><span class="text-[14px] font-black text-white">${l.label}</span><span class="text-[13px] font-bold text-white tabular-nums">${dateStr} ${timeStr}</span></div><span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span></div><span class="font-black text-white text-[15px] tracking-tighter tabular-nums">+${l.points}</span></div>`;
+                container.innerHTML = `
+                    <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
+                    <div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}">
+                        <div class="flex flex-col flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[14px] font-black text-white shrink-0">${l.label}</span>
+                                <input type="datetime-local" value="${localISOTime}" 
+                                       onchange="updateLogTimestamp(${l.id}, this.value)" 
+                                       class="bg-transparent text-[11px] font-bold text-white/80 border-none p-0 outline-none tabular-nums focus:text-white transition-colors">
+                            </div>
+                            <span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span>
+                        </div>
+                        <span class="font-black text-white text-[15px] tracking-tighter tabular-nums ml-2">+${l.points}</span>
+                    </div>`;
+                
                 const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
-                content.addEventListener('touchstart', e => { startX = e.touches[0].clientX; content.style.transition = 'none'; });
-                content.addEventListener('touchmove', e => { const diff = e.touches[0].clientX - startX; if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; } });
-                content.addEventListener('touchend', () => { content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; } });
+                content.addEventListener('touchstart', e => { 
+                    if (e.target.tagName === 'INPUT') return; // Don't swipe if clicking the date input
+                    startX = e.touches[0].clientX; content.style.transition = 'none'; 
+                });
+                content.addEventListener('touchmove', e => { 
+                    if (e.target.tagName === 'INPUT') return;
+                    const diff = e.touches[0].clientX - startX; 
+                    if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; } 
+                });
+                content.addEventListener('touchend', e => { 
+                    if (e.target.tagName === 'INPUT') return;
+                    content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; 
+                    if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; } 
+                });
                 list.appendChild(container);
             });
         }
@@ -510,3 +559,4 @@
     </script>
 </body>
 </html>
+
