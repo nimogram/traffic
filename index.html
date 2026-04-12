@@ -161,7 +161,6 @@
             outline: none;
         }
 
-        /* Time input customization */
         input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             opacity: 0.5;
@@ -276,7 +275,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest tracking-tighter">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.4</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.5</div>
         </footer>
     </div>
 
@@ -346,7 +345,12 @@
             "結論を急ぐ前に『どう思いますか？』と問い、相手の演算リソースをこちらに向けさせましょう。",
             "GYM（+20 EXP）での筋肥大は、札幌の冬を乗り切るための最高密度の断熱材ですよ。",
             "スクワットの1レップは、将来のニモさんへの配当金です。限界の先を楽しみましょう。",
-            "筋肉は裏切りませんが、トレーニングのサボりは翌日のパフォーマンスに直結します。"
+            "筋肉は裏切りませんが、トレーニングのサボりは翌日のパフォーマンスに直結します。",
+            "✨ 『話しかけやすい人』の極意：PC作業中、誰かが近づいたら一度手を止め、3秒だけ相手に視線を向ける。これだけで『割り込みOK』のフラグが立ちますよ。",
+            "✨ 挨拶に『北海道の寒さ』を一言添える。その5秒の余白が、相手の警戒心をデフラグします。",
+            "✨ 忙しい時ほど『真顔』になりがち。ふとした瞬間に表情筋を0.5ミリ緩めるだけで、ニモさんのオーラが『威圧』から『安心』に変換されますよ。",
+            "✨ 相手の話を聞く時は、スマートフォンの画面を伏せる。その物理的な動作が『あなたを最優先に処理している』という最高のアナウンスになります。",
+            "✨ 『何かお困りですか？』ではなく、『進捗どうですか？』とフランクに。助けを求めるハードルを下げてあげるのも、帝王の星を持つニモさんの優しさですよ。"
         ];
 
         let state = { totalPoints: 0, lastMilestone: 0, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [], actions: [] };
@@ -449,14 +453,13 @@
 
         function deleteLog(logId) { const index = state.logs.findIndex(l => l.id === logId); if (index > -1) { playSound('delete'); state.totalPoints -= state.logs[index].points; state.logs.splice(index, 1); saveData(); updateUI(); renderStats(); } }
 
-        /** New Function: Update log timestamp locally */
         function updateLogTimestamp(logId, newTimestampStr) {
             const index = state.logs.findIndex(l => l.id === logId);
             if (index > -1 && newTimestampStr) {
                 state.logs[index].timestamp = new Date(newTimestampStr).toISOString();
                 saveData();
                 playSound('click');
-                renderStats(); // Re-render to update statistics and visual order
+                renderStats();
             }
         }
 
@@ -498,13 +501,10 @@
             state.logs.forEach(l => { const logTime = new Date(l.timestamp).getTime(); if (logTime >= sevenDaysAgo) weeklyTotal += l.points; if (logTime >= todayStart) { todayPoints += l.points; todayCount++; } });
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString(); document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
             
-            // Filter logs for the last 3 days
             const filteredLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= threeDaysAgo);
             
-            // Render logs (sorted by timestamp descending)
             [...filteredLogs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => {
                 const dateObj = new Date(l.timestamp);
-                // Adjust for datetime-local value (YYYY-MM-DDTHH:MM)
                 const localISOTime = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
                 let colorClass = l.colorClass || state.actions.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
@@ -526,7 +526,7 @@
                 
                 const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
                 content.addEventListener('touchstart', e => { 
-                    if (e.target.tagName === 'INPUT') return; // Don't swipe if clicking the date input
+                    if (e.target.tagName === 'INPUT') return;
                     startX = e.touches[0].clientX; content.style.transition = 'none'; 
                 });
                 content.addEventListener('touchmove', e => { 
@@ -559,4 +559,3 @@
     </script>
 </body>
 </html>
-
