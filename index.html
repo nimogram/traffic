@@ -274,7 +274,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest tracking-tighter">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.6</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.8</div>
         </footer>
     </div>
 
@@ -498,14 +498,15 @@
             const list = document.getElementById('history-list'); list.innerHTML = ''; 
             const now = new Date(); 
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            // 3日間を「今日・昨日・一昨日の開始（一昨日の0時）」からとする調整
-            const threeDaysAgo = todayStart - (2 * 24 * 60 * 60 * 1000); 
-            const sevenDaysAgo = todayStart - (6 * 24 * 60 * 60 * 1000);
+            
+            const threeDaysAgo = todayStart - (2 * 24 * 60 * 60 * 1000) - 1000; 
+            const sevenDaysAgo = todayStart - (6 * 24 * 60 * 60 * 1000) - 1000;
             
             let weeklyTotal = 0; let todayPoints = 0; let todayCount = 0;
+            
             state.logs.forEach(l => { 
                 const logTime = new Date(l.timestamp).getTime(); 
-                if (isNaN(logTime)) return; // 無効な日付はスキップ
+                if (isNaN(logTime)) return;
                 if (logTime >= sevenDaysAgo) weeklyTotal += l.points; 
                 if (logTime >= todayStart) { todayPoints += l.points; todayCount++; } 
             });
@@ -513,52 +514,61 @@
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString(); 
             document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
             
-            // 安全策を講じたフィルタリング
             const filteredLogs = state.logs.filter(l => {
-                const t = new Date(l.timestamp).getTime();
-                return !isNaN(t) && t >= threeDaysAgo;
+                const logTime = new Date(l.timestamp).getTime();
+                return !isNaN(logTime) && (logTime >= threeDaysAgo || logTime >= todayStart);
             });
             
-            [...filteredLogs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => {
-                const dateObj = new Date(l.timestamp);
-                if (isNaN(dateObj.getTime())) return;
+            if (state.logs.length === 0) {
+                // 完全な空状態
+                list.innerHTML = '<div class="text-center p-12 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">No activity recorded yet.<br>Go to Action View and tap a button.</div>';
+            } else if (filteredLogs.length === 0) {
+                // 3日以内は空だが、古いデータがある場合のセーフティ
+                state.logs.slice(-5).reverse().forEach(l => renderLogItem(l, list));
+            } else {
+                [...filteredLogs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => renderLogItem(l, list));
+            }
+        }
 
-                const localISOTime = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        function renderLogItem(l, list) {
+            const dateObj = new Date(l.timestamp);
+            if (isNaN(dateObj.getTime())) return;
 
-                let colorClass = l.colorClass || state.actions.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
-                const container = document.createElement('div'); container.className = 'log-item-container';
-                container.innerHTML = `
-                    <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
-                    <div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}">
-                        <div class="flex flex-col flex-1">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[14px] font-black text-white shrink-0">${l.label}</span>
-                                <input type="datetime-local" value="${localISOTime}" 
-                                       onchange="updateLogTimestamp(${l.id}, this.value)" 
-                                       class="bg-transparent text-[11px] font-bold text-white/80 border-none p-0 outline-none tabular-nums focus:text-white transition-colors">
-                            </div>
-                            <span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span>
+            const localISOTime = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+            let colorClass = l.colorClass || state.actions.find(a => a.id === l.actionId)?.color || 'from-slate-800 to-slate-900';
+            const container = document.createElement('div'); container.className = 'log-item-container';
+            container.innerHTML = `
+                <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
+                <div class="log-item-content flex justify-between items-center p-3 bg-gradient-to-r ${colorClass} border-b border-black/20 shadow-sm" id="log-${l.id}">
+                    <div class="flex flex-col flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[14px] font-black text-white shrink-0">${l.label}</span>
+                            <input type="datetime-local" value="${localISOTime}" 
+                                   onchange="updateLogTimestamp(${l.id}, this.value)" 
+                                   class="bg-transparent text-[11px] font-bold text-white/80 border-none p-0 outline-none tabular-nums focus:text-white transition-colors">
                         </div>
-                        <span class="font-black text-white text-[15px] tracking-tighter tabular-nums ml-2">+${l.points}</span>
-                    </div>`;
-                
-                const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
-                content.addEventListener('touchstart', e => { 
-                    if (e.target.tagName === 'INPUT') return;
-                    startX = e.touches[0].clientX; content.style.transition = 'none'; 
-                });
-                content.addEventListener('touchmove', e => { 
-                    if (e.target.tagName === 'INPUT') return;
-                    const diff = e.touches[0].clientX - startX; 
-                    if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; } 
-                });
-                content.addEventListener('touchend', e => { 
-                    if (e.target.tagName === 'INPUT') return;
-                    content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; 
-                    if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; } 
-                });
-                list.appendChild(container);
+                        <span class="text-[10px] text-white/90 uppercase font-black tracking-widest leading-none mt-1">${l.target}</span>
+                    </div>
+                    <span class="font-black text-white text-[15px] tracking-tighter tabular-nums ml-2">+${l.points}</span>
+                </div>`;
+            
+            const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
+            content.addEventListener('touchstart', e => { 
+                if (e.target.tagName === 'INPUT') return;
+                startX = e.touches[0].clientX; content.style.transition = 'none'; 
             });
+            content.addEventListener('touchmove', e => { 
+                if (e.target.tagName === 'INPUT') return;
+                const diff = e.touches[0].clientX - startX; 
+                if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; } 
+            });
+            content.addEventListener('touchend', e => { 
+                if (e.target.tagName === 'INPUT') return;
+                content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; 
+                if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; } 
+            });
+            list.appendChild(container);
         }
 
         function renderMasterView() {
