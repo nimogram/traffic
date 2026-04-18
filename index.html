@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -274,7 +275,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest tracking-tighter">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.8</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v9.9</div>
         </footer>
     </div>
 
@@ -497,33 +498,35 @@
         function renderStats() {
             const list = document.getElementById('history-list'); list.innerHTML = ''; 
             const now = new Date(); 
+            // 今日の開始時刻（00:00:00）
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             
-            const threeDaysAgo = todayStart - (2 * 24 * 60 * 60 * 1000) - 1000; 
-            const sevenDaysAgo = todayStart - (6 * 24 * 60 * 60 * 1000) - 1000;
+            // 4日間を「今日・昨日・一昨日・3日前」の開始時点（3日前の0時）からとする調整
+            const fourDaysAgoStart = todayStart - (3 * 24 * 60 * 60 * 1000); 
+            const sevenDaysAgoStart = todayStart - (6 * 24 * 60 * 60 * 1000);
             
             let weeklyTotal = 0; let todayPoints = 0; let todayCount = 0;
             
             state.logs.forEach(l => { 
                 const logTime = new Date(l.timestamp).getTime(); 
                 if (isNaN(logTime)) return;
-                if (logTime >= sevenDaysAgo) weeklyTotal += l.points; 
+                if (logTime >= sevenDaysAgoStart) weeklyTotal += l.points; 
                 if (logTime >= todayStart) { todayPoints += l.points; todayCount++; } 
             });
             
             document.getElementById('weekly-total').innerText = weeklyTotal.toLocaleString(); 
             document.getElementById('daily-average').innerText = todayCount > 0 ? (todayPoints / todayCount).toFixed(1) : "0.0";
             
+            // フィルタリングロジック：4日以内、または今日の日付以降のものを抽出
             const filteredLogs = state.logs.filter(l => {
                 const logTime = new Date(l.timestamp).getTime();
-                return !isNaN(logTime) && (logTime >= threeDaysAgo || logTime >= todayStart);
+                return !isNaN(logTime) && (logTime >= fourDaysAgoStart || logTime >= todayStart);
             });
             
             if (state.logs.length === 0) {
-                // 完全な空状態
-                list.innerHTML = '<div class="text-center p-12 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">No activity recorded yet.<br>Go to Action View and tap a button.</div>';
+                list.innerHTML = '<div class="text-center p-12 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">No activity recorded yet.</div>';
             } else if (filteredLogs.length === 0) {
-                // 3日以内は空だが、古いデータがある場合のセーフティ
+                // 4日以内は空だが古いデータはある場合、直近5件を表示するセーフティネット
                 state.logs.slice(-5).reverse().forEach(l => renderLogItem(l, list));
             } else {
                 [...filteredLogs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => renderLogItem(l, list));
