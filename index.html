@@ -224,7 +224,7 @@
             </div>
             <div class="flex-1 min-h-[52px]">
                 <p class="text-[8px] font-black text-lime-500/60 uppercase tracking-widest mb-1">Human Intelligence Advisor</p>
-                <p id="advisor-text" class="text-[14px] font-bold text-lime-400 leading-snug tracking-tight">Initializing Strategic OS...</p>
+                <p id="advisor-text" class="text-[14px] font-bold text-white leading-snug tracking-tight">Initializing Strategic OS...</p>
             </div>
         </div>
 
@@ -274,7 +274,7 @@
                 <div class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest tracking-tighter">System Online</span>
             </div>
-            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v10.1</div>
+            <div class="text-[9px] font-bold text-slate-500">EQ-LOGIC PHYSICAL OS v10.2</div>
         </footer>
     </div>
 
@@ -317,7 +317,6 @@
     </div>
 
     <script>
-        // ニモさん提供の新しいGAS URL
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-Lk_8UhahzIlmYDtf6Dh5N_B53cJUUnlm6Ig5MwHvtPO7J4IZ2gXiNo8imHvPHiEh9g/exec"; 
 
         const DEFAULT_ACTIONS = [
@@ -364,7 +363,6 @@
             renderButtons(); 
             updateUI(); 
             startAdvisorRotation(); 
-            // 起動時にスプレッドシートから最新データを同期
             syncFromGas();
         }
         
@@ -383,7 +381,6 @@
             localStorage.setItem('eq_logic_v3', JSON.stringify({ totalPoints: state.totalPoints, logs: state.logs, actions: state.actions })); 
         }
 
-        /** GAS同期ロジック: シートの全データを取得してアプリを更新 */
         async function syncFromGas() {
             if (!GAS_WEBAPP_URL) return;
             try {
@@ -392,7 +389,6 @@
                 const cloudLogs = await response.json();
                 
                 if (Array.isArray(cloudLogs)) {
-                    // クラウドデータに基づき、ローカルのログとポイントを再構成
                     state.logs = cloudLogs.map((l, index) => ({
                         id: index,
                         actionId: l.label, 
@@ -452,7 +448,16 @@
                 const btn = document.createElement('button');
                 btn.className = `bg-gradient-to-r ${action.color} btn-gradient flex items-center px-3 rounded-2xl active-tap transition-all shadow-lg h-[76px] animate-entry`;
                 btn.style.animationDelay = `${0.3 + index * 0.05}s`;
-                btn.onclick = () => { playSound('click'); state.currentAction = action; if (action.id === 'stairs' || action.id === 'bike') { state.selectedTarget = 'BODY'; saveLog(""); } else { openPanel(action); } };
+                btn.onclick = () => { 
+                    playSound('click'); 
+                    state.currentAction = action; 
+                    if (action.id === 'stairs' || action.id === 'bike' || action.id === 'gym') { 
+                        state.selectedTarget = 'BODY'; 
+                        saveLog(""); 
+                    } else { 
+                        openPanel(action); 
+                    } 
+                };
                 btn.innerHTML = `<div class="w-6 shrink-0 flex justify-center text-white opacity-90"><i data-lucide="${action.icon}" class="w-4 h-4"></i></div><div class="flex-1 text-center px-1"><span class="font-normal text-white text-[10pt] leading-none tracking-tight uppercase">${action.label}</span></div><div class="w-10 shrink-0 text-right"><span class="font-normal text-white text-[10pt] leading-none tracking-tighter tabular-nums">+${action.points}</span></div>`;
                 container.appendChild(btn);
             });
@@ -550,7 +555,6 @@
             const now = new Date(); 
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             
-            // 過去4日分（3日前の0時〜）
             const fourDaysAgoStart = todayStart - (3 * 24 * 60 * 60 * 1000); 
             const sevenDaysAgoStart = todayStart - (6 * 24 * 60 * 60 * 1000);
             
