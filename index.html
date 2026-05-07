@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -23,7 +23,6 @@
             touch-action: manipulation;
         }
 
-        /* Glassmorphism 2.0 - Liquid Glass */
         .liquid-glass {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px) saturate(180%);
@@ -55,7 +54,6 @@
             filter: brightness(1.2);
         }
 
-        /* Typewriter Effect for AI output */
         .typewriter::after {
             content: '|';
             animation: blink 1s step-end infinite;
@@ -73,14 +71,6 @@
             animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
         }
-
-        /* Skeleton Loading */
-        .skeleton {
-            background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
         #level-progress-bar {
             transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -163,7 +153,7 @@
             </div>
         </header>
 
-        <!-- AI ADVISOR (Liquid Glass) -->
+        <!-- AI ADVISOR -->
         <div id="advisor-box" class="liquid-glass p-5 rounded-[2rem] flex items-start gap-4 shrink-0 animate-entry" style="animation-delay: 0.2s">
             <div class="w-12 h-12 rounded-2xl bg-lime-500/10 border border-lime-500/20 flex items-center justify-center text-lime-400 shrink-0 shadow-inner">
                 <i data-lucide="shield-check" class="w-7 h-7"></i>
@@ -206,7 +196,7 @@
             <div id="master-list" class="space-y-4"></div>
         </div>
 
-        <!-- DETAIL PANEL (Slide-in) -->
+        <!-- DETAIL PANEL -->
         <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
             <div id="panel-backdrop" class="absolute inset-0 bg-black/80 opacity-0 transition-opacity"></div>
             <div id="panel-content" class="w-[90%] h-full liquid-glass border-l border-white/10 p-8 transform translate-x-full transition-transform duration-400 pointer-events-auto flex flex-col gap-8">
@@ -227,7 +217,7 @@
                             <button onclick="selectTarget('BODY')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">HEALTH</button>
                         </div>
                     </div>
-                    <textarea id="log-memo" rows="5" placeholder="メモを入力（自動保存）..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-sm text-white focus:border-lime-500/50 outline-none"></textarea>
+                    <textarea id="log-memo" rows="5" placeholder="メモを入力..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-sm text-white focus:border-lime-500/50 outline-none"></textarea>
                 </div>
                 <button onclick="saveLog()" class="mt-auto w-full bg-lime-500 text-black font-black py-5 rounded-2xl text-lg active-tap">COMMIT ENTRY</button>
             </div>
@@ -238,14 +228,14 @@
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-Lk_8UhahzIlmYDtf6Dh5N_B53cJUUnlm6Ig5MwHvtPO7J4IZ2gXiNo8imHvPHiEh9g/exec"; 
 
         const DEFAULT_ACTIONS = [
-            { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-cyan-500 to-blue-600' },
-            { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-indigo-500 to-violet-600' },
+            { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-cyan-400 to-blue-600' },
+            { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-indigo-400 to-violet-600' },
             { id: 'buffer', label: '3秒待機', points: 10, icon: 'cpu', color: 'from-fuchsia-500 to-purple-600' },
-            { id: 'network', label: '雑談', points: 15, icon: 'users', color: 'from-emerald-500 to-teal-600' },
-            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-500 to-rose-600' },
-            { id: 'stairs', label: '階段利用', points: 5, icon: 'trending-up', color: 'from-orange-500 to-rose-500' },
-            { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-yellow-500 to-orange-600' },
-            { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-500 to-emerald-500' }
+            { id: 'network', label: '雑談', points: 15, icon: 'users', color: 'from-emerald-400 to-teal-600' },
+            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-pink-400 to-rose-600' },
+            { id: 'stairs', label: '階段利用', points: 5, icon: 'trending-up', color: 'from-orange-400 to-rose-500' },
+            { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-yellow-400 to-orange-600' },
+            { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-emerald-500' }
         ];
 
         const ADVISORY_DATABASE = [
@@ -263,11 +253,9 @@
         let audioCtx = null;
         let typewriterTimeout = null;
 
-        // Dynamic Difficulty Adjustment (DDA) - Logistic Model
         function getExpRequiredForLevel(lv) {
-            // Level up difficulty increases using a logistic-like progression
-            const K = 2000; // Max gap cap
-            const r = 0.5; // Growth rate
+            const K = 2000;
+            const r = 0.5;
             return Math.floor(500 + (K / (1 + Math.exp(-r * (lv - 5)))));
         }
 
@@ -279,7 +267,7 @@
                 const p = JSON.parse(saved);
                 state.totalPoints = p.totalPoints || 0;
                 state.logs = p.logs || [];
-                state.actions = p.actions || DEFAULT_ACTIONS;
+                state.actions = (p.actions && p.actions.length === 8) ? p.actions : DEFAULT_ACTIONS;
             } else { state.actions = DEFAULT_ACTIONS; }
         }
 
@@ -345,7 +333,8 @@
             const container = document.getElementById('action-view'); container.innerHTML = '';
             state.actions.forEach((a, i) => {
                 const btn = document.createElement('button');
-                btn.className = `bg-gradient-to-br ${a.color} btn-gradient rounded-3xl flex flex-col justify-between p-4 active-tap animate-entry shadow-lg h-[100px] border border-white/10`;
+                // Height adjusted to h-[72px] for a more compact look
+                btn.className = `bg-gradient-to-br ${a.color} btn-gradient rounded-3xl flex items-center justify-between px-5 active-tap animate-entry shadow-lg h-[72px] border border-white/10`;
                 btn.style.animationDelay = `${0.3 + i * 0.05}s`;
                 btn.onclick = () => {
                     playSound('click'); state.currentAction = a;
@@ -353,11 +342,11 @@
                     else openPanel(a);
                 };
                 btn.innerHTML = `
-                    <div class="flex justify-between items-start w-full">
-                        <i data-lucide="${a.icon}" class="w-5 h-5 text-white/80"></i>
-                        <span class="text-[10px] font-black text-white/50 tracking-widest uppercase">+${a.points}</span>
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="${a.icon}" class="w-5 h-5 text-white/90"></i>
+                        <span class="text-sm font-black text-white tracking-tighter">${a.label}</span>
                     </div>
-                    <span class="text-sm font-black text-white text-left tracking-tighter">${a.label}</span>
+                    <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">+${a.points}</span>
                 `;
                 container.appendChild(btn);
             });
@@ -475,6 +464,14 @@
                 list.appendChild(item);
             });
             lucide.createIcons();
+        }
+
+        function toggleMute() {
+            state.isMuted = !state.isMuted;
+            const icon = document.getElementById('mute-icon');
+            icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2');
+            lucide.createIcons();
+            if (!state.isMuted) playSound('click');
         }
 
         window.onload = init;
