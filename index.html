@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -34,20 +35,6 @@
             box-shadow: 0 0 30px rgba(132, 204, 22, 0.1);
         }
 
-        .btn-gradient {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .btn-gradient::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 100%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-            pointer-events: none;
-        }
-
         .active-tap:active {
             transform: scale(0.95);
             filter: brightness(1.2);
@@ -61,25 +48,11 @@
 
         @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-entry {
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-        }
-
-        #level-progress-bar {
-            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
         .log-item-container {
             position: relative;
             overflow: hidden;
-            border-radius: 16px;
-            margin-bottom: 10px;
+            border-radius: 4px;
+            margin-bottom: 2px;
         }
 
         .log-item-content {
@@ -89,160 +62,154 @@
         }
 
         .delete-btn-bg {
-            position: absolute; right: 0; top: 0; bottom: 0; width: 100px;
+            position: absolute; right: 0; top: 0; bottom: 0; width: 60px;
             background-color: #ef4444; color: white;
             display: flex; align-items: center; justify-content: flex-end;
-            padding-right: 20px; z-index: 1; border-radius: 16px;
-            font-weight: 900; font-size: 10px; letter-spacing: 0.1em;
+            padding-right: 10px; z-index: 1; border-radius: 4px;
+            font-weight: 900; font-size: 8px;
         }
 
         input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
-            opacity: 0.5;
+            opacity: 0.1;
         }
 
         .chart-wrapper {
             width: 100%;
-            max-width: 280px;
+            max-width: 200px;
             margin: 0 auto;
             position: relative;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col p-4 gap-4">
+<body class="min-h-screen flex flex-col p-4">
 
-    <div id="app" class="max-w-lg mx-auto w-full h-full flex flex-col gap-4 relative">
+    <div id="app" class="max-w-lg mx-auto w-full h-[calc(100dvh-2rem)] flex flex-col gap-3 relative">
         
-        <!-- HEADER (Action View Only) -->
-        <header id="global-header" class="liquid-glass rounded-[2rem] p-5 theme-glow shrink-0 animate-entry" style="animation-delay: 0.1s">
-            <div class="flex justify-between items-start mb-4">
+        <!-- HEADER -->
+        <header id="global-header" class="liquid-glass rounded-[1.5rem] p-4 theme-glow shrink-0">
+            <div class="flex justify-between items-start mb-3">
                 <div onclick="toggleMasterView()" class="cursor-pointer">
-                    <p class="text-[10px] font-black text-lime-500 tracking-[0.3em] mb-1 uppercase">EQ ASSET LOGIC</p>
+                    <p class="text-[8px] font-black text-lime-500 tracking-[0.3em] mb-0.5 uppercase">EQ ASSET LOGIC</p>
                     <div class="flex items-baseline gap-2">
-                        <span id="header-total-points" class="text-5xl font-black text-white tracking-tighter tabular-nums">0</span>
-                        <span class="text-xs font-black text-slate-500 uppercase tracking-widest">EXP Asset</span>
+                        <!-- v12.3: Shrunk to text-xl to match all screens -->
+                        <span id="header-total-points" class="text-xl font-black text-white tracking-tighter tabular-nums">0</span>
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">EXP Asset</span>
                     </div>
                 </div>
-                <div class="flex flex-col items-end gap-3">
-                    <div id="heart-container" class="flex gap-1">
-                        <i data-lucide="heart" class="w-4 h-4 text-lime-500 fill-lime-500"></i>
-                        <i data-lucide="heart" class="w-4 h-4 text-lime-500 fill-lime-500"></i>
-                        <i data-lucide="heart" class="w-4 h-4 text-lime-500 fill-lime-500"></i>
-                        <i data-lucide="heart" class="w-4 h-4 text-lime-500 fill-lime-500"></i>
-                        <i data-lucide="heart" class="w-4 h-4 text-lime-500 fill-lime-500"></i>
+                <div class="flex flex-col items-end gap-2">
+                    <div id="heart-container" class="flex gap-0.5">
+                        <i data-lucide="heart" class="w-3 h-3 text-lime-500 fill-lime-500"></i>
+                        <i data-lucide="heart" class="w-3 h-3 text-lime-500 fill-lime-500"></i>
+                        <i data-lucide="heart" class="w-3 h-3 text-lime-500 fill-lime-500"></i>
+                        <i data-lucide="heart" class="w-3 h-3 text-lime-500 fill-lime-500"></i>
+                        <i data-lucide="heart" class="w-3 h-3 text-lime-500 fill-lime-500"></i>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="toggleMute()" class="p-2.5 rounded-2xl bg-white/5 border border-white/10 active-tap">
-                            <i id="mute-icon" data-lucide="volume-2" class="w-4 h-4 text-slate-400"></i>
-                        </button>
-                    </div>
+                    <button onclick="toggleMute()" class="p-2 rounded-xl bg-white/5 border border-white/10 active-tap">
+                        <i id="mute-icon" data-lucide="volume-2" class="w-3 h-3 text-slate-400"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="bg-black/40 rounded-2xl p-4 border border-white/5">
-                <div class="flex justify-between items-end mb-2">
+            <div class="bg-black/40 rounded-xl p-3 border border-white/5">
+                <div class="flex justify-between items-end mb-1">
                     <div>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Strategy Stage</p>
-                        <p id="level-badge" class="text-xs font-black text-lime-400 uppercase tracking-widest leading-none">Lv.1 Specialist</p>
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Strategy Stage</p>
+                        <p id="level-badge" class="text-[10px] font-black text-lime-400 uppercase tracking-widest leading-none">Lv.1 Specialist</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[10px] font-black text-slate-500 uppercase leading-none mb-1">Gap to Level Up</p>
+                        <p class="text-[8px] font-black text-slate-500 uppercase leading-none mb-0.5">Next Goal</p>
                         <div class="flex items-baseline leading-none">
-                            <span id="next-level-info" class="text-2xl font-black text-white tabular-nums">+500</span>
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">EXP</span>
+                            <span id="next-level-info" class="text-sm font-black text-white tabular-nums">+500</span>
+                            <span class="text-[8px] font-black text-slate-500 uppercase ml-1">EXP</span>
                         </div>
                     </div>
                 </div>
-                <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden p-[2px]">
-                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 to-lime-300 rounded-full shadow-[0_0_15px_rgba(132,204,22,0.5)]" style="width: 0%"></div>
+                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div id="level-progress-bar" class="h-full bg-gradient-to-r from-lime-600 to-lime-300" style="width: 0%"></div>
                 </div>
             </div>
         </header>
 
-        <!-- AI ADVISOR (Action View Only) -->
-        <div id="advisor-box" class="liquid-glass p-5 rounded-[2rem] flex items-start gap-4 shrink-0 animate-entry" style="animation-delay: 0.2s">
-            <div class="w-12 h-12 rounded-2xl bg-lime-500/10 border border-lime-500/20 flex items-center justify-center text-lime-400 shrink-0 shadow-inner">
-                <i data-lucide="shield-check" class="w-7 h-7"></i>
+        <!-- ADVISOR -->
+        <div id="advisor-box" class="liquid-glass p-4 rounded-[1.5rem] flex items-start gap-3 shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-lime-500/10 border border-lime-500/20 flex items-center justify-center text-lime-400 shrink-0">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
             </div>
-            <div class="flex-1 min-h-[60px]">
-                <p class="text-[10px] font-black text-lime-500 uppercase tracking-[0.2em] mb-2 opacity-80">Intelligence Advisory</p>
-                <p id="advisor-text" class="text-[15px] font-bold text-white leading-relaxed tracking-tight typewriter">Initializing Cognitive OS...</p>
+            <div class="flex-1 min-h-[40px]">
+                <p id="advisor-text" class="text-[13px] font-bold text-white leading-relaxed typewriter">Initializing...</p>
             </div>
         </div>
 
         <!-- MAIN ACTION VIEW -->
-        <div id="action-view" class="flex-1 grid grid-cols-2 gap-3 overflow-y-auto pr-1 content-start"></div>
+        <div id="action-view" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-1 content-start pb-20"></div>
 
-        <!-- STATS VIEW (Pure Analytic Screen) -->
-        <div id="stats-view" class="hidden h-full flex flex-col gap-4 overflow-hidden pt-2">
-            <!-- 1. Total Points -->
-            <div class="liquid-glass p-6 rounded-[2.5rem] text-center shrink-0 border border-lime-500/20 theme-glow">
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">TOTAL EXP ASSET</p>
-                <p id="stats-total-points" class="text-6xl font-black text-white tabular-nums tracking-tighter">0</p>
+        <!-- STATS VIEW -->
+        <div id="stats-view" class="hidden flex-1 flex flex-col gap-2 overflow-hidden">
+            <!-- Points & Goal (Consistently text-xl) -->
+            <div class="liquid-glass p-3 rounded-[1.5rem] text-center shrink-0 border border-lime-500/10">
+                <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em] mb-0.5">Total EXP Asset</p>
+                <div class="flex items-baseline justify-center gap-2">
+                    <span id="stats-total-points" class="text-xl font-black text-white tabular-nums tracking-tighter">0</span>
+                    <span id="stats-next-goal" class="text-[10px] font-bold text-lime-400 uppercase tracking-widest opacity-80">+0 NEXT</span>
+                </div>
             </div>
             
-            <!-- 2. Radar Chart -->
-            <div class="liquid-glass p-6 rounded-[2.5rem] shrink-0">
-                <p class="text-[10px] font-black text-lime-500 uppercase tracking-[0.2em] text-center mb-4">Strategic Balance Analysis</p>
+            <div class="liquid-glass p-2 rounded-[1.5rem] shrink-0">
                 <div class="chart-wrapper">
                     <canvas id="radarChart"></canvas>
                 </div>
             </div>
 
-            <!-- 3. Scrollable History List -->
-            <div class="flex flex-col flex-1 overflow-hidden">
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-2">Execution Logs</p>
-                <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pb-24 pr-1">
-                    <!-- Logs will be injected here -->
-                </div>
-            </div>
+            <!-- Scrollable History List -->
+            <div class="flex-1 overflow-y-auto space-y-1 pb-24 pr-1" id="history-list"></div>
         </div>
 
-        <!-- FLOATING TOGGLE BUTTON -->
-        <button id="toggle-view-btn" onclick="toggleView()" class="fixed bottom-10 right-6 w-16 h-16 bg-lime-500 text-black rounded-3xl shadow-[0_15px_40px_rgba(132,204,22,0.4)] flex items-center justify-center active-tap z-50">
-            <i id="view-icon" data-lucide="bar-chart-3" class="w-7 h-7"></i>
+        <!-- TOGGLE BUTTON -->
+        <button id="toggle-view-btn" onclick="toggleView()" class="fixed bottom-8 right-6 w-14 h-14 bg-lime-500 text-black rounded-2xl shadow-xl flex items-center justify-center active-tap z-50">
+            <i id="view-icon" data-lucide="bar-chart-3" class="w-6 h-6"></i>
         </button>
 
-        <!-- MASTER SETTINGS -->
-        <div id="master-view" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl p-8 flex flex-col overflow-y-auto transform translate-y-full transition-transform duration-500">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-xl font-black text-white uppercase tracking-widest">System Maintenance</h3>
-                <button onclick="toggleMasterView()" class="p-4 bg-white/10 rounded-full active-tap"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <div id="master-list" class="space-y-4"></div>
-        </div>
-
-        <!-- REGISTRATION PANEL -->
+        <!-- COMMIT PANEL -->
         <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
             <div id="panel-backdrop" class="absolute inset-0 bg-black/80 opacity-0 transition-opacity"></div>
-            <div id="panel-content" class="w-[90%] h-full liquid-glass border-l border-white/10 p-8 transform translate-x-full transition-transform duration-400 pointer-events-auto flex flex-col gap-8">
+            <div id="panel-content" class="w-[90%] h-full liquid-glass border-l border-white/10 p-6 transform translate-x-full transition-transform duration-400 pointer-events-auto flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h2 id="panel-title" class="text-2xl font-black text-white">Execution Log</h2>
-                        <p id="panel-points" class="text-lime-400 font-black mt-1 text-3xl">+10 EXP</p>
+                        <h2 class="text-lg font-black text-white uppercase">Commit Log</h2>
+                        <!-- v12.3: Consistent text-xl -->
+                        <p id="panel-points" class="text-xl font-black text-lime-400 tracking-tighter tabular-nums mt-0.5">+10 EXP</p>
                     </div>
-                    <button onclick="closePanel()" class="p-3 bg-white/10 rounded-full active-tap"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <button onclick="closePanel()" class="p-2 bg-white/10 rounded-full text-white active-tap"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
-                <div class="space-y-8">
+                <div class="space-y-6 flex-1 overflow-y-auto">
                     <div>
-                        <p class="text-xs font-black text-white/50 uppercase tracking-widest mb-4">Select Target Sync</p>
-                        <div id="target-selector" class="grid grid-cols-2 gap-3">
-                            <button onclick="selectTarget('AKS')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">AKS</button>
-                            <button onclick="selectTarget('YSD')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">YSD</button>
-                            <button onclick="selectTarget('YKO')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">YKO</button>
-                            <button onclick="selectTarget('BODY')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">HEALTH</button>
+                        <p class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-3">Target Sync</p>
+                        <div id="target-selector" class="grid grid-cols-2 gap-2">
+                            <button onclick="selectTarget('AKS')" class="target-opt bg-white/5 border border-white/10 rounded-xl py-3 text-[10px] font-bold text-white active-tap">AKS</button>
+                            <button onclick="selectTarget('YSD')" class="target-opt bg-white/5 border border-white/10 rounded-xl py-3 text-[10px] font-bold text-white active-tap">YSD</button>
+                            <button onclick="selectTarget('YKO')" class="target-opt bg-white/5 border border-white/10 rounded-xl py-3 text-[10px] font-bold text-white active-tap">YKO</button>
+                            <button onclick="selectTarget('BODY')" class="target-opt bg-white/5 border border-white/10 rounded-xl py-3 text-[10px] font-bold text-white active-tap">HEALTH</button>
                         </div>
                     </div>
-                    <textarea id="log-memo" rows="5" placeholder="状況、反応、改善ロジック..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-sm text-white focus:border-lime-500/50 outline-none"></textarea>
+                    <textarea id="log-memo" rows="3" placeholder="状況、反応、改善..." class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-xs text-white focus:border-lime-500/50 outline-none"></textarea>
                 </div>
-                <button onclick="saveLog()" class="mt-auto w-full bg-lime-500 text-black font-black py-5 rounded-2xl text-lg active-tap">COMMIT ENTRY</button>
+                <button onclick="saveLog()" class="shrink-0 w-full bg-lime-500 text-black font-black py-4 rounded-xl text-md active-tap">COMMIT ENTRY</button>
             </div>
+        </div>
+
+        <!-- MASTER VIEW -->
+        <div id="master-view" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl p-8 flex flex-col overflow-y-auto transform translate-y-full transition-transform duration-500">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-sm font-black text-white uppercase tracking-widest">Maintenance</h3>
+                <button onclick="toggleMasterView()" class="p-3 bg-white/10 rounded-full text-white active-tap"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="master-list" class="space-y-3 pb-20"></div>
         </div>
     </div>
 
     <script>
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-Lk_8UhahzIlmYDtf6Dh5N_B53cJUUnlm6Ig5MwHvtPO7J4IZ2gXiNo8imHvPHiEh9g/exec"; 
-
         const DEFAULT_ACTIONS = [
             { id: 'pillow', label: '枕詞', points: 10, icon: 'message-square', color: 'from-cyan-400 to-blue-600' },
             { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-indigo-400 to-violet-600' },
@@ -254,28 +221,13 @@
             { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-emerald-500' }
         ];
 
-        const ADVISORY_DATABASE = [
-            "✨ 相手の話を聞く時はスマホを伏せる。その動作が『あなたを最優先に処理している』という最高のアナウンスになります。",
-            "✨ PC作業中に誰かが近づいたら一度手を止め、3秒だけ相手に視線を向ける。これで『割り込みOK』のフラグが立ちます。",
-            "✨ 挨拶に『北海道の寒さ』を一言添える。その5秒の余白が、相手の警戒心をデフラグします。",
-            "✨ 忙しい時ほど表情筋を0.5ミリ緩める。ニモさんのオーラが『威圧』から『安心』に変換されます。",
-            "🎯 相手の『なぜ』を先に理解することが、最速の合意形成への近道ですよ。",
-            "沈黙の3秒は、相手が本音を話すための『招待状』です。",
-            "筋肥大は、将来のニモさんへの最高密度の断熱材。1レップの配当を楽しみましょう。",
-            "『少しお力添えいただけますか？』で、相手の自尊心を刺激し、味方に引き込みましょう。"
-        ];
-
-        let state = { totalPoints: 0, currentLevel: 1, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [], actions: [], bonusActive: false };
-        let audioCtx = null;
-        let typewriterTimeout = null;
+        let state = { totalPoints: 0, currentLevel: 1, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [], actions: [] };
         let radarChartInstance = null;
+        let typeWriterTimeout = null;
 
-        function getExpRequiredForLevel(lv) {
-            const K = 2000; const r = 0.5;
-            return Math.floor(500 + (K / (1 + Math.exp(-r * (lv - 5)))));
-        }
+        function getExpRequiredForLevel(lv) { return Math.floor(500 + (2000 / (1 + Math.exp(-0.5 * (lv - 5))))); }
 
-        function init() { loadData(); lucide.createIcons(); renderButtons(); updateUI(); startAdvisor(); syncFromGas(); checkComebackMechanic(); }
+        function init() { loadData(); lucide.createIcons(); renderButtons(); updateUI(); startAdvisor(); syncFromGas(); }
         
         function loadData() {
             const saved = localStorage.getItem('eq_logic_v11');
@@ -301,98 +253,57 @@
                     state.totalPoints = cloudLogs.reduce((s, l) => s + l.points, 0);
                     saveData(); updateUI();
                 }
-            } catch (e) { console.error("Sync Error:", e); }
-        }
-
-        function checkComebackMechanic() {
-            if (state.logs.length === 0) return;
-            const lastLogTime = new Date(state.logs[0].timestamp).getTime();
-            if (Date.now() - lastLogTime > 24 * 60 * 60 * 1000) {
-                state.bonusActive = true;
-                showAdvisor("✨ お帰りなさい。24時間ぶりの再稼働ですね。継続リソース復旧のため、次回EXPを倍増させます。");
-            }
-        }
-
-        function showAdvisor(txt) {
-            const el = document.getElementById('advisor-text');
-            if (typewriterTimeout) clearTimeout(typewriterTimeout);
-            el.innerText = ''; let i = 0;
-            function type() { if (i < txt.length) { el.innerText += txt.charAt(i); i++; typewriterTimeout = setTimeout(type, 50); } }
-            type();
+            } catch (e) { console.error(e); }
         }
 
         function startAdvisor() {
-            setInterval(() => { if (state.view === 'action') showAdvisor(ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)]); }, 12000);
-            showAdvisor(ADVISORY_DATABASE[0]);
+            const el = document.getElementById('advisor-text');
+            const txt = "✨ 相手の話を聞く時はスマホを伏せる。最高のパフォーマンスになります。";
+            if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+            el.innerText = ''; let i = 0;
+            function type() { if (i < txt.length) { el.innerText += txt.charAt(i); i++; typeWriterTimeout = setTimeout(type, 50); } }
+            type();
         }
 
-        function playSound(type) {
-            if (state.isMuted) return;
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            const now = audioCtx.currentTime;
-            if (type === 'click') {
-                o.type = 'sine'; o.frequency.setValueAtTime(1000, now); o.frequency.exponentialRampToValueAtTime(400, now + 0.1);
-                g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-                o.start(now); o.stop(now + 0.1);
-            }
+        function updateUI() {
+            let pts = state.totalPoints; let lv = 1;
+            while (pts >= getExpRequiredForLevel(lv)) { pts -= getExpRequiredForLevel(lv); lv++; }
+            const req = getExpRequiredForLevel(lv);
+            document.getElementById('header-total-points').innerText = state.totalPoints.toLocaleString();
+            document.getElementById('stats-total-points').innerText = state.totalPoints.toLocaleString();
+            document.getElementById('stats-next-goal').innerText = `+${req - pts} NEXT`;
+            document.getElementById('level-badge').innerText = `Lv.${lv} Specialist`;
+            document.getElementById('next-level-info').innerText = `+${req - pts}`;
+            document.getElementById('level-progress-bar').style.width = `${(pts / req) * 100}%`;
         }
 
         function renderButtons() {
             const container = document.getElementById('action-view'); container.innerHTML = '';
             state.actions.forEach((a, i) => {
                 const btn = document.createElement('button');
-                btn.className = `bg-gradient-to-br ${a.color} btn-gradient rounded-3xl flex items-center justify-between px-5 active-tap animate-entry shadow-lg h-[72px] border border-white/10`;
-                btn.style.animationDelay = `${0.3 + i * 0.05}s`;
-                btn.onclick = () => {
-                    playSound('click'); state.currentAction = a;
-                    if (['gym', 'stairs', 'bike'].includes(a.id)) { state.selectedTarget = 'BODY'; saveLog(""); }
-                    else openPanel(a);
-                };
-                btn.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="${a.icon}" class="w-5 h-5 text-white/90"></i>
-                        <span class="text-sm font-black text-white tracking-tighter">${a.label}</span>
-                    </div>
-                    <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">+${a.points}</span>
-                `;
+                btn.className = `bg-gradient-to-br ${a.color} rounded-2xl flex items-center justify-between px-4 active-tap h-[64px] border border-white/10`;
+                btn.onclick = () => { state.currentAction = a; if (['gym', 'stairs', 'bike'].includes(a.id)) { state.selectedTarget = 'BODY'; saveLog(""); } else openPanel(a); };
+                btn.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="${a.icon}" class="w-4 h-4 text-white"></i><span class="text-[13px] font-black text-white">${a.label}</span></div><span class="text-[10px] font-black text-white/40">+${a.points}</span>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
         }
 
-        function updateUI() {
-            let pts = state.totalPoints; let lv = 1;
-            while (pts >= getExpRequiredForLevel(lv)) { pts -= getExpRequiredForLevel(lv); lv++; }
-            state.currentLevel = lv; const req = getExpRequiredForLevel(lv);
-            document.getElementById('header-total-points').innerText = state.totalPoints.toLocaleString();
-            document.getElementById('stats-total-points').innerText = state.totalPoints.toLocaleString();
-            document.getElementById('level-badge').innerText = `Lv.${lv} ${lv >= 10 ? 'Strategic Master' : 'Specialist'}`;
-            document.getElementById('next-level-info').innerText = `+${req - pts}`;
-            document.getElementById('level-progress-bar').style.width = `${(pts / req) * 100}%`;
-        }
-
         function toggleView() {
             state.view = state.view === 'action' ? 'stats' : 'action';
-            
-            // Toggle Global noise elements
             document.getElementById('global-header').classList.toggle('hidden', state.view === 'stats');
             document.getElementById('advisor-box').classList.toggle('hidden', state.view === 'stats');
-            
             document.getElementById('action-view').classList.toggle('hidden', state.view !== 'action');
             document.getElementById('stats-view').classList.toggle('hidden', state.view !== 'stats');
-            
             const icon = document.getElementById('view-icon');
             icon.setAttribute('data-lucide', state.view === 'stats' ? 'layout-grid' : 'bar-chart-3');
-            
             if (state.view === 'stats') renderStats();
-            lucide.createIcons(); playSound('click');
+            lucide.createIcons();
         }
 
         function openPanel(a) {
             state.selectedTarget = null;
-            document.getElementById('panel-title').innerText = `${a.label} Execution`;
+            document.getElementById('panel-title').innerText = `${a.label} Commit`;
             document.getElementById('panel-points').innerText = `+${a.points} EXP`;
             document.getElementById('detail-panel').classList.remove('pointer-events-none');
             document.getElementById('panel-content').classList.remove('translate-x-full');
@@ -406,62 +317,47 @@
         }
 
         function selectTarget(t) {
-            state.selectedTarget = t; playSound('click');
+            state.selectedTarget = t;
             document.querySelectorAll('.target-opt').forEach(btn => {
                 btn.style.borderColor = btn.innerText.includes(t==='BODY'?'HEALTH':t) ? 'var(--accent-lime)' : 'rgba(255,255,255,0.1)';
-                btn.style.background = btn.innerText.includes(t==='BODY'?'HEALTH':t) ? 'rgba(132, 204, 22, 0.1)' : 'rgba(255,255,255,0.05)';
             });
         }
 
         function saveLog(memo = null) {
             const a = state.currentAction; const target = state.selectedTarget || 'BODY';
-            const pts = state.bonusActive ? a.points * 2 : a.points;
-            if (state.bonusActive) state.bonusActive = false;
-            const log = { id: Date.now(), label: a.label, points: pts, target: target, timestamp: new Date().toISOString(), colorClass: a.color };
-            state.logs.unshift(log); state.totalPoints += pts;
+            const log = { id: Date.now(), label: a.label, points: a.points, target: target, timestamp: new Date().toISOString(), colorClass: a.color };
+            state.logs.unshift(log); state.totalPoints += a.points;
             fetch(GAS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ ...log, memo: memo || document.getElementById('log-memo').value }) });
             saveData(); updateUI(); closePanel();
         }
 
         function renderStats() {
-            document.getElementById('stats-total-points').innerText = state.totalPoints.toLocaleString();
             const list = document.getElementById('history-list'); list.innerHTML = '';
-            
-            const now = new Date(); 
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const sevenDaysAgo = today - (6 * 24 * 60 * 60 * 1000);
-            const fourDaysAgo = today - (3 * 24 * 60 * 60 * 1000);
-            
-            const weekLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= sevenDaysAgo);
+            const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const weekLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= (today - 6*24*60*60*1000));
             const labels = state.actions.map(a => a.label);
             const dataCounts = labels.map(label => weekLogs.filter(l => l.label === label).length);
-            
             updateRadarChart(labels, dataCounts);
 
-            const filtered = state.logs.filter(l => new Date(l.timestamp).getTime() >= fourDaysAgo);
-            if (filtered.length === 0) {
-                list.innerHTML = '<div class="text-center p-12 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Connecting to Intelligence Hub...</div>';
-            } else {
-                filtered.forEach(l => {
-                    const container = document.createElement('div'); container.className = 'log-item-container liquid-glass';
-                    const localISOTime = new Date(new Date(l.timestamp).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-                    container.innerHTML = `
-                        <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
-                        <div class="log-item-content flex justify-between items-center p-4 bg-gradient-to-r ${l.colorClass} border-b border-white/5">
-                            <div class="flex flex-col flex-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-black text-white shrink-0">${l.label}</span>
-                                    <input type="datetime-local" step="1800" value="${localISOTime}" onchange="updateLogTimestamp(${l.id}, this.value)" class="bg-transparent text-[11px] font-bold text-white/50 border-none p-0 outline-none tabular-nums focus:text-white transition-colors">
-                                </div>
-                                <span class="text-[10px] font-black text-white/40 uppercase tracking-widest mt-1">${l.target}</span>
+            state.logs.filter(l => new Date(l.timestamp).getTime() >= (today - 3*24*60*60*1000)).forEach(l => {
+                const container = document.createElement('div'); container.className = 'log-item-container liquid-glass';
+                const localISOTime = new Date(new Date(l.timestamp).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(11, 16);
+                container.innerHTML = `
+                    <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
+                    <!-- v12.3: py-0 for extreme compression -->
+                    <div class="log-item-content flex justify-between items-center py-0 bg-gradient-to-r ${l.colorClass} border-b border-white/5">
+                        <div class="flex flex-col flex-1 pl-3 py-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[11px] font-black text-white shrink-0">${l.label}</span>
+                                <span class="text-[9px] font-bold text-white/30 tabular-nums">${localISOTime}</span>
                             </div>
-                            <span class="text-lg font-black text-white ml-2">+${l.points}</span>
+                            <span class="text-[6px] font-black text-white/20 uppercase tracking-[0.2em] leading-none">${l.target}</span>
                         </div>
-                    `;
-                    setupSwipe(container);
-                    list.appendChild(container);
-                });
-            }
+                        <span class="text-[12px] font-black text-white pr-3">+${l.points}</span>
+                    </div>
+                `;
+                list.appendChild(container);
+            });
         }
 
         function updateRadarChart(labels, data) {
@@ -471,79 +367,45 @@
                 type: 'radar',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: 'rgba(132, 204, 22, 0.2)',
-                        borderColor: '#84cc16',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#84cc16',
-                    }]
+                    datasets: [{ data: data, backgroundColor: 'rgba(132, 204, 22, 0.1)', borderColor: '#84cc16', borderWidth: 1, pointRadius: 1 }]
                 },
                 options: {
                     scales: {
                         r: {
-                            angleLines: { color: 'rgba(255,255,255,0.1)' },
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 9, family: 'Inter' } },
-                            ticks: { display: false, stepSize: 1 },
+                            angleLines: { color: 'rgba(255,255,255,0.05)' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            pointLabels: { color: 'rgba(255,255,255,0.2)', font: { size: 6, weight: '900' } },
+                            ticks: { display: false },
                             suggestedMin: 0
                         }
                     },
                     plugins: { legend: { display: false } },
-                    animation: { duration: 1000, easing: 'easeOutQuart' }
+                    animation: { duration: 400 }
                 }
             });
         }
 
-        function setupSwipe(container) {
-            const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
-            content.addEventListener('touchstart', e => { if (e.target.tagName === 'INPUT') return; startX = e.touches[0].clientX; content.style.transition = 'none'; });
-            content.addEventListener('touchmove', e => { 
-                if (e.target.tagName === 'INPUT') return;
-                const diff = e.touches[0].clientX - startX; 
-                if (diff < 0) { currentTranslate = Math.max(diff, -100); content.style.transform = `translateX(${currentTranslate}px)`; } 
-            });
-            content.addEventListener('touchend', () => { 
-                content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; 
-                if (currentTranslate < -70) { content.style.transform = 'translateX(-100px)'; } else { content.style.transform = 'translateX(0)'; } 
-            });
-        }
-
-        function deleteLog(logId) {
-            const index = state.logs.findIndex(l => l.id === logId);
-            if (index > -1) { playSound('click'); state.totalPoints -= state.logs[index].points; state.logs.splice(index, 1); saveData(); updateUI(); renderStats(); }
-        }
-
-        function updateLogTimestamp(logId, newTime) {
-            const index = state.logs.findIndex(l => l.id === logId);
-            if (index > -1 && newTime) { state.logs[index].timestamp = new Date(newTime).toISOString(); saveData(); renderStats(); }
+        function deleteLog(id) {
+            const idx = state.logs.findIndex(l => l.id === id);
+            if (idx > -1) { state.totalPoints -= state.logs[idx].points; state.logs.splice(idx, 1); saveData(); updateUI(); renderStats(); }
         }
 
         function toggleMasterView() {
-            const m = document.getElementById('master-view'); const open = m.classList.contains('translate-y-full');
+            const m = document.getElementById('master-view');
+            const open = m.classList.contains('translate-y-full');
             if (open) { m.classList.remove('hidden'); setTimeout(() => m.classList.remove('translate-y-full'), 10); renderMaster(); }
             else { m.classList.add('translate-y-full'); setTimeout(() => m.classList.add('hidden'), 500); }
-            playSound('click');
         }
 
         function renderMaster() {
             const list = document.getElementById('master-list'); list.innerHTML = '';
             state.actions.forEach((a, i) => {
-                const item = document.createElement('div'); item.className = `p-5 rounded-3xl liquid-glass`;
-                item.innerHTML = `
-                    <div class="flex items-center gap-3 mb-4"><i data-lucide="${a.icon}" class="w-5 h-5 text-lime-500"></i><span class="text-xs font-black text-white uppercase">${a.label}</span></div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" value="${a.label}" onchange="updateAction(${i}, 'label', this.value)" class="bg-black/50 border border-white/10 rounded-xl p-3 text-xs text-white">
-                        <input type="number" value="${a.points}" onchange="updateAction(${i}, 'points', this.value)" class="bg-black/50 border border-white/10 rounded-xl p-3 text-xs text-white">
-                    </div>
-                `;
+                const item = document.createElement('div'); item.className = `p-4 rounded-xl liquid-glass`;
+                item.innerHTML = `<div class="flex items-center gap-2 mb-2"><i data-lucide="${a.icon}" class="w-3 h-3 text-lime-500"></i><span class="text-[9px] font-black text-white uppercase">${a.label}</span></div><div class="grid grid-cols-2 gap-2"><input type="text" value="${a.label}" onchange="state.actions[${i}].label=this.value;saveData();" class="bg-black/50 border border-white/10 rounded-lg p-2 text-[10px] text-white"><input type="number" value="${a.points}" onchange="state.actions[${i}].points=parseInt(this.value);saveData();" class="bg-black/50 border border-white/10 rounded-lg p-2 text-[10px] text-white"></div>`;
                 list.appendChild(item);
             });
             lucide.createIcons();
         }
-
-        function updateAction(index, key, value) { if (key === 'points') value = parseInt(value) || 0; state.actions[index][key] = value; saveData(); renderButtons(); }
-        function toggleMute() { state.isMuted = !state.isMuted; const icon = document.getElementById('mute-icon'); icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2'); lucide.createIcons(); if (!state.isMuted) playSound('click'); }
 
         window.onload = init;
     </script>
