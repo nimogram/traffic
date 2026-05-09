@@ -1,550 +1,490 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sync Log Update - V7.8 Reveal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EQ-Logic Pro | Octalysis Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 1. CORE SETUP - Business Intelligence Style */
-        * {
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+        
+        :root {
+            --base-black: #0a0a0a;
+            --accent-purple: #a855f7;
+            --accent-sky: #0ea5e9;
         }
 
         body {
-            background-color: #0f172a;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin: 0;
-            min-height: 100vh;
-            padding: 20px 0;
-            place-items: center;
-        }
-
-        .slide-container {
-            align-items: flex-start;
-            background-color: #000;
-            border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            font-family: 'Urbanist', sans-serif;
-            height: 720px;
-            justify-content: center;
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: var(--base-black);
+            color: #f8fafc;
             overflow: hidden;
-            padding: 60px;
+            height: 100dvh;
+            touch-action: manipulation;
+        }
+
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-gradient-text {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-sky));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .theme-gradient-bg {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-sky));
+        }
+
+        .theme-glow {
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.15);
+        }
+
+        .active-tap:active {
+            transform: scale(0.95);
+            filter: brightness(1.2);
+        }
+
+        .typewriter::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: var(--accent-purple);
+        }
+
+        @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
+
+        .log-item-container {
             position: relative;
-            width: 1280px;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 8px;
         }
 
-        /* High-Contrast Background Elements */
-        .slide-container::before {
-            background: radial-gradient(circle at 10% 10%, rgba(132, 204, 22, 0.05) 0%, transparent 40%);
-            content: '';
-            height: 100%;
-            left: 0;
-            position: absolute;
-            top: 0;
-            width: 100%;
-            z-index: 0;
+        .log-item-content {
+            position: relative;
+            z-index: 2;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .slide-container::after {
-            background: linear-gradient(90deg, #84cc16 0%, transparent 70%);
-            bottom: 40px;
-            content: '';
-            height: 2px;
-            left: 60px;
-            position: absolute;
-            right: 60px;
+        .delete-btn-bg {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
+            background-color: #ef4444; color: white;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 15px; z-index: 1; border-radius: 12px;
+            font-weight: 900; font-size: 10px;
+        }
+
+        .datetime-input {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.5);
+            border: none;
+            padding: 0;
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
             opacity: 0.3;
         }
 
-        .slide-container > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* 2. TYPOGRAPHY - Rational and Modern */
-        .slide-container h1, .slide-container h2, .slide-container h3 {
-            color: #f8fafc;
-            font-family: 'Urbanist', sans-serif;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .slide-container .slide-title {
-            color: #bef264;
-            font-size: 52px;
-            letter-spacing: -1px;
-            margin-bottom: 30px;
-            text-align: left;
+        .chart-wrapper {
             width: 100%;
-        }
-
-        .slide-container p, .slide-container li, .slide-container .subtitle {
-            color: #cbd5e1;
-            font-size: 22px;
-            line-height: 1.4;
-        }
-
-        .slide-container .subtitle {
-            font-weight: 400;
-            margin-top: 15px;
-            max-width: 800px;
-        }
-
-        .slide-container .content-area {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            justify-content: center;
-            width: 100%;
-        }
-
-        /* 3. LAYOUT SPECIFICS */
-        .title-layout {
-            text-align: center;
-            width: 100%;
-        }
-
-        .title-layout h1 {
-            font-size: 84px;
-            line-height: 1;
-            margin-bottom: 20px;
-        }
-
-        .title-layout h1 span {
-            color: #84cc16;
-        }
-
-        .section-title-layout {
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            justify-content: center;
-            text-align: center;
-            width: 100%;
-        }
-
-        .section-title-layout h2 {
-            font-size: 72px;
-            margin-bottom: 20px;
-        }
-
-        .section-title-layout hr {
-            background-color: #84cc16;
-            border: none;
-            height: 6px;
-            margin: 20px auto;
-            width: 120px;
-        }
-
-        .two-column {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            width: 100%;
-        }
-
-        .image-wrapper {
-            background: #111;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            height: 400px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .image-wrapper img {
-            height: 100%;
-            object-fit: cover;
-            width: 100%;
-        }
-
-        .rounded-image-layout .image-wrapper {
-            border-radius: 50%;
-            height: 400px;
+            max-width: 320px;
+            height: 280px;
             margin: 0 auto;
-            width: 400px;
-        }
-
-        .tiled-content {
-            display: flex;
-            gap: 30px;
-            width: 100%;
-        }
-
-        .tile {
-            background-color: #0f172a;
-            border: 1px solid #1e293b;
-            border-radius: 20px;
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-            gap: 15px;
-            padding: 30px;
-        }
-
-        .tile .icon {
-            color: #84cc16;
-            font-size: 44px;
-        }
-
-        .tile h3 {
-            color: #f8fafc;
-            font-size: 28px;
-        }
-
-        /* 4. CHARTS & METRICS */
-        .chart-container {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            width: 100%;
-        }
-
-        .bar {
-            align-items: center;
-            display: flex;
-            gap: 20px;
-        }
-
-        .bar .label {
-            color: #94a3b8;
-            flex: 0 0 200px;
-            font-weight: 700;
-            text-align: right;
-        }
-
-        .bar .bar-inner {
-            background-color: #1e293b;
-            border-radius: 10px;
-            flex-grow: 1;
-            height: 40px;
-        }
-
-        .bar .bar-fill {
-            align-items: center;
-            border-radius: 10px;
-            color: #000;
-            display: flex;
-            font-size: 16px;
-            font-weight: 700;
-            height: 100%;
-            justify-content: flex-end;
-            padding-right: 15px;
-        }
-
-        .highlight-numbers-layout .number {
-            color: #84cc16;
-            font-size: 180px;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .highlight-numbers-layout .number-label {
-            color: #bef264;
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        /* Timeline Styles */
-        .timeline-layout {
-            display: flex;
-            justify-content: space-between;
-            padding: 40px 0;
             position: relative;
-            width: 100%;
-        }
-
-        .timeline-line {
-            background-color: #334155;
-            height: 4px;
-            left: 0;
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            z-index: 0;
-        }
-
-        .timeline-item {
-            position: relative;
-            text-align: center;
-            width: 30%;
-            z-index: 1;
-        }
-
-        .timeline-item::after {
-            background-color: #84cc16;
-            border: 4px solid #000;
-            border-radius: 50%;
-            content: '';
-            height: 24px;
-            left: 50%;
-            position: absolute;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px;
-        }
-
-        .timeline-item .content-wrapper {
-            position: absolute;
-            width: 100%;
-        }
-
-        .timeline-item:nth-child(odd) .content-wrapper { bottom: 60%; }
-        .timeline-item:nth-child(even) .content-wrapper { top: 60%; }
-
-        .timeline-item h3 { color: #bef264; font-size: 24px; }
-
-        /* Quote Layout */
-        .quote-layout {
-            text-align: center;
-            width: 100%;
-        }
-
-        .quote-layout blockquote {
-            color: #f8fafc;
-            font-size: 48px;
-            font-style: italic;
-            line-height: 1.3;
-            margin: 0 auto 30px;
-            max-width: 900px;
-            position: relative;
-        }
-
-        .quote-layout blockquote::before {
-            color: #84cc16;
-            content: '"';
-            font-size: 120px;
-            left: -60px;
-            position: absolute;
-            top: -40px;
-        }
-
-        /* Bullet List */
-        .bullet-list ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .bullet-list li {
-            margin-bottom: 25px;
-            padding-left: 50px;
-            position: relative;
-        }
-
-        .bullet-list i {
-            color: #84cc16;
-            font-size: 28px;
-            left: 0;
-            position: absolute;
-            top: 5px;
         }
     </style>
 </head>
-<body>
+<body class="p-4">
 
-<!-- Slide 1: Title_Slide -->
-<div class="slide-container" id="slide1">
-    <div class="title-layout">
-        <h1>SYNC LOG <span>V7.8</span></h1>
-        <p class="subtitle">Peak Efficiency Update: Implementing Swipe-to-Delete Interaction for Tactical Log Reconciliation in Sapporo.</p>
-    </div>
-</div>
-
-<!-- Slide 2: Section_Title -->
-<div class="slide-container" id="slide2">
-    <div class="section-title-layout">
-        <hr>
-        <h2>Strategic Objective</h2>
-        <p>Streamlining high-velocity data management for IT professional performance.</p>
-    </div>
-</div>
-
-<!-- Slide 3: Image_Right_Text_Left -->
-<div class="slide-container" id="slide3">
-    <h2 class="slide-title">Swipe-to-Delete Interface</h2>
-    <div class="content-area">
-        <div class="two-column">
-            <div>
-                <h3>Intuitive Data Purging</h3>
-                <p>Incorporating the modern mobile design pattern for rapid interaction. This allows for one-handed log management, crucial for busy IT sales professionals navigating the business landscape.</p>
-                <p>The interaction reduces the cognitive load by mapping physical movement directly to a logical "Atomic Action."</p>
-            </div>
-            <div class="image-wrapper">
-                <img src="[attachment_0](attachment)" alt="Mobile UI Swipe Interaction">
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 4: Tiled_Text_With_Icons -->
-<div class="slide-container" id="slide4">
-    <h2 class="slide-title">Interaction Logic Update</h2>
-    <div class="content-area">
-        <div class="tiled-content">
-            <div class="tile">
-                <div class="icon"><i class="fa-solid fa-fingerprint"></i></div>
-                <h3>Input Capture</h3>
-                <p>Utilizes touchstart to define the initial anchor point of the user intention.</p>
-            </div>
-            <div class="tile">
-                <div class="icon"><i class="fa-solid fa-arrows-left-right"></i></div>
-                <h3>Threshold</h3>
-                <p>Dynamic detection of lateral velocity to prevent accidental data loss.</p>
-            </div>
-            <div class="tile">
-                <div class="icon"><i class="fa-solid fa-bolt"></i></div>
-                <h3>Execution</h3>
-                <p>Atomic deletion sequence triggering local state removal and API calls.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 5: Two_Column_Tiled_Text -->
-<div class="slide-container" id="slide5">
-    <h2 class="slide-title">Data Integrity: GAS Mirroring</h2>
-    <div class="content-area">
-        <div class="two-column">
-            <div style="background:#0f172a; border-radius:16px; padding:30px; border:1px solid #1e293b;">
-                <h3>State Reconciliation</h3>
-                <p>The local IndexedDB/State is immediately updated to provide zero-latency feedback, essential for INTJ-level tactical flow.</p>
-            </div>
-            <div style="background:#0f172a; border-radius:16px; padding:30px; border:1px solid #1e293b;">
-                <h3>API Cloud Sync</h3>
-                <p>The Google Apps Script backend receives a DELETE packet to maintain a perfect mirror in your Google Sheets archive.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 6: Rounded_Image_and_Text -->
-<div class="slide-container rounded-image-layout" id="slide6">
-    <h2 class="slide-title">Visual Neon Continuity</h2>
-    <div class="content-area">
-        <div class="two-column">
-            <div class="image-wrapper">
-                <img src="[attachment_1](attachment)" alt="Glowing Neon Icon">
-            </div>
-            <div>
-                <h3>Aesthetic Precision</h3>
-                <p>Maintaining the Lime Green and Black high-contrast theme. Visual continuity is maintained through the transition states, ensuring the UI feels like a seamless part of the Strategic OS architecture.</p>
-                <p>Every pixel serves the purpose of clarity and performance.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 7: Bar_Chart_For_Comparisons -->
-<div class="slide-container" id="slide7">
-    <h2 class="slide-title">Interaction Efficiency Gains</h2>
-    <div class="content-area">
-        <div class="chart-container">
-            <div class="bar">
-                <div class="label">Conventional Tap</div>
-                <div class="bar-inner"><div class="bar-fill" style="width: 90%; background: linear-gradient(90deg, #334155, #475569);">500ms</div></div>
-            </div>
-            <div class="bar">
-                <div class="label">Swipe Action</div>
-                <div class="bar-inner"><div class="bar-fill" style="width: 45%; background: linear-gradient(90deg, #84cc16, #bef264);">250ms</div></div>
-            </div>
-            <div class="bar">
-                <div class="label">Logic Sync</div>
-                <div class="bar-inner"><div class="bar-fill" style="width: 20%; background: linear-gradient(90deg, #daffde, #bef264);">100ms</div></div>
-            </div>
-        </div>
-        <p style="margin-top:40px; text-align:center;">The Swipe pattern reduces interaction time by 50%, allowing for more focus on high-level strategic planning.</p>
-    </div>
-</div>
-
-<!-- Slide 8: Timeline -->
-<div class="slide-container" id="slide8">
-    <h2 class="slide-title">Evolution Roadmap</h2>
-    <div class="content-area">
-        <div class="timeline-layout">
-            <div class="timeline-line"></div>
-            <div class="timeline-item">
-                <div class="content-wrapper">
-                    <h3>V7.7</h3>
-                    <p>GAS Backend Integration & Automated Persistence</p>
+    <div id="app" class="max-w-lg mx-auto w-full h-full flex flex-col gap-4 relative">
+        
+        <!-- HEADER (Action View) -->
+        <header id="global-header" class="liquid-glass rounded-[2rem] p-5 theme-glow shrink-0">
+            <div class="flex justify-between items-start mb-4">
+                <div onclick="toggleMasterView()" class="cursor-pointer">
+                    <p class="text-[10px] font-black tracking-[0.3em] mb-1 uppercase theme-gradient-text">EQ ASSET LOGIC</p>
+                    <div class="flex items-baseline gap-2">
+                        <!-- v13.1: Consistent 3xl points -->
+                        <span id="header-total-points" class="text-3xl font-black text-white tracking-tighter tabular-nums">0</span>
+                        <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">EXP Asset</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-3">
+                    <div id="heart-container" class="flex gap-1">
+                        <i data-lucide="heart" class="w-4 h-4 text-purple-500 fill-purple-500"></i>
+                        <i data-lucide="heart" class="w-4 h-4 text-purple-500 fill-purple-500"></i>
+                        <i data-lucide="heart" class="w-4 h-4 text-purple-500 fill-purple-500"></i>
+                        <i data-lucide="heart" class="w-4 h-4 text-sky-500 fill-sky-500"></i>
+                        <i data-lucide="heart" class="w-4 h-4 text-sky-500 fill-sky-500"></i>
+                    </div>
+                    <button onclick="toggleMute()" class="p-2.5 rounded-2xl bg-white/5 border border-white/10 active-tap">
+                        <i id="mute-icon" data-lucide="volume-2" class="w-4 h-4 text-slate-400"></i>
+                    </button>
                 </div>
             </div>
-            <div class="timeline-item">
-                <div class="content-wrapper">
-                    <h3>V7.8</h3>
-                    <p>UI Polish & Swipe Interaction Logic</p>
+
+            <div class="bg-black/40 rounded-2xl p-4 border border-white/5">
+                <div class="flex justify-between items-end mb-2">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Strategy Stage</p>
+                        <p id="level-badge" class="text-xs font-black text-purple-400 uppercase tracking-widest leading-none">Lv.1 Specialist</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-black text-slate-500 uppercase leading-none mb-1">Gap to Level Up</p>
+                        <div class="flex items-baseline leading-none">
+                            <span id="next-level-info" class="text-lg font-black text-white tabular-nums">+500</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div id="level-progress-bar" class="h-full theme-gradient-bg" style="width: 0%"></div>
                 </div>
             </div>
-            <div class="timeline-item">
-                <div class="content-wrapper">
-                    <h3>V8.0</h3>
-                    <p>Strategic Analytics & Multi-Persona Hub</p>
+        </header>
+
+        <!-- ADVISOR -->
+        <div id="advisor-box" class="liquid-glass p-5 rounded-[2rem] flex items-start gap-4 shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 shadow-inner">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1 min-h-[50px]">
+                <p id="advisor-text" class="text-[14px] font-bold text-white leading-relaxed typewriter">Strategic OS Initialized...</p>
+            </div>
+        </div>
+
+        <!-- MAIN ACTION VIEW -->
+        <div id="action-view" class="flex-1 grid grid-cols-2 gap-3 overflow-y-auto pr-1 content-start pb-24"></div>
+
+        <!-- STATS VIEW -->
+        <div id="stats-view" class="hidden flex-1 flex flex-col gap-4 overflow-hidden">
+            <!-- Points Summary (text-3xl) -->
+            <div class="liquid-glass p-6 rounded-[2rem] text-center shrink-0 border border-white/5">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Accumulated Asset</p>
+                <div class="flex items-baseline justify-center gap-3">
+                    <span id="stats-total-points" class="text-3xl font-black text-white tabular-nums tracking-tighter">0</span>
+                    <span id="stats-next-goal" class="text-[11px] font-bold theme-gradient-text uppercase tracking-widest opacity-80">+0 NEXT</span>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 9: Quote -->
-<div class="slide-container" id="slide9">
-    <div class="content-area">
-        <div class="quote-layout">
-            <blockquote>Efficiency is doing things right; effectiveness is doing the right things.</blockquote>
-            <p style="color:#84cc16; font-size:24px; font-weight:700;">— Strategic Management Philosophy</p>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 10: Highlighted_Numbers -->
-<div class="slide-container" id="slide10">
-    <h2 class="slide-title">Optimization Result</h2>
-    <div class="content-area">
-        <div class="two-column highlight-numbers-layout" style="align-items:center;">
-            <div>
-                <div class="number">30%</div>
-                <div class="number-label">Management Velocity</div>
+            
+            <!-- Radar Chart Area -->
+            <div class="liquid-glass p-6 rounded-[2.5rem] shrink-0">
+                <div class="chart-wrapper">
+                    <canvas id="radarChart"></canvas>
+                </div>
             </div>
-            <div>
-                <h3>Quantifiable Progress</h3>
-                <p>The time spent on administrative log maintenance has been reduced significantly. This update empowers the user to perform state-of-the-art log reconciliation during transitions between business targets in Sapporo.</p>
+
+            <!-- History Area (Independent Scroll) -->
+            <div class="flex-1 overflow-y-auto space-y-2 pb-32 pr-1" id="history-list"></div>
+        </div>
+
+        <!-- FLOATING ACTION BUTTON -->
+        <button id="toggle-view-btn" onclick="toggleView()" class="fixed bottom-10 right-6 w-16 h-16 theme-gradient-bg text-black rounded-3xl shadow-[0_15px_40px_rgba(168, 85, 247, 0.3)] flex items-center justify-center active-tap z-50">
+            <i id="view-icon" data-lucide="bar-chart-3" class="w-7 h-7"></i>
+        </button>
+
+        <!-- COMMIT PANEL -->
+        <div id="detail-panel" class="fixed inset-0 z-50 flex justify-end pointer-events-none overflow-hidden">
+            <div id="panel-backdrop" class="absolute inset-0 bg-black/80 opacity-0 transition-opacity"></div>
+            <div id="panel-content" class="w-[90%] h-full liquid-glass border-l border-white/10 p-8 transform translate-x-full transition-transform duration-400 pointer-events-auto flex flex-col gap-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-black text-white uppercase tracking-tighter">Commit Action</h2>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <p id="panel-points" class="text-3xl font-black theme-gradient-text tracking-tighter tabular-nums">+10 EXP</p>
+                        </div>
+                    </div>
+                    <button onclick="closePanel()" class="p-3 bg-white/10 rounded-full text-white active-tap"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+                <div class="space-y-8 flex-1 overflow-y-auto pr-1">
+                    <div>
+                        <p class="text-xs font-black text-white/50 uppercase tracking-widest mb-4">Target Unit</p>
+                        <div id="target-selector" class="grid grid-cols-2 gap-3">
+                            <button onclick="selectTarget('AKS')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">AKS</button>
+                            <button onclick="selectTarget('YSD')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">YSD</button>
+                            <button onclick="selectTarget('YKO')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">YKO</button>
+                            <button onclick="selectTarget('BODY')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">HEALTH</button>
+                        </div>
+                    </div>
+                    <textarea id="log-memo" rows="4" placeholder="状況、反応、改善ロジック..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-sm text-white focus:border-purple-500/50 outline-none"></textarea>
+                </div>
+                <button onclick="saveLog()" class="shrink-0 w-full theme-gradient-bg text-black font-black py-5 rounded-2xl text-lg active-tap">COMMIT ACTION</button>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Slide 11: Styled_Bullet_Points -->
-<div class="slide-container" id="slide11">
-    <h2 class="slide-title">v7.8 Technical Summary</h2>
-    <div class="content-area">
-        <div class="bullet-list">
-            <ul>
-                <li><i class="fa-solid fa-check-double"></i> <strong>Neon UI Sync:</strong> Absolute visual continuity between interaction states and the core Lime theme.</li>
-                <li><i class="fa-solid fa-cloud-arrow-up"></i> <strong>GAS Mirroring:</strong> Bi-directional data integrity ensured through non-blocking asynchronous cloud commits.</li>
-                <li><i class="fa-solid fa-hand-pointer"></i> <strong>Swipe Purge:</strong> Reduced latency in log cleanup using optimized touch event listener thresholds.</li>
-                <li><i class="fa-solid fa-mobile-screen"></i> <strong>Mobile Logic:</strong> Specifically tuned for high-pressure mobile environments encountered in IT Sales.</li>
-            </ul>
+        <!-- MASTER SETTINGS -->
+        <div id="master-view" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl p-8 flex flex-col overflow-y-auto transform translate-y-full transition-transform duration-500">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-xl font-black text-white uppercase tracking-widest">Maintenance</h3>
+                <button onclick="toggleMasterView()" class="p-4 bg-white/10 rounded-full text-white active-tap"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div id="master-list" class="space-y-4 pb-20"></div>
         </div>
     </div>
-</div>
 
-<!-- Slide 12: Q&A -->
-<div class="slide-container" id="slide12">
-    <div class="section-title-layout">
-        <hr>
-        <h2>Strategic Readiness</h2>
-        <p>The system is primed for peak performance deployment. Ready to proceed with v7.8 implementation?</p>
-        <p style="margin-top:40px; color:#84cc16; font-weight:700;">www.nimo-strategic.io | Sapporo Digital Operations</p>
-    </div>
-</div>
+    <script>
+        const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-Lk_8UhahzIlmYDtf6Dh5N_B53cJUUnlm6Ig5MwHvtPO7J4IZ2gXiNo8imHvPHiEh9g/exec"; 
 
+        // v13.1: Distinct Modern Coloring
+        const DEFAULT_ACTIONS = [
+            { id: 'plus', label: 'ひとことプラス', points: 10, icon: 'message-circle', color: 'from-teal-400 to-cyan-500' },
+            { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-rose-500 to-red-600' },
+            { id: 'sketch', label: 'スケッチ', points: 10, icon: 'pencil', color: 'from-amber-400 to-orange-500' },
+            { id: 'network', label: '雑談', points: 15, icon: 'users', color: 'from-blue-400 to-indigo-500' },
+            { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-fuchsia-400 to-purple-500' },
+            { id: 'stairs', label: '階段利用', points: 5, icon: 'trending-up', color: 'from-emerald-400 to-teal-500' },
+            { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-indigo-500 to-purple-700' },
+            { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-green-500' }
+        ];
+
+        let state = { totalPoints: 0, currentLevel: 1, isMuted: false, currentAction: null, selectedTarget: null, view: 'action', logs: [], actions: [] };
+        let radarChartInstance = null;
+        let typeWriterTimeout = null;
+
+        function getExpRequiredForLevel(lv) { return Math.floor(500 + (2000 / (1 + Math.exp(-0.5 * (lv - 5))))); }
+
+        function init() {
+            loadData();
+            lucide.createIcons();
+            renderButtons();
+            updateUI();
+            startAdvisor();
+            syncFromGas();
+        }
+        
+        function loadData() {
+            const saved = localStorage.getItem('eq_logic_v11');
+            if (saved) {
+                const p = JSON.parse(saved);
+                state.totalPoints = p.totalPoints || 0;
+                state.logs = p.logs || [];
+                state.actions = (p.actions && p.actions.length === 8) ? p.actions : DEFAULT_ACTIONS;
+            } else { state.actions = DEFAULT_ACTIONS; }
+        }
+
+        function saveData() { localStorage.setItem('eq_logic_v11', JSON.stringify({ totalPoints: state.totalPoints, logs: state.logs, actions: state.actions })); }
+
+        async function syncFromGas() {
+            try {
+                const res = await fetch(GAS_WEBAPP_URL);
+                const cloudLogs = await res.json();
+                if (Array.isArray(cloudLogs)) {
+                    state.logs = cloudLogs.map((l, i) => ({
+                        id: i, label: l.label, points: l.points, target: l.target, timestamp: l.timestamp,
+                        colorClass: state.actions.find(a => a.label === l.label)?.color || 'from-slate-800'
+                    }));
+                    state.totalPoints = cloudLogs.reduce((s, l) => s + l.points, 0);
+                    saveData(); updateUI();
+                }
+            } catch (e) {}
+        }
+
+        function startAdvisor() {
+            const ADVISORY_DATABASE = [
+                "✨ 相手の話を聞く時はスマホを伏せる。最高のパフォーマンスになります。",
+                "✨ 挨拶に『北海道の寒さ』を一言。警戒心をデフラグします。",
+                "✨ 表情筋を0.5ミリ緩める。威圧から安心に変換されます。",
+                "🎯 相手の『なぜ』を先に理解することが、最速の合意形成への近道。",
+                "沈黙の3秒は、相手が本音を話すための『招待状』です。"
+            ];
+            const el = document.getElementById('advisor-text');
+            const txt = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
+            if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+            el.innerText = ''; let i = 0;
+            function type() { if (i < txt.length) { el.innerText += txt.charAt(i); i++; typeWriterTimeout = setTimeout(type, 50); } }
+            type();
+        }
+
+        function updateUI() {
+            let pts = state.totalPoints; let lv = 1;
+            while (pts >= getExpRequiredForLevel(lv)) { pts -= getExpRequiredForLevel(lv); lv++; }
+            const req = getExpRequiredForLevel(lv);
+            document.getElementById('header-total-points').innerText = state.totalPoints.toLocaleString();
+            document.getElementById('stats-total-points').innerText = state.totalPoints.toLocaleString();
+            document.getElementById('stats-next-goal').innerText = `+${req - pts} NEXT`;
+            document.getElementById('level-badge').innerText = `Lv.${lv} Specialist`;
+            document.getElementById('next-level-info').innerText = `+${req - pts}`;
+            document.getElementById('level-progress-bar').style.width = `${(pts / req) * 100}%`;
+        }
+
+        function renderButtons() {
+            const container = document.getElementById('action-view'); container.innerHTML = '';
+            state.actions.forEach((a, i) => {
+                const btn = document.createElement('button');
+                btn.className = `bg-gradient-to-br ${a.color} rounded-3xl flex items-center justify-between px-5 active-tap h-[76px] border border-white/10 shadow-lg`;
+                btn.onclick = () => { state.currentAction = a; if (['gym', 'stairs', 'bike'].includes(a.id)) { state.selectedTarget = 'BODY'; saveLog(""); } else openPanel(a); };
+                btn.innerHTML = `<div class="flex items-center gap-3"><i data-lucide="${a.icon}" class="w-5 h-5 text-white"></i><span class="text-[14px] font-black text-white">${a.label}</span></div><span class="text-[11px] font-black text-white/40 tracking-widest">+${a.points}</span>`;
+                container.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function toggleView() {
+            state.view = state.view === 'action' ? 'stats' : 'action';
+            document.getElementById('global-header').classList.toggle('hidden', state.view === 'stats');
+            document.getElementById('advisor-box').classList.toggle('hidden', state.view === 'stats');
+            document.getElementById('action-view').classList.toggle('hidden', state.view !== 'action');
+            document.getElementById('stats-view').classList.toggle('hidden', state.view !== 'stats');
+            const icon = document.getElementById('view-icon');
+            icon.setAttribute('data-lucide', state.view === 'stats' ? 'layout-grid' : 'bar-chart-3');
+            if (state.view === 'stats') renderStats();
+            lucide.createIcons();
+        }
+
+        function openPanel(a) {
+            state.selectedTarget = null;
+            document.getElementById('panel-title').innerText = `${a.label} Commit`;
+            document.getElementById('panel-points').innerText = `+${a.points} EXP`;
+            document.getElementById('detail-panel').classList.remove('pointer-events-none');
+            document.getElementById('panel-content').classList.remove('translate-x-full');
+            document.getElementById('panel-backdrop').style.opacity = '1';
+        }
+
+        function closePanel() {
+            document.getElementById('panel-content').classList.add('translate-x-full');
+            document.getElementById('panel-backdrop').style.opacity = '0';
+            setTimeout(() => document.getElementById('detail-panel').classList.add('pointer-events-none'), 400);
+        }
+
+        function selectTarget(t) {
+            state.selectedTarget = t;
+            document.querySelectorAll('.target-opt').forEach(btn => {
+                const isActive = btn.innerText.includes(t==='BODY'?'HEALTH':t);
+                btn.style.borderColor = isActive ? 'var(--accent-sky)' : 'rgba(255,255,255,0.1)';
+                btn.style.backgroundColor = isActive ? 'rgba(14, 165, 233, 0.1)' : 'rgba(255,255,255,0.05)';
+            });
+        }
+
+        function saveLog(memo = null) {
+            const a = state.currentAction; const target = state.selectedTarget || 'BODY';
+            const log = { id: Date.now(), label: a.label, points: a.points, target: target, timestamp: new Date().toISOString(), colorClass: a.color };
+            state.logs.unshift(log); state.totalPoints += a.points;
+            fetch(GAS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ ...log, memo: memo || document.getElementById('log-memo').value }) });
+            saveData(); updateUI(); closePanel();
+        }
+
+        function renderStats() {
+            const list = document.getElementById('history-list'); list.innerHTML = '';
+            const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            
+            const weekLogs = state.logs.filter(l => new Date(l.timestamp).getTime() >= (today - 6*24*60*60*1000));
+            const labels = state.actions.map(a => a.label);
+            const dataCounts = labels.map(label => weekLogs.filter(l => l.label === label).length);
+            updateRadarChart(labels, dataCounts);
+
+            state.logs.forEach(l => {
+                const container = document.createElement('div'); container.className = 'log-item-container liquid-glass';
+                const d = new Date(l.timestamp);
+                const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                
+                container.innerHTML = `
+                    <div class="delete-btn-bg" onclick="deleteLog(${l.id})">DELETE</div>
+                    <div class="log-item-content flex justify-between items-center py-2.5 bg-gradient-to-r ${l.colorClass} border-b border-white/5">
+                        <div class="flex flex-col flex-1 pl-5">
+                            <div class="flex items-center gap-4">
+                                <span class="text-[14px] font-black text-white shrink-0">${l.label}</span>
+                                <input type="datetime-local" step="1800" value="${localISO}" onchange="updateLogTimestamp(${l.id}, this.value)" class="datetime-input">
+                            </div>
+                            <span class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] leading-none mt-1.5">${l.target}</span>
+                        </div>
+                        <span class="text-[15px] font-black text-white pr-5">+${l.points}</span>
+                    </div>
+                `;
+                setupSwipe(container);
+                list.appendChild(container);
+            });
+        }
+
+        function updateRadarChart(labels, data) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (radarChartInstance) radarChartInstance.destroy();
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: 'rgba(168, 85, 247, 0.2)', borderColor: '#a855f7', borderWidth: 2, pointRadius: 2 }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 9, weight: '900' } },
+                            ticks: { display: false },
+                            suggestedMin: 0
+                        }
+                    },
+                    plugins: { legend: { display: false } },
+                    animation: { duration: 800 }
+                }
+            });
+        }
+
+        function setupSwipe(container) {
+            const content = container.querySelector('.log-item-content'); let startX = 0; let currentTranslate = 0;
+            content.addEventListener('touchstart', e => { 
+                if (e.target.tagName === 'INPUT') return;
+                startX = e.touches[0].clientX; 
+                content.style.transition = 'none'; 
+            }, { passive: true });
+            
+            content.addEventListener('touchmove', e => { 
+                if (e.target.tagName === 'INPUT') return;
+                const diff = e.touches[0].clientX - startX; 
+                if (diff < 0) { 
+                    currentTranslate = Math.max(diff, -80); 
+                    content.style.transform = `translateX(${currentTranslate}px)`; 
+                } 
+            }, { passive: true });
+            
+            content.addEventListener('touchend', () => { 
+                content.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'; 
+                if (currentTranslate < -50) { content.style.transform = 'translateX(-80px)'; } else { content.style.transform = 'translateX(0)'; } 
+            });
+        }
+
+        function deleteLog(id) {
+            const idx = state.logs.findIndex(l => l.id === id);
+            if (idx > -1) { state.totalPoints -= state.logs[idx].points; state.logs.splice(idx, 1); saveData(); updateUI(); renderStats(); }
+        }
+
+        function updateLogTimestamp(id, val) {
+            const idx = state.logs.findIndex(l => l.id === id);
+            if (idx > -1) { state.logs[idx].timestamp = new Date(val).toISOString(); saveData(); updateUI(); renderStats(); }
+        }
+
+        function toggleMute() { state.isMuted = !state.isMuted; const icon = document.getElementById('mute-icon'); icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2'); lucide.createIcons(); }
+
+        function toggleMasterView() {
+            const m = document.getElementById('master-view');
+            const open = m.classList.contains('translate-y-full');
+            if (open) { m.classList.remove('hidden'); setTimeout(() => m.classList.remove('translate-y-full'), 10); renderMaster(); }
+            else { m.classList.add('translate-y-full'); setTimeout(() => m.classList.add('hidden'), 500); }
+        }
+
+        function renderMaster() {
+            const list = document.getElementById('master-list'); list.innerHTML = '';
+            state.actions.forEach((a, i) => {
+                const item = document.createElement('div'); item.className = `p-5 rounded-2xl liquid-glass`;
+                item.innerHTML = `<div class="flex items-center gap-3 mb-3"><i data-lucide="${a.icon}" class="w-4 h-4 text-purple-500"></i><span class="text-xs font-black text-white uppercase">${a.label}</span></div><div class="grid grid-cols-2 gap-3"><input type="text" value="${a.label}" onchange="state.actions[${i}].label=this.value;saveData();" class="bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white"><input type="number" value="${a.points}" onchange="state.actions[${i}].points=parseInt(this.value);saveData();" class="bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white"></div>`;
+                list.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        window.onload = init;
+    </script>
 </body>
 </html>
