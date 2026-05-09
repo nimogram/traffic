@@ -34,7 +34,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Royal Sky Gradient */
         .theme-gradient-text {
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-sky));
             -webkit-background-clip: text;
@@ -62,7 +61,6 @@
 
         @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
 
-        /* History Items */
         .log-item-container {
             position: relative;
             overflow: hidden;
@@ -109,7 +107,6 @@
             position: relative;
         }
 
-        /* Scroll Customization */
         #history-list::-webkit-scrollbar { width: 4px; }
         #history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
@@ -124,7 +121,6 @@
                 <div onclick="toggleMasterView()" class="cursor-pointer">
                     <p class="text-[10px] font-black tracking-[0.3em] mb-1 uppercase theme-gradient-text">EQ ASSET LOGIC</p>
                     <div class="flex items-baseline gap-2">
-                        <!-- v13.3: Point size fixed at 3xl -->
                         <span id="header-total-points" class="text-3xl font-black text-white tracking-tighter tabular-nums">0</span>
                         <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">EXP Asset</span>
                     </div>
@@ -168,11 +164,11 @@
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
             <div class="flex-1 min-h-[50px]">
-                <p id="advisor-text" class="text-[14px] font-bold text-white leading-relaxed typewriter">Strategy Portfolio Analyzing...</p>
+                <p id="advisor-text" class="text-[14px] font-bold text-white leading-relaxed typewriter">Analyzing Strategy Portfolio...</p>
             </div>
         </div>
 
-        <!-- MAIN ACTION VIEW (Button grid) -->
+        <!-- MAIN ACTION VIEW -->
         <div id="action-view" class="flex-1 grid grid-cols-2 gap-3 overflow-y-auto pr-1 content-start pb-24"></div>
 
         <!-- STATS VIEW -->
@@ -241,7 +237,6 @@
     <script>
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-Lk_8UhahzIlmYDtf6Dh5N_B53cJUUnlm6Ig5MwHvtPO7J4IZ2gXiNo8imHvPHiEh9g/exec"; 
 
-        // Modern and distinct colors for each action
         const DEFAULT_ACTIONS = [
             { id: 'plus', label: 'ひとことプラス', points: 10, icon: 'message-circle', color: 'from-teal-400 to-cyan-500' },
             { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-rose-500 to-red-600' },
@@ -259,7 +254,6 @@
 
         function getExpRequiredForLevel(lv) { return Math.floor(500 + (2000 / (1 + Math.exp(-0.5 * (lv - 5))))); }
 
-        // Core Initialization
         function init() {
             loadData();
             if (window.lucide) lucide.createIcons();
@@ -350,7 +344,6 @@
 
         function openPanel(a) {
             state.selectedTarget = null;
-            document.getElementById('panel-title').innerText = `${a.label} Commit`;
             document.getElementById('panel-points').innerText = `+${a.points} EXP`;
             document.getElementById('detail-panel').classList.remove('pointer-events-none');
             document.getElementById('panel-content').classList.remove('translate-x-full');
@@ -389,7 +382,10 @@
             const dataCounts = labels.map(label => weekLogs.filter(l => l.label === label).length);
             updateRadarChart(labels, dataCounts);
 
-            state.logs.forEach(l => {
+            // v13.4 Sort by timestamp DESC (Newest first)
+            const sortedLogs = [...state.logs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            sortedLogs.forEach(l => {
                 const container = document.createElement('div'); container.className = 'log-item-container liquid-glass';
                 const d = new Date(l.timestamp);
                 const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
@@ -467,7 +463,7 @@
             if (idx > -1) { state.totalPoints -= state.logs[idx].points; state.logs.splice(idx, 1); saveData(); updateUI(); renderStats(); }
         }
 
-        // v13.3 Precision Rounding (00m or 30m)
+        // v13.4 Precision Rounding (00m or 30m)
         function updateLogTimestamp(id, val) {
             const idx = state.logs.findIndex(l => l.id === id);
             if (idx > -1) {
@@ -501,8 +497,8 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        // Initialize on Load
         window.addEventListener('load', init);
     </script>
 </body>
 </html>
+
