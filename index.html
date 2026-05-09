@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EQ-Logic Pro | Octalysis Edition</title>
+    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,6 +34,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        /* Royal Sky Gradient */
         .theme-gradient-text {
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-sky));
             -webkit-background-clip: text;
@@ -44,7 +46,7 @@
         }
 
         .theme-glow {
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.15);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
         }
 
         .active-tap:active {
@@ -60,6 +62,7 @@
 
         @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
 
+        /* History Items */
         .log-item-container {
             position: relative;
             overflow: hidden;
@@ -105,19 +108,23 @@
             margin: 0 auto;
             position: relative;
         }
+
+        /* Scroll Customization */
+        #history-list::-webkit-scrollbar { width: 4px; }
+        #history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
 </head>
 <body class="p-4">
 
     <div id="app" class="max-w-lg mx-auto w-full h-full flex flex-col gap-4 relative">
         
-        <!-- HEADER (Action View) -->
+        <!-- HEADER -->
         <header id="global-header" class="liquid-glass rounded-[2rem] p-5 theme-glow shrink-0">
             <div class="flex justify-between items-start mb-4">
                 <div onclick="toggleMasterView()" class="cursor-pointer">
                     <p class="text-[10px] font-black tracking-[0.3em] mb-1 uppercase theme-gradient-text">EQ ASSET LOGIC</p>
                     <div class="flex items-baseline gap-2">
-                        <!-- v13.1: Consistent 3xl points -->
+                        <!-- v13.3: Point size fixed at 3xl -->
                         <span id="header-total-points" class="text-3xl font-black text-white tracking-tighter tabular-nums">0</span>
                         <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">EXP Asset</span>
                     </div>
@@ -161,37 +168,34 @@
                 <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
             <div class="flex-1 min-h-[50px]">
-                <p id="advisor-text" class="text-[14px] font-bold text-white leading-relaxed typewriter">Strategic OS Initialized...</p>
+                <p id="advisor-text" class="text-[14px] font-bold text-white leading-relaxed typewriter">Strategy Portfolio Analyzing...</p>
             </div>
         </div>
 
-        <!-- MAIN ACTION VIEW -->
+        <!-- MAIN ACTION VIEW (Button grid) -->
         <div id="action-view" class="flex-1 grid grid-cols-2 gap-3 overflow-y-auto pr-1 content-start pb-24"></div>
 
         <!-- STATS VIEW -->
         <div id="stats-view" class="hidden flex-1 flex flex-col gap-4 overflow-hidden">
-            <!-- Points Summary (text-3xl) -->
             <div class="liquid-glass p-6 rounded-[2rem] text-center shrink-0 border border-white/5">
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Accumulated Asset</p>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Total Accumulated EXP</p>
                 <div class="flex items-baseline justify-center gap-3">
                     <span id="stats-total-points" class="text-3xl font-black text-white tabular-nums tracking-tighter">0</span>
                     <span id="stats-next-goal" class="text-[11px] font-bold theme-gradient-text uppercase tracking-widest opacity-80">+0 NEXT</span>
                 </div>
             </div>
             
-            <!-- Radar Chart Area -->
             <div class="liquid-glass p-6 rounded-[2.5rem] shrink-0">
                 <div class="chart-wrapper">
                     <canvas id="radarChart"></canvas>
                 </div>
             </div>
 
-            <!-- History Area (Independent Scroll) -->
             <div class="flex-1 overflow-y-auto space-y-2 pb-32 pr-1" id="history-list"></div>
         </div>
 
-        <!-- FLOATING ACTION BUTTON -->
-        <button id="toggle-view-btn" onclick="toggleView()" class="fixed bottom-10 right-6 w-16 h-16 theme-gradient-bg text-black rounded-3xl shadow-[0_15px_40px_rgba(168, 85, 247, 0.3)] flex items-center justify-center active-tap z-50">
+        <!-- FLOATING TOGGLE BUTTON -->
+        <button id="toggle-view-btn" onclick="toggleView()" class="fixed bottom-10 right-6 w-16 h-16 theme-gradient-bg text-black rounded-3xl shadow-[0_15px_40px_rgba(168, 85, 247, 0.4)] flex items-center justify-center active-tap z-50">
             <i id="view-icon" data-lucide="bar-chart-3" class="w-7 h-7"></i>
         </button>
 
@@ -218,13 +222,13 @@
                             <button onclick="selectTarget('BODY')" class="target-opt bg-white/5 border border-white/10 rounded-2xl py-4 text-xs font-bold text-white active-tap">HEALTH</button>
                         </div>
                     </div>
-                    <textarea id="log-memo" rows="4" placeholder="状況、反応、改善ロジック..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-sm text-white focus:border-purple-500/50 outline-none"></textarea>
+                    <textarea id="log-memo" rows="4" placeholder="状況、思考、次へのロジック..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-5 text-sm text-white focus:border-purple-500/50 outline-none"></textarea>
                 </div>
                 <button onclick="saveLog()" class="shrink-0 w-full theme-gradient-bg text-black font-black py-5 rounded-2xl text-lg active-tap">COMMIT ACTION</button>
             </div>
         </div>
 
-        <!-- MASTER SETTINGS -->
+        <!-- MASTER VIEW -->
         <div id="master-view" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl p-8 flex flex-col overflow-y-auto transform translate-y-full transition-transform duration-500">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="text-xl font-black text-white uppercase tracking-widest">Maintenance</h3>
@@ -237,7 +241,7 @@
     <script>
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-Lk_8UhahzIlmYDtf6Dh5N_B53cJUUnlm6Ig5MwHvtPO7J4IZ2gXiNo8imHvPHiEh9g/exec"; 
 
-        // v13.1: Distinct Modern Coloring
+        // Modern and distinct colors for each action
         const DEFAULT_ACTIONS = [
             { id: 'plus', label: 'ひとことプラス', points: 10, icon: 'message-circle', color: 'from-teal-400 to-cyan-500' },
             { id: 'gym', label: 'GYM', points: 20, icon: 'dumbbell', color: 'from-rose-500 to-red-600' },
@@ -245,7 +249,7 @@
             { id: 'network', label: '雑談', points: 15, icon: 'users', color: 'from-blue-400 to-indigo-500' },
             { id: 'thanks_daily', label: 'ありがとう', points: 5, icon: 'heart', color: 'from-fuchsia-400 to-purple-500' },
             { id: 'stairs', label: '階段利用', points: 5, icon: 'trending-up', color: 'from-emerald-400 to-teal-500' },
-            { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-indigo-500 to-purple-700' },
+            { id: 'thanks_pub', label: '称賛', points: 30, icon: 'trophy', color: 'from-indigo-600 to-purple-700' },
             { id: 'bike', label: '自転車通勤', points: 10, icon: 'bike', color: 'from-lime-400 to-green-500' }
         ];
 
@@ -255,9 +259,10 @@
 
         function getExpRequiredForLevel(lv) { return Math.floor(500 + (2000 / (1 + Math.exp(-0.5 * (lv - 5))))); }
 
+        // Core Initialization
         function init() {
             loadData();
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
             renderButtons();
             updateUI();
             startAdvisor();
@@ -288,16 +293,16 @@
                     state.totalPoints = cloudLogs.reduce((s, l) => s + l.points, 0);
                     saveData(); updateUI();
                 }
-            } catch (e) {}
+            } catch (e) { console.error("Sync Error:", e); }
         }
 
         function startAdvisor() {
             const ADVISORY_DATABASE = [
-                "✨ 相手の話を聞く時はスマホを伏せる。最高のパフォーマンスになります。",
-                "✨ 挨拶に『北海道の寒さ』を一言。警戒心をデフラグします。",
-                "✨ 表情筋を0.5ミリ緩める。威圧から安心に変換されます。",
-                "🎯 相手の『なぜ』を先に理解することが、最速の合意形成への近道。",
-                "沈黙の3秒は、相手が本音を話すための『招待状』です。"
+                "✨ 相手の話を聞く時はスマホを伏せる。その動作が信頼を構築します。",
+                "✨ 挨拶に『北海道の天気』を一言。警戒心をデフラグする一手です。",
+                "✨ 表情筋を0.5ミリ緩める。威圧を安心に変える営業ロジックです。",
+                "🎯 相手の『なぜ』を先に理解することが、最短の合意形成への近道。",
+                "沈黙の3秒は、相手の本音を引き出すための招待状です。"
             ];
             const el = document.getElementById('advisor-text');
             const txt = ADVISORY_DATABASE[Math.floor(Math.random() * ADVISORY_DATABASE.length)];
@@ -328,7 +333,7 @@
                 btn.innerHTML = `<div class="flex items-center gap-3"><i data-lucide="${a.icon}" class="w-5 h-5 text-white"></i><span class="text-[14px] font-black text-white">${a.label}</span></div><span class="text-[11px] font-black text-white/40 tracking-widest">+${a.points}</span>`;
                 container.appendChild(btn);
             });
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         function toggleView() {
@@ -340,7 +345,7 @@
             const icon = document.getElementById('view-icon');
             icon.setAttribute('data-lucide', state.view === 'stats' ? 'layout-grid' : 'bar-chart-3');
             if (state.view === 'stats') renderStats();
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         function openPanel(a) {
@@ -417,6 +422,8 @@
                     datasets: [{ data: data, backgroundColor: 'rgba(168, 85, 247, 0.2)', borderColor: '#a855f7', borderWidth: 2, pointRadius: 2 }]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         r: {
                             angleLines: { color: 'rgba(255,255,255,0.1)' },
@@ -460,12 +467,22 @@
             if (idx > -1) { state.totalPoints -= state.logs[idx].points; state.logs.splice(idx, 1); saveData(); updateUI(); renderStats(); }
         }
 
+        // v13.3 Precision Rounding (00m or 30m)
         function updateLogTimestamp(id, val) {
             const idx = state.logs.findIndex(l => l.id === id);
-            if (idx > -1) { state.logs[idx].timestamp = new Date(val).toISOString(); saveData(); updateUI(); renderStats(); }
+            if (idx > -1) {
+                let date = new Date(val);
+                let minutes = date.getMinutes();
+                if (minutes < 15) date.setMinutes(0);
+                else if (minutes < 45) date.setMinutes(30);
+                else { date.setHours(date.getHours() + 1); date.setMinutes(0); }
+                date.setSeconds(0);
+                state.logs[idx].timestamp = date.toISOString();
+                saveData(); updateUI(); renderStats();
+            }
         }
 
-        function toggleMute() { state.isMuted = !state.isMuted; const icon = document.getElementById('mute-icon'); icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2'); lucide.createIcons(); }
+        function toggleMute() { state.isMuted = !state.isMuted; const icon = document.getElementById('mute-icon'); icon.setAttribute('data-lucide', state.isMuted ? 'volume-x' : 'volume-2'); if (window.lucide) lucide.createIcons(); }
 
         function toggleMasterView() {
             const m = document.getElementById('master-view');
@@ -481,10 +498,11 @@
                 item.innerHTML = `<div class="flex items-center gap-3 mb-3"><i data-lucide="${a.icon}" class="w-4 h-4 text-purple-500"></i><span class="text-xs font-black text-white uppercase">${a.label}</span></div><div class="grid grid-cols-2 gap-3"><input type="text" value="${a.label}" onchange="state.actions[${i}].label=this.value;saveData();" class="bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white"><input type="number" value="${a.points}" onchange="state.actions[${i}].points=parseInt(this.value);saveData();" class="bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white"></div>`;
                 list.appendChild(item);
             });
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
-        window.onload = init;
+        // Initialize on Load
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
